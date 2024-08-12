@@ -1,7 +1,7 @@
 
 import platform
 
-port=18088
+port=18089
 waitTime=60
 sysstr = platform.system()
 if(sysstr=="Linux"):
