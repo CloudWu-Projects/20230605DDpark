@@ -2,6 +2,7 @@
 import logging
 from logging import handlers
 from utils.configer import cfg
+import os
 
 class LogUtil(object):
     #  日志级别关系映射
@@ -21,9 +22,13 @@ class LogUtil(object):
         
     def _do_init(self):
         self.__log_file_path = cfg.get(self.log_conf_section, "logPath")
+        log_dir  = os.path.dirname(self.__log_file_path)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
         self.__log2stream = cfg.getInt(self.log_conf_section, "log2stream")
 
-    def getLogger(self, fmt='%(asctime)s - %(process)d - %(thread)d - %(funcName)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
+    #def getLogger(self, fmt='%(asctime)s - %(process)d - %(thread)d - %(funcName)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
+    def getLogger(self, fmt='%(asctime)s - %(thread)d - %(filename)s:%(lineno)d - %(levelname)s - %(funcName)s: %(message)s'):
         logger = logging.getLogger(self.__log_file_path)
         # 设置日志格式
         format_str = logging.Formatter(fmt)
@@ -35,6 +40,8 @@ class LogUtil(object):
         encoding = cfg.get(self.log_conf_section, "encoding")
         th = handlers.TimedRotatingFileHandler(filename=self.__log_file_path, when=when, backupCount=back_count,
                                                encoding=encoding)
+        
+    
         th.setFormatter(format_str)  # 设置文件里写入的格式
 
         logger.addHandler(th)

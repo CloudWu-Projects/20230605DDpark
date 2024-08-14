@@ -52,6 +52,8 @@ class SqliteUtil:
             conn.commit()
         except Exception as e:
             logger.error("查询出现异常:%s",e)
+            logger.error(sql)
+            logger.error(param)
             conn.rollback()
         finally :
             if cursor is not None :

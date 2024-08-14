@@ -1,19 +1,38 @@
-1. 【滕州停车云】host:api.link.aliyun.com
+# 流程
+ 
+ 接受停车云推送的数据
 
-2. DDPark 启动时创建（注册）停车场 https://iotcity.yuque.com/iotcity/park/holfl9?singleDoc#uSl8S
+    入场数据
+        
+        保留orderid picUrl 到db中
 
-3. DDPark 监听XXXX端口，用以接收【停车云】推送的数据
+        上传数据到第三方云
 
-4. DDPark 接收到【停车云】推送的数据，解析其中的数据并转发给【滕州停车云】
+    出场数据
 
-    a. ???收到停车数据时动态创建(注册)停车场????
-    
-    b. 车位更新 /park/isv/v1/parkspace/update？？
-    
-    c. 车辆余位更新  /park/isv/v1/park/availablespace/update
-    
-    d. 车辆入场  /park/isv/v1/park/record/enter
-    
-    e. 车辆出场  /park/isv/v1/park/record/depart
+        上传数据到第三方云
 
-5. ？？？【停车云】数据中带有停车场ID（park_id), 需要把这个ID 转发给【滕州停车云】？？？？
+        上传photourl 到第三方云
+        从db 中检索到 picurl ， 一起上传到第三方云
+
+
+# DB 结构
+
+orderid, picUrl
+
+## 创建表
+
+create table `PICInfo` (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  `orderid` varchar(255) NOT NULL,
+  `picUrl` varchar(255) NOT NULL,
+  PRIMARY KEY (`orderid`)
+)
+
+## 插入数据
+
+insert into `PICInfo` (`orderid`, `picUrl`) values ('123', 'http://www.baidu.com')
+
+## 查询数据
+
+select * from `PICInfo` where orderid = '123'
