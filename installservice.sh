@@ -25,10 +25,10 @@ Description=$SERVICE_DESCRIPTION
 After=network.target
 
 [Service]
+Type=simple
 ExecStart=python3 $SERVICE_EXECUTABLE_PATH
 WorkingDirectory=$CURRENT_DIR
-User=your_user
-Group=your_group
+
 Restart=always
 
 [Install]
