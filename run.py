@@ -15,6 +15,19 @@ def get_all_router():
     routers = [rule.rule for rule in app.url_map.iter_rules()]
     return make_success_data(routers)
 
+@app.route("/log",methods=['GET'])
+def get_log():
+    # 获取日志
+    #从log/server.log中获取日志
+    with open(cfg.get("logging", "logPath"),"r",encoding="utf-8") as f:
+        log_content = f.read()
+    html_content = "<html><body><pre>{}</pre></body></html>".format(log_content)
+    return html_content
+    
+
+
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     return "不接受该访问",404
