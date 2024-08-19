@@ -74,6 +74,7 @@ class OutputServer:
         self.__insert_car_info(f"{park_id}-{order_id}", pic_addr)
 
         self.__post_to_Server(cfg.get("platform", "url_inout"), outJson)
+        self.photo(order_id, pic_addr,None)
 
     def car_out(self, park_id, order_id, car_number, license_color, out_time, pic_addr):
         outJson = Car_InOUT_Json.copy()
@@ -118,6 +119,12 @@ class OutputServer:
 
         outJson['recordSN'] = order_id
         outJson['timestamp'] = int(time.time())
-        outJson['photosData'] = f"{out_pic_addr}\n"
+        outJson['photosData'] =""
+        if in_picUrl is not None:
+            outJson['photosData'] = f"{in_picUrl}\n"        
+        
+        if out_pic_addr is not None:
+            outJson['photosData'] += f"{out_pic_addr}\n"
+
         self.__post_to_Server(cfg.get("platform", "url_pic"), outJson)
         self.__remove(order_id)
