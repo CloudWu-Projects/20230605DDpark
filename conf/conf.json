@@ -1,0 +1,27 @@
+{
+    "logging": {
+        "level": "debug",
+        "logPath": "log/server.log",
+        "when": "D",
+        "backupCount": "7",
+        "encoding": "utf-8",
+        "log2stream": "1"
+    },
+    "server": {
+        "port": 18089
+    },
+    "sqlite": {
+        "data_path": "datas_db_online.db"
+    },
+    "parkinfo": {
+        "10054579": {
+            "parkid": 10054579,
+            "projectName": "WJ-2022-019地块住宅项目",
+            "projectId": "9"
+        }
+    },
+    "platform": {
+        "url_inout": "http://222.92.40.243:8066/mgr/data/access/car/project/record",
+        "url_pic": "http://222.92.40.243:8066/mgr/data/access/car/project/photos"
+    }
+}

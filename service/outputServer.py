@@ -13,8 +13,8 @@ Car_InOUT_Json = {
     "plateColor": "BE",
     "brand": "",
     "plateType": "",
-    "projectId": cfg.get("platform", "projectId"),
-    "projectName": cfg.get("platform", "projectName"),
+    "projectId": "",
+    "projectName": "",
     "entryTime": "停车云2.2.in_time 停车云2.3.out_time",
     "timestamp": "now",
     "deviceSn": "",
@@ -63,6 +63,11 @@ class OutputServer:
             logger.error(outJson)
             logger.error(e)
 
+    def __getProjectid(self,parkid):
+        return cfg.getParkinfo(parkid)['projectId']
+    def __getProjectName(self,parkid):
+        return cfg.getParkinfo(parkid)['projectName']
+    
     def car_in(self, park_id, order_id, car_number, license_color, in_time, pic_addr):
         outJson = Car_InOUT_Json.copy()
         outJson['recordSN'] = order_id
@@ -70,6 +75,8 @@ class OutputServer:
         outJson['entryTime'] = in_time
         outJson['timestamp'] = int(time.time())
         outJson['plateColor'] = self.__convertColor(license_color)
+        outJson['projectId'] =self.__getProjectid(park_id)
+        outJson['projectName'] = self.__getProjectName(park_id)
 
         self.__insert_car_info(f"{park_id}-{order_id}", pic_addr)
 

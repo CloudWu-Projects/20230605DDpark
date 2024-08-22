@@ -8,7 +8,7 @@ router_API = Blueprint('router_API', __name__)
 from service import outputServer
 
 outputServer= outputServer.OutputServer()
-allowParkID= cfg.get('platform', 'parkid').split(',')
+
 
 
 @router_API.route('/outpark', methods=['POST','GET'])  
@@ -17,10 +17,9 @@ def out_park():
     logger.debug(f"{json.dumps(json_body,ensure_ascii=False)}")  
 
     park_id=json_body['park_id']
-    if f'{park_id}' not in allowParkID:
-        logger.error(f'park_id {park_id} !={allowParkID} error,>>>')
-        return jsonify({"state":0,"errmsg":"park_id error"})   
-        pass
+    if f'{park_id}' not in cfg.GetConfig()['parkinfo']:
+        logger.error(f'park_id {park_id} not allow>>>')
+        return jsonify({"state":0,f"errmsg":"park_id {park_id} not allow"})           
     
     
     order_id=json_body['data']['order_id']

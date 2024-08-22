@@ -9,4 +9,4 @@ config_API = Blueprint('config_API', __name__)
 
 @config_API.route('/config', methods=['POST','GET'])  
 def config():
-    return jsonify(cfg)
+    return jsonify(cfg.getConfig())
