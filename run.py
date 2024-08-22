@@ -5,10 +5,12 @@ from flask import request
 from utils.configer import cfg
 from conf.config import  make_error_data,make_success_data
 from routers.router_API import router_API
+from routers.config_API import config_API
 
 app = Flask(__name__)
 
 app.register_blueprint(router_API)
+app.register_blueprint(config_API)
 
 @app.route("/",methods=['GET'])
 def get_all_router():
