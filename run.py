@@ -40,7 +40,7 @@ if __name__ == "__main__":
     port = cfg.getInt("server","port")
     # 启动服务
     # http://127.0.0.1:8080/api/get_car_data
-    app.run(host='0.0.0.0', port=port,debug=True)
+    app.run(host='0.0.0.0', port=port,debug=False)
 # uvicorn boot:app --reload
 # sqlite 的图形化管理工具
 # sqlite_web --password -x -p 8088 data/datas_db.db
