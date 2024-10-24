@@ -46,11 +46,10 @@ def in_park():
     json_body = request.json
     logger.debug(f"{json.dumps(json_body,ensure_ascii=False)}") 
     park_id=json_body['park_id']
-    if f'{park_id}'  not in allowParkID:
-        logger.error(f'park_id {park_id} !={allowParkID} error,>>>')
-        return jsonify({"state":0,"errmsg":"park_id error"})   
-        pass
-    
+    if f'{park_id}'  not in cfg.GetConfig()['parkinfo']:
+        logger.error(f'park_id {park_id} not allow>>>')
+        return jsonify({"state":0,"errmsg":"park_id error"})           
+    logger.error(f"park_id {park_id} ")
     order_id=json_body['data']['order_id']
     car_number=json_body['data']['car_number']
     license_color=json_body['data']['license_color']

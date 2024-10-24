@@ -53,7 +53,7 @@ class OutputServer:
 
     def __post_to_Server(self, url, outJson):
         try:
-            logger.debug(url)
+            logger.debug(f"__post_to_Server {url}")
             logger.debug(f"{json.dumps(outJson, ensure_ascii=False)}")
             ret = requests.post(url, json=outJson)
             logger.debug(ret.text)
@@ -69,6 +69,7 @@ class OutputServer:
         return cfg.getParkinfo(parkid)['projectName']
     
     def car_in(self, park_id, order_id, car_number, license_color, in_time, pic_addr):
+        logger.debug(f"car_in {park_id} {order_id} {car_number} {license_color} {in_time} {pic_addr}")
         outJson = Car_InOUT_Json.copy()
         outJson['recordSN'] = order_id
         outJson['plateNum'] = car_number
@@ -84,6 +85,7 @@ class OutputServer:
         self.photo(order_id, pic_addr,None)
 
     def car_out(self, park_id, order_id, car_number, license_color, out_time, pic_addr):
+        logger.debug(f"car_out {park_id} {order_id} {car_number} {license_color} {out_time} {pic_addr}")
         outJson = Car_InOUT_Json.copy()
         outJson['recordSN'] = order_id
         outJson['plateNum'] = car_number
@@ -100,6 +102,7 @@ class OutputServer:
         self.photo(order_id, in_picUrl, pic_addr)
 
     def __insert_car_info(self, order_id, picurl):
+        logger.debug(f"insert {order_id} {picurl}")
         self.dao.updateBySql(INSERT_CAR_INFO_SQL, (order_id, picurl))
 
     def __query(self, order_id):
