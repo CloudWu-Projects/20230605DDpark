@@ -17,7 +17,7 @@ def out_park():
     logger.debug(f"{json.dumps(json_body,ensure_ascii=False)}")  
 
     park_id=json_body['park_id']
-    if f'{park_id}' not in cfg.GetConfig()['parkinfo']:
+    if f'{park_id}' not in cfg.getConfig()['parkinfo']:
         logger.error(f'park_id {park_id} not allow>>>')
         return jsonify({"state":0,f"errmsg":"park_id {park_id} not allow"})           
     
@@ -49,8 +49,7 @@ def out_park():
 def in_park():
     json_body = request.json
     logger.debug(f"{json.dumps(json_body,ensure_ascii=False)}") 
-    park_id=json_body['park_id']
-    b = cfg.getConfig()['parkinfo']
+    park_id=json_body['park_id']    
     if f'{park_id}'  not in cfg.getConfig()['parkinfo']:
         logger.error(f'park_id {park_id} not allow>>>')
         return jsonify({"state":0,"errmsg":"park_id error"})           
