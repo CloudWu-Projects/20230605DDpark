@@ -43,7 +43,9 @@ class Configer:
         cfg.load()
 
     def getParkinfo(self,parkid):
-        return cfg.get("parkinfo",parkid)
+        parkinfo=  cfg.getConfig()['parkinfo']
+        return parkinfo[str(parkid)]
+        
 
     def getConfig(self):
         return self.__config

@@ -28,7 +28,11 @@ def out_park():
     out_time=json_body['data']['out_time']
     pic_addr=json_body['data']['pic_addr']
 
-    outputServer.car_out(park_id,order_id,car_number,license_color,out_time,pic_addr)
+    try:
+        outputServer.car_out(park_id,order_id,car_number,license_color,out_time,pic_addr)
+    except Exception as e:
+        logger.error(e)
+        
     ret = {"state": 1, "errmsg": "OK"}
     reuslt = {
         "state": 1,
@@ -46,7 +50,8 @@ def in_park():
     json_body = request.json
     logger.debug(f"{json.dumps(json_body,ensure_ascii=False)}") 
     park_id=json_body['park_id']
-    if f'{park_id}'  not in cfg.GetConfig()['parkinfo']:
+    b = cfg.getConfig()['parkinfo']
+    if f'{park_id}'  not in cfg.getConfig()['parkinfo']:
         logger.error(f'park_id {park_id} not allow>>>')
         return jsonify({"state":0,"errmsg":"park_id error"})           
     logger.error(f"park_id {park_id} ")
@@ -56,7 +61,10 @@ def in_park():
     in_time=json_body['data']['in_time']
     pic_addr=json_body['data']['pic_addr']
 
-    outputServer.car_in(park_id,order_id,car_number,license_color,in_time,pic_addr)
+    try:
+        outputServer.car_in(park_id,order_id,car_number,license_color,in_time,pic_addr)
+    except Exception as e:
+        logger.error(e)
     ret = {"state": 1, "errmsg": "OK"}
     reuslt = {
         "state": 1,
