@@ -6,7 +6,6 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/petermattis/goid v0.0.0-20250303134427-723919f7f203
 	github.com/sirupsen/logrus v1.9.3
-	go.uber.org/zap v1.27.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 

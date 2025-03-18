@@ -7,8 +7,6 @@ import (
 	"jilaidian_go/logger"
 	"jilaidian_go/models"
 	"strconv"
-
-	"go.uber.org/zap"
 )
 
 // ChargeService 充电服务
@@ -39,14 +37,14 @@ func (s *ChargeService) HandleChargeInfo(chargeData models.ChargeInfo) error {
 	// 校验 parkId
 	if !s.ValidateParkID(chargeData.ParkID) {
 		err := fmt.Errorf("无效的停车场ID: %s", chargeData.ParkID)
-		logger.Logger.Error("校验停车场ID失败", zap.String("parkId", chargeData.ParkID))
+		logger.Logger.Error("校验停车场ID失败", "parkId", chargeData.ParkID)
 		return err
 	}
 
 	// 记录充电信息
 	logger.Logger.Info("接收到充电信息",
-		zap.String("parkId", chargeData.ParkID),
-		zap.String("plateNo", chargeData.PlateNo))
+		" parkId ", chargeData.ParkID,
+		" plateNo ", chargeData.PlateNo)
 
 	// 这里可以添加更多的处理逻辑，如存储到数据库等
 	return nil
@@ -67,7 +65,7 @@ func (s *ChargeService) ProcessChargingAndDiscount(chargeData models.ChargeInfo)
 
 	orderInfo, err := s.apiClient.QueryOrder(parkID, chargeData.PlateNo)
 	if err != nil {
-		logger.Logger.Error("查询订单失败", zap.Error(err))
+		logger.Logger.Error("查询订单失败", (err))
 		return err
 	}
 
@@ -86,16 +84,16 @@ func (s *ChargeService) ProcessChargingAndDiscount(chargeData models.ChargeInfo)
 			deductionMoney,
 		)
 		if err != nil {
-			logger.Logger.Error("下发优惠失败", zap.Error(err))
+			logger.Logger.Error("下发优惠失败", (err))
 			return err
 		}
 		logger.Logger.Info("优惠下发成功",
-			zap.String("plateNo", chargeData.PlateNo),
-			zap.String("orderId", orderInfo.Data.OrderID))
+			" plateNo ", chargeData.PlateNo,
+			" orderId ", orderInfo.Data.OrderID)
 	} else {
 		logger.Logger.Warn("订单查询未成功，不下发优惠",
-			zap.Int("state", orderInfo.State),
-			zap.String("errMsg", orderInfo.ErrMsg))
+			" state ", orderInfo.State,
+			" errMsg ", orderInfo.ErrMsg)
 	}
 
 	return nil
