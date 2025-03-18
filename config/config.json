@@ -1,0 +1,12 @@
+{
+  "server": {
+    "port": "8080"
+  },
+  "park": {
+    "allowedIds": ["10051557", "10033791"]
+  },
+  "api": {
+    "baseUrl": "http://istparking.sciseetech.com/public",
+    "uKey": "dny75"
+  }
+}

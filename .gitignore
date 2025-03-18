@@ -1,6 +1,1 @@
-tenzhoupark/
-__pycache__/
-fujianpark/
-zjhuagong/
-log/
-datas_db_online.db
+app.log

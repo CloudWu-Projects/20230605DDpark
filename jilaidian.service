@@ -1,11 +1,11 @@
 [Unit]
-Description=渣土车20240812
+Description=20250314吉来电_go
 After=network.target
 
 [Service]
 Type=simple
 Restart=always
-ExecStart=python3 /home/admin/codes/20231206zjhuagong/main.py
+ExecStart=/home/admin/codes/20250314jilaidian_go/jilaidian
 
 [Install]
 WantedBy=multi-user.target
