@@ -12,7 +12,7 @@ func RunExample() {
 	chargeService := service.NewChargeService()
 	//apiClient := client.NewAPIClient()
 
-	parkInfo := config.Parks{
+	parkInfo := config.ParkInfo{
 		Deduction_money: 100,
 		Deduction_time:  60,
 		Parkid:          10051557,

@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-type Parks struct {
+type ParkInfo struct {
 	Parkid          int    `json:"parkid"`
 	Ukey            string `json:"ukey"`
 	Deduction_time  int    `json:"deduction_time"`
@@ -23,7 +23,7 @@ type Config struct {
 	Server struct {
 		Port string `json:"port"`
 	} `json:"server"`
-	Parks []Parks `json:"parks"`
+	Parks []ParkInfo `json:"parks"`
 
 	API struct {
 		BaseURL string `json:"baseUrl"`
@@ -36,6 +36,15 @@ var Global *Config
 func createDefaultConfig() *Config {
 	config := &Config{}
 	config.Server.Port = "8080"
+	config.Parks = []ParkInfo{
+		{
+			Parkid:          99999,
+			Ukey:            "your_ukey",
+			Deduction_time:  60,
+			Deduction_money: 60,
+			ReduceAmount:    100,
+		},
+	}
 	config.API.BaseURL = "http://istparking.sciseetech.com/public"
 	return config
 }
@@ -56,7 +65,7 @@ func createDirIfNotExist(filename string) error {
 
 // WriteConfigToFile writes the config to a file in YAML format
 func WriteConfigToFile(config *Config, filename string) error {
-	data, err := json.Marshal(config)
+	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal config: %w", err)
 	}
@@ -84,7 +93,7 @@ func Load(filePath string) error {
 	Global = createDefaultConfig()
 	return json.Unmarshal(data, Global)
 }
-func GetParkInfo(parkID string) *Parks {
+func GetParkInfo(parkID string) *ParkInfo {
 	for _, id := range Global.Parks {
 		if strconv.Itoa(id.Parkid) == parkID {
 			return &id

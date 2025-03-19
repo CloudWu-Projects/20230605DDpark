@@ -9,7 +9,7 @@ func TestClientQueryOrder(t *testing.T) {
 
 	parkID := 10051557
 	carNumber := "鲁BFZ7606"
-	parkInfo := config.Parks{
+	parkInfo := config.ParkInfo{
 		Deduction_money: 100,
 		Deduction_time:  60,
 		Parkid:          10051557,

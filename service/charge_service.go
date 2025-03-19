@@ -23,7 +23,7 @@ func NewChargeService() *ChargeService {
 // ValidateParkID 校验停车场ID
 
 // ProcessChargingAndDiscount 处理充电和优惠
-func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.Parks, chargeData models.ChargeInfo) error {
+func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, chargeData models.ChargeInfo) error {
 	// 1. 处理充电信息
 
 	// 2. 查询订单信息

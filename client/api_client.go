@@ -31,7 +31,7 @@ func NewAPIClient() *APIClient {
 }
 
 // QueryOrder 查询订单
-func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Parks) (string, error) {
+func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.ParkInfo) (string, error) {
 	url := fmt.Sprintf("%s/order/queryOrder", c.baseURL)
 
 	// 构造请求数据
@@ -65,7 +65,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 }
 
 // SendDiscountNotice 下发优惠信息
-func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.Parks) error {
+func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.ParkInfo) error {
 	url := fmt.Sprintf("%s/charge/discountNotice", c.baseURL)
 
 	// 构造请求数据
