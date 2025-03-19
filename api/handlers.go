@@ -1,7 +1,7 @@
 package api
 
 import (
-	"encoding/json"
+	"fmt"
 	"jilaidian_go/config"
 	"jilaidian_go/logger"
 	"jilaidian_go/models"
@@ -32,26 +32,17 @@ func (h *Handler) SetupRoutes(router *gin.Engine) {
 // HandleChargingRecord 处理充电记录
 func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	var record models.ChargeInfo
-
-	// 记录请求JSON
-	reqJSON, err := json.Marshal(record)
-	if err != nil {
-		logger.Logger.Error("JSON序列化失败", (err))
-	} else {
-		logger.Logger.Info("客户端请求数据", ("request"), (string(reqJSON)))
-	}
-
 	if err := c.ShouldBindJSON(&record); err != nil {
 		logger.Logger.Error("参数解析失败", (err))
-		c.JSON(http.StatusBadRequest, gin.H{"error": "非法参数"})
+		c.JSON(http.StatusBadRequest, gin.H{"result": 1, "description": "非法参数"})
 		return
 	}
 
 	// 车场校验逻辑
 	parkinfo := config.GetParkInfo(record.ParkID)
 	if parkinfo == nil {
-		logger.Logger.Warn("无效车场ID parkId:", record.ParkID)
-		c.JSON(http.StatusForbidden, gin.H{"error": "未授权的车场"})
+		logger.Logger.Warnf(fmt.Sprintf("无效车场ID parkId: %+v", record))
+		c.JSON(http.StatusForbidden, gin.H{"result": 1, "description": "未授权的车场"})
 		return
 	}
 
@@ -59,12 +50,7 @@ func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	//
 	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, record); err != nil {
 		logger.Logger.Error("处理充电和优惠失败", (err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "处理充电和优惠失败"})
+		c.JSON(http.StatusInternalServerError, gin.H{"result": 1, "description": "处理充电和优惠失败"})
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "充电记录处理成功"})
-
-	// 异步处理优惠下发
-	go func() {
-
-	}()
+	c.JSON(http.StatusOK, gin.H{"result": 0, "description": "充电记录处理成功"})
 }
