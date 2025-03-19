@@ -63,37 +63,11 @@ func (s *ChargeService) ProcessChargingAndDiscount(chargeData models.ChargeInfo)
 		return fmt.Errorf("停车场ID格式错误: %v", err)
 	}
 
-	orderInfo, err := s.apiClient.QueryOrder(parkID, chargeData.PlateNo)
+	order_id, err := s.apiClient.QueryOrder(parkID, chargeData.PlateNo)
 	if err != nil {
 		return fmt.Errorf("查询订单信息失败: %v", err)
 	}
+	err = s.apiClient.SendDiscountNotice(parkID, chargeData.PlateNo, order_id, 0.0, 0, 0)
 
-	// 3. 下发优惠信息
-	if orderInfo.State == 1 { // 查询成功
-		reduceAmount := 8.0
-		deductionTime := 4
-		deductionMoney := 5
-
-		err := s.apiClient.SendDiscountNotice(
-			parkID,
-			chargeData.PlateNo,
-			orderInfo.Data.OrderID,
-			reduceAmount,
-			deductionTime,
-			deductionMoney,
-		)
-		if err != nil {
-			logger.Logger.Error("下发优惠失败", (err))
-			return err
-		}
-		logger.Logger.Info("优惠下发成功",
-			" plateNo ", chargeData.PlateNo,
-			" orderId ", orderInfo.Data.OrderID)
-	} else {
-		logger.Logger.Warn("订单查询未成功，不下发优惠",
-			" state ", orderInfo.State,
-			" errMsg ", orderInfo.ErrMsg)
-	}
-
-	return nil
+	return err
 }

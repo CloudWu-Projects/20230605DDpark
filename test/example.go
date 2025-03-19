@@ -26,22 +26,19 @@ func RunExample() {
 	// 2. 通过阿里云查询订单信息
 	parkID := 10033791
 	carNumber := "京A5566TT"
-	orderInfo, err := apiClient.QueryOrder(parkID, carNumber)
+	orderID, err := apiClient.QueryOrder(parkID, carNumber)
 	if err != nil {
 		fmt.Println("Error querying order:", err)
 		return
 	}
 
 	// 3. 下发优惠信息
-	if orderInfo.State == 1 { // 查询成功
-		orderID := orderInfo.Data.OrderID
-		reduceAmount := 8.0
-		deductionTime := 4
-		deductionMoney := 5
-		if err := apiClient.SendDiscountNotice(parkID, carNumber, orderID, reduceAmount, deductionTime, deductionMoney); err != nil {
-			fmt.Println("Error sending discount notice:", err)
-			return
-		}
-		fmt.Println("Discount notice sent successfully!")
+	reduceAmount := 8.0
+	deductionTime := 4
+	deductionMoney := 5
+	if err := apiClient.SendDiscountNotice(parkID, carNumber, orderID, reduceAmount, deductionTime, deductionMoney); err != nil {
+		fmt.Println("Error sending discount notice:", err)
+		return
 	}
+	fmt.Println("Discount notice sent successfully!")
 }
