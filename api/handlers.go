@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"jilaidian_go/logger"
 	"jilaidian_go/models"
 	"jilaidian_go/service"
@@ -30,6 +31,15 @@ func (h *Handler) SetupRoutes(router *gin.Engine) {
 // HandleChargingRecord 处理充电记录
 func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	var record models.ChargeInfo
+
+	// 记录请求JSON
+	reqJSON, err := json.Marshal(record)
+	if err != nil {
+		logger.Logger.Error("JSON序列化失败", (err))
+	} else {
+		logger.Logger.Info("客户端请求数据", ("request"), (string(reqJSON)))
+	}
+
 	if err := c.ShouldBindJSON(&record); err != nil {
 		logger.Logger.Error("参数解析失败", (err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "非法参数"})
@@ -44,18 +54,15 @@ func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	}
 
 	// 处理充电信息
-	if err := h.chargeService.HandleChargeInfo(record); err != nil {
-		logger.Logger.Error("处理充电信息失败", (err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "处理充电信息失败"})
-		return
+	//
+	if err := h.chargeService.ProcessChargingAndDiscount(record); err != nil {
+		logger.Logger.Error("处理充电和优惠失败", (err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "处理充电和优惠失败"})
 	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "充电记录处理成功"})
 
 	// 异步处理优惠下发
 	go func() {
-		if err := h.chargeService.ProcessChargingAndDiscount(record); err != nil {
-			logger.Logger.Error("处理充电和优惠失败", (err))
-		}
+
 	}()
 }

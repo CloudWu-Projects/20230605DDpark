@@ -65,8 +65,7 @@ func (s *ChargeService) ProcessChargingAndDiscount(chargeData models.ChargeInfo)
 
 	orderInfo, err := s.apiClient.QueryOrder(parkID, chargeData.PlateNo)
 	if err != nil {
-		logger.Logger.Error("查询订单失败", (err))
-		return err
+		return fmt.Errorf("查询订单信息失败: %v", err)
 	}
 
 	// 3. 下发优惠信息

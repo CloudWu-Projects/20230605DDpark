@@ -1,2 +1,3 @@
 app.log
 *.exe
+client/config/config.json

@@ -37,7 +37,7 @@ func init() {
 	multiWriter := io.MultiWriter(os.Stdout, LumberjackLogger)
 	_logInstance.SetOutput(multiWriter)
 	_logInstance.SetFormatter(&CustomFormatter{})
-
+	_logInstance.SetLevel(logrus.DebugLevel)
 	// 创建 Logger
 	Logger = _logInstance
 }

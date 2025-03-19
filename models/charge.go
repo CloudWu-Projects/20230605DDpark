@@ -13,7 +13,6 @@ type QueryOrderRequest struct {
 	ParkID      int    `json:"park_id"`
 	Data        struct {
 		CarNumber string `json:"car_number"`
-		QueryTime int64  `json:"query_time"`
 	} `json:"data"`
 }
 
