@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"jilaidian_go/config"
 	"jilaidian_go/logger"
 	"jilaidian_go/models"
 	"jilaidian_go/service"
@@ -47,7 +48,8 @@ func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	}
 
 	// 车场校验逻辑
-	if !h.chargeService.ValidateParkID(record.ParkID) {
+	parkinfo := config.GetParkInfo(record.ParkID)
+	if parkinfo == nil {
 		logger.Logger.Warn("无效车场ID parkId:", record.ParkID)
 		c.JSON(http.StatusForbidden, gin.H{"error": "未授权的车场"})
 		return
@@ -55,7 +57,7 @@ func (h *Handler) HandleChargingRecord(c *gin.Context) {
 
 	// 处理充电信息
 	//
-	if err := h.chargeService.ProcessChargingAndDiscount(record); err != nil {
+	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, record); err != nil {
 		logger.Logger.Error("处理充电和优惠失败", (err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "处理充电和优惠失败"})
 	}

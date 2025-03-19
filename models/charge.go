@@ -6,6 +6,27 @@ type ChargeInfo struct {
 	PlateNo string `json:"plateNo"`
 }
 
+// 充电记录数据结构
+type ChargingRecord struct {
+	PortName     string `json:"portName"`
+	ParkId       string `json:"parkId"`
+	OrderNo      string `json:"orderNo"`
+	PlateNo      string `json:"plateNo"`
+	StartTime    string `json:"startTime"`
+	EndTime      string `json:"endTime"`
+	StationId    string `json:"stationId"`
+	StationName  string `json:"stationName"`
+	DeviceId     string `json:"deviceId"`
+	DeviceName   string `json:"deviceName"`
+	SpaceNo      string `json:"spaceNo"`
+	Power        string `json:"power"`
+	ElecMoney    string `json:"elecMoney"`
+	ServiceMoney string `json:"seviceMoney"`
+	TotalMoney   string `json:"totalMoney"`
+	Sign         string `json:"sign"`
+	Time         string `json:"time"`
+}
+
 // QueryOrderRequest 查询订单请求结构体
 type QueryOrderRequest struct {
 	ServiceName string `json:"service_name"`

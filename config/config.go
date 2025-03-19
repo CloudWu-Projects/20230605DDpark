@@ -7,19 +7,26 @@ import (
 	"jilaidian_go/logger"
 	"os"
 	"path/filepath"
+	"strconv"
 )
+
+type Parks struct {
+	Parkid          int    `json:"parkid"`
+	Ukey            string `json:"ukey"`
+	Deduction_time  int    `json:"deduction_time"`
+	Deduction_money int    `json:"deduction_money"`
+	ReduceAmount    int    `json:"reduceAmount"`
+}
 
 // Config 应用配置结构体
 type Config struct {
 	Server struct {
 		Port string `json:"port"`
 	} `json:"server"`
-	Park struct {
-		AllowedIDs []string `json:"allowedIds"`
-	} `json:"park"`
+	Parks []Parks `json:"parks"`
+
 	API struct {
 		BaseURL string `json:"baseUrl"`
-		UKey    string `json:"uKey"`
 	} `json:"api"`
 }
 
@@ -29,9 +36,7 @@ var Global *Config
 func createDefaultConfig() *Config {
 	config := &Config{}
 	config.Server.Port = "8080"
-	config.Park.AllowedIDs = []string{""}
 	config.API.BaseURL = "http://istparking.sciseetech.com/public"
-	config.API.UKey = "7JPWIA1SGV9N17LE"
 	return config
 }
 func createDirIfNotExist(filename string) error {
@@ -79,10 +84,13 @@ func Load(filePath string) error {
 	Global = createDefaultConfig()
 	return json.Unmarshal(data, Global)
 }
-
-// GetAllowedParkIDs 获取允许的停车场ID列表
-func GetAllowedParkIDs() []string {
-	return Global.Park.AllowedIDs
+func GetParkInfo(parkID string) *Parks {
+	for _, id := range Global.Parks {
+		if strconv.Itoa(id.Parkid) == parkID {
+			return &id
+		}
+	}
+	return nil
 }
 
 func init() {

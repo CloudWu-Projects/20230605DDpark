@@ -17,7 +17,6 @@ import (
 // APIClient 外部API客户端
 type APIClient struct {
 	baseURL string
-	ukey    string
 	client  *http.Client
 }
 
@@ -25,7 +24,6 @@ type APIClient struct {
 func NewAPIClient() *APIClient {
 	return &APIClient{
 		baseURL: config.Global.API.BaseURL,
-		ukey:    config.Global.API.UKey,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
@@ -33,7 +31,7 @@ func NewAPIClient() *APIClient {
 }
 
 // QueryOrder 查询订单
-func (c *APIClient) QueryOrder(parkID int, carNumber string) (string, error) {
+func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Parks) (string, error) {
 	url := fmt.Sprintf("%s/order/queryOrder", c.baseURL)
 
 	// 构造请求数据
@@ -45,7 +43,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string) (string, error) {
 	dataBytes, _ := json.Marshal(data)
 	dataStr := string(dataBytes)
 	// 生成签名
-	sign := utils.GenerateSignString(dataStr, c.ukey)
+	sign := utils.GenerateSignString(dataStr, parkinfo.Ukey)
 
 	// 构造请求体
 	request := models.QueryOrderRequest{
@@ -67,7 +65,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string) (string, error) {
 }
 
 // SendDiscountNotice 下发优惠信息
-func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, reduceAmount float64, deductionTime, deductionMoney int) error {
+func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.Parks) error {
 	url := fmt.Sprintf("%s/charge/discountNotice", c.baseURL)
 
 	// 构造请求数据
@@ -85,9 +83,9 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, re
 	}{
 		CarNumber:         carNumber,
 		OrderID:           orderID,
-		ReduceAmount:      reduceAmount,
-		DeductionTime:     deductionTime,
-		DeductionMoney:    deductionMoney,
+		ReduceAmount:      0,
+		DeductionTime:     parkinfo.Deduction_time,
+		DeductionMoney:    parkinfo.Deduction_money,
 		Duration:          20,
 		Remark:            "备注",
 		StartChargingTime: "2020-08-27 00:02:09",
@@ -99,7 +97,7 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, re
 	dataStr := string(dataBytes)
 	logger.Logger.Info("dataStr:", dataStr)
 	// 生成签名
-	sign := utils.GenerateSignString(dataStr, c.ukey)
+	sign := utils.GenerateSignString(dataStr, parkinfo.Ukey)
 
 	// 构造请求体
 	request := models.DiscountNoticeRequest{
