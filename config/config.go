@@ -44,6 +44,13 @@ func createDefaultConfig() *Config {
 			Deduction_money: 60,
 			ReduceAmount:    100,
 		},
+		{
+			Parkid:          888888,
+			Ukey:            "your_ukey",
+			Deduction_time:  60,
+			Deduction_money: 60,
+			ReduceAmount:    100,
+		},
 	}
 	config.API.BaseURL = "http://istparking.sciseetech.com/public"
 	return config
@@ -64,7 +71,7 @@ func createDirIfNotExist(filename string) error {
 }
 
 // WriteConfigToFile writes the config to a file in YAML format
-func WriteConfigToFile(config *Config, filename string) error {
+func (config *Config) WriteConfigToFile(filename string) error {
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal config: %w", err)
@@ -79,19 +86,35 @@ func WriteConfigToFile(config *Config, filename string) error {
 }
 
 // Load 从文件加载配置
-func Load(filePath string) error {
+func (c *Config) Load(filePath string) error {
+	// 读取配置文件
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Logger.Error("没找到配置文件 重新创建")
-			Global := createDefaultConfig()
-			WriteConfigToFile(Global, filePath)
+			// 创建默认配置并写入文件
+			defaultConfig := createDefaultConfig()
+			err := defaultConfig.WriteConfigToFile(filePath)
+			if err != nil {
+				logger.Logger.Errorf("创建配置文件失败: %v", err)
+				return err
+			}
+			// 将默认配置赋值给当前对象
+			*c = *defaultConfig
 			return nil
 		}
+		logger.Logger.Errorf("读取配置文件失败: %v", err)
 		return err
 	}
-	Global = createDefaultConfig()
-	return json.Unmarshal(data, Global)
+
+	// 解析配置文件内容
+	if err := json.Unmarshal(data, c); err != nil {
+		logger.Logger.Errorf("解析配置文件失败: %v", err)
+		return err
+	}
+	return nil
+}
+func (c *Config) SaveConfig() error {
+	return c.WriteConfigToFile("config/config.json")
 }
 func GetParkInfo(parkID string) *ParkInfo {
 	for _, id := range Global.Parks {
@@ -101,11 +124,19 @@ func GetParkInfo(parkID string) *ParkInfo {
 	}
 	return nil
 }
-
+func LoadConfig() *Config {
+	cc := &Config{}
+	if err := cc.Load("config/config.json"); err != nil {
+		logger.Logger.Error("加载配置失败xxxx", err)
+		return nil
+	}
+	return cc
+}
 func init() {
+	Global = &Config{}
 
-	if err := Load("config/config.json"); err != nil {
-		logger.Logger.Error("加载配置失败", err)
+	if err := Global.Load("config/config.json"); err != nil {
+		logger.Logger.Error("加载配置失败xxxxxaaaa", err)
 		return
 	}
 }

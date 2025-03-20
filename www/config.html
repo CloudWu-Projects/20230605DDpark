@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            border: 2px ridge #007bff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 80%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Hide forms by default */
+        #modify-parks-form,
+        #add-parks-form {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Config Editor</h1>
+    <div>
+        <label>
+            <input type="radio" name="form-selector" value="modify" onclick="toggleForm('modify')" checked> Modify Parks
+        </label>
+        <label>
+            <input type="radio" name="form-selector" value="add" onclick="toggleForm('add')"> Add Park
+        </label>
+    </div>
+
+    <div id="modify-parks-form">
+        <form action="/save" method="post">
+            <button type="submit">Save</button>
+            <div class="form-group">
+                <label for="server.port">Server Port</label>
+                <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
+            </div>
+            <div class="form-group">
+                <label for="api.baseUrl">API Base URL</label>
+                <input type="text" id="api.baseUrl" name="api.baseUrl" value="{{.API.BaseURL}}" required>
+            </div>
+            <div>
+                <h2>Parks</h2>
+                {{range $index, $park := .Parks}}
+                <div class="form-group" data-index="{{.Parkid}}">
+                    <div>
+                        <button class="remove-button" onclick="remove(this)" data-index="{{.Parkid}}"
+                            aria-label="Remove Park">del</button>
+                    </div>
+                    <div>
+                        <label for="parkid-{{.Parkid}}">Park ID</label>
+                        <input type="text" id="parkid-{{.Parkid}}" name="parks.parkid.{{.Parkid}}" value="{{.Parkid}}"
+                            required>
+                    </div>
+                    <div>
+                        <label for="ukey-{{.Parkid}}">UKey</label>
+                        <input type="text" id="ukey-{{.Parkid}}" name="parks.{{.Parkid}}.ukey" value="{{.Ukey}}"
+                            required>
+                    </div>
+                    <div>
+                        <label for="deduction-time-{{.Parkid}}">Deduction Time</label>
+                        <input type="number" id="deduction-time-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_time"
+                            value="{{.Deduction_time}}" required>
+                        <span class="unit">min</span>
+                    </div>
+                    <div>
+                        <label for="deduction-money-{{.Parkid}}">Deduction Money</label>
+                        <input type="number" id="deduction-money-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_money"
+                            value="{{.Deduction_money}}" required>
+                        <span class="unit">￥</span>
+                    </div>
+                </div>
+
+                {{end}}
+                <script>
+                    function remove(e) {
+                        const index = e.getAttribute('data-index');
+                        if (index == '99999') {
+                            return;
+                        }
+                        const parkElement = document.querySelector(`.form-group[data-index="${index}"]`);
+                        if (parkElement) {
+                            parkElement.remove();
+                        }
+                    }
+                </script>
+        </form>
+    </div>
+    <div id="add-parks-form">
+        <form action="/add" method="post">
+            <button type="submit">Add park</button>
+            <div class="form-group">
+                <div>
+                    <label>Park ID</label>
+                    <input type="text" id="parkid-add" name="add.parkid" value="" required>
+                </div>
+                <div>
+                    <label for="ukey--add">UKey</label>
+                    <input type="text" id="ukey-add" name="add.ukey" value="" required>
+                </div>
+                <div>
+                    <label for="deduction-time-add">Deduction Time</label>
+                    <input type="number" id="deduction-time-add" name="add.deduction_time" value="" required>
+                    <span class="unit">min</span>
+                </div>
+                <div>
+                    <label for="deduction-money-add">Deduction Money</label>
+                    <input type="number" id="deduction-money-add" name="add.deduction_money" value="" required>
+                    <span class="unit">￥</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Function to toggle between modify and add forms
+        function toggleForm(formType) {
+            document.getElementById('modify-parks-form').style.display = formType === 'modify' ? 'block' : 'none';
+            document.getElementById('add-parks-form').style.display = formType === 'add' ? 'block' : 'none';
+        }
+
+        // Event listener for document ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // 默认显示 Modify Parks 表单
+            toggleForm('modify');
+        });
+    </script>
+</body>
+
+</html>

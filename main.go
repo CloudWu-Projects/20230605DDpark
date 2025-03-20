@@ -12,19 +12,12 @@ import (
 
 func main() {
 	// 解析命令行参数
-	configPath := flag.String("config", "config/config.json", "配置文件路径")
+
 	runExample := flag.Bool("example", false, "运行示例代码")
 	flag.Parse()
 
 	// 初始化日志
 	logger.Logger.Info("初始化日志")
-
-	// 加载配置
-	if err := config.Load(*configPath); err != nil {
-		logger.Logger.Error("加载配置失败", err)
-		return
-	}
-	logger.Logger.Info("配置加载成功")
 
 	// 如果是运行示例代码
 	if *runExample {
@@ -39,7 +32,8 @@ func main() {
 	// 设置路由
 	handler := api.NewHandler()
 	handler.SetupRoutes(router)
-
+	configHandler := api.NewConfigHandler()
+	configHandler.SetupRoutes(router)
 	// 启动服务器
 	port := config.Global.Server.Port
 	logger.Logger.Info("启动服务器 port:", port)
