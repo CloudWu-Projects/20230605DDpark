@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "lanzhouurl", 
         nargs="?",  # 可选参数
-        default="https://wwkd.lanzn.com/iNQEL2r5ws3i",  # 默认值
+        default="https://wwkd.lanzn.com/iRrqN2r641xe",  # 默认值
         help="The Lanzou Cloud URL to download from."
     )
     args = parser.parse_args()
