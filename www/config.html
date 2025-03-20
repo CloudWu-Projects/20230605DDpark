@@ -80,23 +80,23 @@
                     </div>
                     <div>
                         <label for="parkid-{{.Parkid}}">Park ID</label>
-                        <input type="text" id="parkid-{{.Parkid}}" name="parks.parkid.{{.Parkid}}" value="{{.Parkid}}"
+                        <input type="text" id="parkid-{{.Parkid}}" name="parks.parkid.{{.Parkid}}" data-index="{{.Parkid}}" value="{{.Parkid}}"
                             required>
                     </div>
                     <div>
                         <label for="ukey-{{.Parkid}}">UKey</label>
-                        <input type="text" id="ukey-{{.Parkid}}" name="parks.{{.Parkid}}.ukey" value="{{.Ukey}}"
+                        <input type="text" id="ukey-{{.Parkid}}" name="parks.{{.Parkid}}.ukey" data-index="{{.Parkid}}" value="{{.Ukey}}"
                             required>
                     </div>
                     <div>
                         <label for="deduction-time-{{.Parkid}}">Deduction Time</label>
-                        <input type="number" id="deduction-time-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_time"
+                        <input type="number" id="deduction-time-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_time"  data-index="{{.Parkid}}"
                             value="{{.Deduction_time}}" required>
                         <span class="unit">min</span>
                     </div>
                     <div>
                         <label for="deduction-money-{{.Parkid}}">Deduction Money</label>
-                        <input type="number" id="deduction-money-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_money"
+                        <input type="number" id="deduction-money-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_money"  data-index="{{.Parkid}}"
                             value="{{.Deduction_money}}" required>
                         <span class="unit">￥</span>
                     </div>
@@ -154,6 +154,25 @@
         document.addEventListener('DOMContentLoaded', function () {
             // 默认显示 Modify Parks 表单
             toggleForm('modify');
+
+            // 检查每个 Parkid 是否为 99999 并禁用输入框
+            const parkInputs = document.querySelectorAll('input[name^="parks.parkid."]');
+            parkInputs.forEach(input => {
+                const parkid = input.value;
+                if (parkid === '99999') {
+                    input.disabled = true;
+                }
+            });
+
+
+            // 找到所有 data-index 为 99999 的按钮并禁用它们
+            const removeButtons = document.querySelector('button.remove-button[data-index="99999"]');
+            removeButtons.style.display = 'none';
+
+            const fixedElements =  document.querySelectorAll('input[data-index="99999"]');
+            fixedElements.forEach(input => {
+                input.disabled = true;
+            });
         });
     </script>
 </body>

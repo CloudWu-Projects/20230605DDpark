@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"jilaidian_go/api"
 	"jilaidian_go/config"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+//go:embed www/config.html
+var content embed.FS
 
 func main() {
 	// 解析命令行参数
@@ -32,7 +36,7 @@ func main() {
 	// 设置路由
 	handler := api.NewHandler()
 	handler.SetupRoutes(router)
-	configHandler := api.NewConfigHandler()
+	configHandler := api.NewConfigHandler(content)
 	configHandler.SetupRoutes(router)
 	// 启动服务器
 	port := config.Global.Server.Port

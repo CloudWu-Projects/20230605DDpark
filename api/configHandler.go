@@ -12,19 +12,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed ..\www\config.html
-var content embed.FS
-
 // Handler API处理器
 type ConfigHandler struct {
 	tmpl *template.Template
 }
 
 // NewHandler 创建新的API处理器
-func NewConfigHandler() *ConfigHandler {
-	fmt.Println("NewConfigHandler")
-	tmpl, _ := template.ParseFS(content, "config.html")
+func NewConfigHandler(content embed.FS) *ConfigHandler {
 
+	tmpl, err := template.ParseFS(content, "www/config.html")
+	if err != nil {
+		fmt.Println("Error parsing template:", err)
+		panic(err)
+	}
 	return &ConfigHandler{
 		tmpl: tmpl,
 	}
@@ -66,9 +66,9 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 			ukey := r.Form.Get(fmt.Sprintf("parks.%d.ukey", parkID))
 			deductionTime, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_time", parkID)))
 			deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
-
+			newParkid, _ := strconv.Atoi(r.Form.Get(key))
 			parks = append(parks, config.ParkInfo{
-				Parkid:          parkID,
+				Parkid:          newParkid,
 				Ukey:            ukey,
 				Deduction_time:  deductionTime,
 				Deduction_money: deductionMoney,
