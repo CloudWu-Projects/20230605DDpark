@@ -12,6 +12,7 @@
         }
 
         .form-group {
+            margin-top: 20px;
             margin-bottom: 15px;
             border: 2px ridge #007bff;
         }
@@ -45,12 +46,50 @@
         #add-parks-form {
             display: none;
         }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            /* 控制按钮之间的间距 */
+        }
     </style>
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure.css" />
+    <script>
+        // Function to toggle between modify and add forms
+        function toggleForm(formType) {
+            document.getElementById('modify-parks-form').style.display = formType === 'modify' ? 'block' : 'none';
+            document.getElementById('add-parks-form').style.display = formType === 'add' ? 'block' : 'none';
+        }
+        // Event listener for document ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // 默认显示 Modify Parks 表单
+            toggleForm('modify');
+
+            // 检查每个 Parkid 是否为 99999 并禁用输入框
+            const parkInputs = document.querySelectorAll('input[name^="parks.parkid."]');
+            parkInputs.forEach(input => {
+                const parkid = input.value;
+                if (parkid === '99999') {
+                    input.disabled = true;
+                }
+            });
+
+
+            // 找到所有 data-index 为 99999 的按钮并禁用它们
+            const removeButtons = document.querySelector('button.remove-button[data-index="99999"]');
+            removeButtons.style.display = 'none';
+
+            const fixedElements = document.querySelectorAll('input[data-index="99999"]');
+            fixedElements.forEach(input => {
+                input.disabled = true;
+            });
+        });
+    </script>
 </head>
 
 <body>
     <h1>Config Editor</h1>
-    <div>
+    <div class="radio-group">
         <label>
             <input type="radio" name="form-selector" value="modify" onclick="toggleForm('modify')" checked> Modify Parks
         </label>
@@ -58,68 +97,13 @@
             <input type="radio" name="form-selector" value="add" onclick="toggleForm('add')"> Add Park
         </label>
     </div>
-
-    <div id="modify-parks-form">
-        <form action="/save" method="post">
-            <button type="submit">Save</button>
-            <div class="form-group">
-                <label for="server.port">Server Port</label>
-                <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
-            </div>
-            <div class="form-group">
-                <label for="api.baseUrl">API Base URL</label>
-                <input type="text" id="api.baseUrl" name="api.baseUrl" value="{{.API.BaseURL}}" required>
-            </div>
-            <div>
-                <h2>Parks</h2>
-                {{range $index, $park := .Parks}}
-                <div class="form-group" data-index="{{.Parkid}}">
-                    <div>
-                        <button class="remove-button" onclick="remove(this)" data-index="{{.Parkid}}"
-                            aria-label="Remove Park">del</button>
-                    </div>
-                    <div>
-                        <label for="parkid-{{.Parkid}}">Park ID</label>
-                        <input type="text" id="parkid-{{.Parkid}}" name="parks.parkid.{{.Parkid}}" data-index="{{.Parkid}}" value="{{.Parkid}}"
-                            required>
-                    </div>
-                    <div>
-                        <label for="ukey-{{.Parkid}}">UKey</label>
-                        <input type="text" id="ukey-{{.Parkid}}" name="parks.{{.Parkid}}.ukey" data-index="{{.Parkid}}" value="{{.Ukey}}"
-                            required>
-                    </div>
-                    <div>
-                        <label for="deduction-time-{{.Parkid}}">Deduction Time</label>
-                        <input type="number" id="deduction-time-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_time"  data-index="{{.Parkid}}"
-                            value="{{.Deduction_time}}" required>
-                        <span class="unit">min</span>
-                    </div>
-                    <div>
-                        <label for="deduction-money-{{.Parkid}}">Deduction Money</label>
-                        <input type="number" id="deduction-money-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_money"  data-index="{{.Parkid}}"
-                            value="{{.Deduction_money}}" required>
-                        <span class="unit">￥</span>
-                    </div>
-                </div>
-
-                {{end}}
-                <script>
-                    function remove(e) {
-                        const index = e.getAttribute('data-index');
-                        if (index == '99999') {
-                            return;
-                        }
-                        const parkElement = document.querySelector(`.form-group[data-index="${index}"]`);
-                        if (parkElement) {
-                            parkElement.remove();
-                        }
-                    }
-                </script>
-        </form>
-    </div>
     <div id="add-parks-form">
         <form action="/add" method="post">
-            <button type="submit">Add park</button>
+            <div>
+
+                <button type="submit">Add park</button>
+
+            </div>
             <div class="form-group">
                 <div>
                     <label>Park ID</label>
@@ -142,39 +126,66 @@
             </div>
         </form>
     </div>
+    <div id="modify-parks-form">
+        <form action="/save" method="post">
+            <div><button type="submit">Save</button></div>
+            <div class="form-group">
+                <label for="server.port">Server Port</label>
+                <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
+            </div>
+            <div class="form-group">
+                <label for="api.baseUrl">API Base URL</label>
+                <input type="text" id="api.baseUrl" name="api.baseUrl" value="{{.API.BaseURL}}" required>
+            </div>
+            <div>
+                <h2>Parks</h2>
+                {{range $index, $park := .Parks}}
+                <div class="form-group" data-index="{{.Parkid}}">
+                    <div>
+                        <button class="remove-button" onclick="remove(this)" data-index="{{.Parkid}}"
+                            aria-label="Remove Park">del</button>
+                    </div>
+                    <div>
+                        <label for="parkid-{{.Parkid}}">Park ID</label>
+                        <input type="text" id="parkid-{{.Parkid}}" name="parks.parkid.{{.Parkid}}"
+                            data-index="{{.Parkid}}" value="{{.Parkid}}" required>
+                    </div>
+                    <div>
+                        <label for="ukey-{{.Parkid}}">UKey</label>
+                        <input type="text" id="ukey-{{.Parkid}}" name="parks.{{.Parkid}}.ukey" data-index="{{.Parkid}}"
+                            value="{{.Ukey}}" required>
+                    </div>
+                    <div>
+                        <label for="deduction-time-{{.Parkid}}">Deduction Time</label>
+                        <input type="number" id="deduction-time-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_time"
+                            data-index="{{.Parkid}}" value="{{.Deduction_time}}" required>
+                        <span class="unit">min</span>
+                    </div>
+                    <div>
+                        <label for="deduction-money-{{.Parkid}}">Deduction Money</label>
+                        <input type="number" id="deduction-money-{{.Parkid}}" name="parks.{{.Parkid}}.deduction_money"
+                            data-index="{{.Parkid}}" value="{{.Deduction_money}}" required>
+                        <span class="unit">￥</span>
+                    </div>
+                </div>
 
-    <script>
-        // Function to toggle between modify and add forms
-        function toggleForm(formType) {
-            document.getElementById('modify-parks-form').style.display = formType === 'modify' ? 'block' : 'none';
-            document.getElementById('add-parks-form').style.display = formType === 'add' ? 'block' : 'none';
-        }
-
-        // Event listener for document ready
-        document.addEventListener('DOMContentLoaded', function () {
-            // 默认显示 Modify Parks 表单
-            toggleForm('modify');
-
-            // 检查每个 Parkid 是否为 99999 并禁用输入框
-            const parkInputs = document.querySelectorAll('input[name^="parks.parkid."]');
-            parkInputs.forEach(input => {
-                const parkid = input.value;
-                if (parkid === '99999') {
-                    input.disabled = true;
-                }
-            });
+                {{end}}
+                <script>
+                    function remove(e) {
+                        const index = e.getAttribute('data-index');
+                        if (index == '99999') {
+                            return;
+                        }
+                        const parkElement = document.querySelector(`.form-group[data-index="${index}"]`);
+                        if (parkElement) {
+                            parkElement.remove();
+                        }
+                    }
+                </script>
+        </form>
+    </div>
 
 
-            // 找到所有 data-index 为 99999 的按钮并禁用它们
-            const removeButtons = document.querySelector('button.remove-button[data-index="99999"]');
-            removeButtons.style.display = 'none';
-
-            const fixedElements =  document.querySelectorAll('input[data-index="99999"]');
-            fixedElements.forEach(input => {
-                input.disabled = true;
-            });
-        });
-    </script>
 </body>
 
 </html>
