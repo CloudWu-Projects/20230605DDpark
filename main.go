@@ -7,8 +7,7 @@ import (
 	"jilaidian_go/config"
 	"jilaidian_go/logger"
 	"jilaidian_go/test"
-
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 //go:embed www/config.html
@@ -31,17 +30,18 @@ func main() {
 	}
 
 	// 初始化 Gin
-	router := gin.Default()
+	//router := gin.Default()
 
 	// 设置路由
 	handler := api.NewHandler()
-	handler.SetupRoutes(router)
+	handler.SetupRoutes()
 	configHandler := api.NewConfigHandler(content)
-	configHandler.SetupRoutes(router)
+	configHandler.SetupRoutes()
 	// 启动服务器
 	port := config.Global.Server.Port
 	logger.Logger.Info("启动服务器 port:", port)
-	if err := router.Run(":" + port); err != nil {
-		logger.Logger.Error("服务器启动失败", err)
+
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		logger.Logger.Error("启动服务器失败", err)
 	}
 }

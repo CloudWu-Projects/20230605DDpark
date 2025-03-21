@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Handler API处理器
@@ -31,21 +29,19 @@ func NewConfigHandler(content embed.FS) *ConfigHandler {
 }
 
 // SetupRoutes 设置路由
-func (h *ConfigHandler) SetupRoutes(router *gin.Engine) {
+func (h *ConfigHandler) SetupRoutes() {
 	// 充电记录接口
-	router.POST("/save", h.saveHandler)
-	router.GET("/", h.indexHandler)
-	router.POST("/add", h.addHandler)
+	http.HandleFunc("/", h.indexHandler)
+	http.HandleFunc("/save", h.saveHandler)
+	http.HandleFunc("/add", h.addHandler)
 }
-func (h *ConfigHandler) HandleChargingRecord(c *gin.Context) {}
 
-func (h *ConfigHandler) indexHandler(c *gin.Context) {
+func (h *ConfigHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	ci := config.LoadConfig()
-	h.tmpl.Execute(c.Writer, ci)
+	h.tmpl.Execute(w, ci)
 }
-func (h *ConfigHandler) saveHandler(c *gin.Context) {
-	w := c.Writer
-	r := c.Request
+func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -93,11 +89,8 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (h *ConfigHandler) addHandler(c *gin.Context) {
-	w := c.Writer
-	r := c.Request
+func (h *ConfigHandler) addHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		//http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		tmpl := template.Must(template.ParseFiles("add.html"))
 		c := config.LoadConfig()
 		tmpl.Execute(w, c)
