@@ -18,57 +18,93 @@
     <h3>Modal 实例</h3>
     <p>请单击按钮打开模态。</p>
 
-    <button type="button" class="btn btn-primary" data-bs-heading="1111" data-bs-toggle="modal" data-bs-target="#addParksModal">
+    <button type="button" class="btn btn-primary" data-bs-heading="1111" data-bs-toggle="modal"
+      data-bs-target="#addParksModal">
       打开模态111
     </button>
-    
-    <button type="button" class="btn btn-primary" data-bs-heading="22222" data-bs-toggle="modal" data-bs-target="#addParksModal">
+
+    <button type="button" class="btn btn-primary" data-bs-heading="22222" data-bs-toggle="modal"
+      data-bs-target="#addParksModal">
       打开模态2222
     </button>
-    <div id="addParksModal" class="modal fade" role="dialog" >
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Modal Header</h4>
-                </div>
-                <div class="modal-body">
-                    <form action="/add" method="post">
-                        <div>
-                            <button type="submit" id="add_or_modify_btn">Add park</button>
-                            <input type="hidden" id="old_parkid" name="old_parkid" value="">
-                        </div>
-                        <div class="form-group">
-                            <div>
-                                <label>Park ID</label>
-                                <input type="text" id="parkid-add" name="add.parkid" value="" required>
-                            </div>
-                            <div>
-                                <label for="ukey--add">UKey</label>
-                                <input type="text" id="ukey-add" name="add.ukey" value="" required>
-                            </div>
-                            <div>
-                                <label for="deduction-time-add">Deduction Time</label>
-                                <input type="number" id="deduction-time-add" name="add.deduction_time" value=""
-                                    required>
-                                <span class="unit">min</span>
-                            </div>
-                            <div>
-                                <label for="deduction-money-add">Deduction Money</label>
-                                <input type="number" id="deduction-money-add" name="add.deduction_money" value=""
-                                    required>
-                                <span class="unit">￥</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
 
-            </div>
+    <button type="button" class="btn btn-primary" data-bs-heading="22222" data-bs-toggle="modal"
+      data-bs-target="#modifyParksModal">
+      modifyParksModal
+    </button>
+    <div id="addParksModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Modal Header</h4>
+          </div>
+          <div class="modal-body">
+            <form action="/add" method="post">
+              <div>
+                <button type="submit" id="add_or_modify_btn">Add park</button>
+                <input type="hidden" id="old_parkid" name="old_parkid" value="">
+              </div>
+              <div class="form-group">
+                <div>
+                  <label>Park ID</label>
+                  <input type="text" id="parkid-add" name="add.parkid" value="" required>
+                </div>
+                <div>
+                  <label for="ukey--add">UKey</label>
+                  <input type="text" id="ukey-add" name="add.ukey" value="" required>
+                </div>
+                <div>
+                  <label for="deduction-time-add">Deduction Time</label>
+                  <input type="number" id="deduction-time-add" name="add.deduction_time" value="" required>
+                  <span class="unit">min</span>
+                </div>
+                <div>
+                  <label for="deduction-money-add">Deduction Money</label>
+                  <input type="number" id="deduction-money-add" name="add.deduction_money" value="" required>
+                  <span class="unit">￥</span>
+                </div>
+              </div>
+            </form>
+          </div>
+          <!-- 模态页脚 -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+          </div>
         </div>
+      </div>
 
+    </div>
+    <div id="modifyParksModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Modal Header</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/save" method="post">
+              <div><button type="submit">Save</button></div>
+              <div class="form-group">
+                <label for="server.port">Server Port</label>
+                <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
+              </div>
+              <div class="form-group">
+                <label for="api.baseUrl">API Base URL</label>
+                <input type="text" id="api.baseUrl" name="api.baseUrl" value="{{.API.BaseURL}}" required>
+              </div>
+              <div>
+
+              </div>
+
+            </form>
+          </div>
+          <!-- 模态页脚 -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- 模态 -->
     <div class="modal" id="myModal">
@@ -96,26 +132,38 @@
     </div>
     <table data-toggle="table" data-search="true">
       <thead>
-        <tr>
-          <th>Item ID</th>
-          <th>Item Name</th>
-          <th>Item Price</th>
-        </tr>
+          <tr>
+              <th>Park ID</th>
+              <th>UKey</th>
+              <th>Deduction Time</th>
+              <th>Deduction Money</th>
+              <th>status</th>
+          </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Item 1</td>
-          <td>$1</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Item 2</td>
-          <td>$2</td>
-        </tr>
+          {{if .Parks}}
+          {{range $index, $park := .Parks}}
+          <tr>
+              <td>{{.Parkid}}</td>
+              <td>{{.Ukey}}</td>
+              <td>{{.Deduction_time}}</td>
+              <td>{{.Deduction_money}}</td>
+              <td>
+                  <!-- 使用 data 属性绑定所有必要的数据 -->
+                  <a href="#" class="edit-link" data-parkid="{{.Parkid }}" data-ukey="{{.Ukey  }}"
+                      data-deduction-time="{{.Deduction_time }}"
+                      data-deduction-money="{{.Deduction_money  }}">Edit</a>
+              </td>
+          </tr>
+          {{end}}
+          {{else}}
+          <!-- 如果没有数据，显示默认提示 -->
+          <tr>
+              <td colspan="5">No data available</td>
+          </tr>
+          {{end}}
       </tbody>
-    </table>
-
+  </table>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
