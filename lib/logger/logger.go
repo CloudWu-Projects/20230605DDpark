@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"jilaidian_go/lib/common"
+	"log"
 	"os"
 
 	"github.com/petermattis/goid"
@@ -25,21 +26,26 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return []byte(logMessage), nil
 }
 
+var LumberjackLogger = &lumberjack.Logger{
+	Filename:   common.GetLogPath(),
+	MaxSize:    10,
+	MaxBackups: 3,
+	MaxAge:     28,
+	Compress:   true,
+}
+
 func init() {
 
 	_logInstance := logrus.New()
 
-	var LumberjackLogger = &lumberjack.Logger{
-		Filename:   common.GetLogPath(),
-		MaxSize:    10,
-		MaxBackups: 3,
-		MaxAge:     28,
-		Compress:   true,
-	}
+	fmt.Println("log path:", common.GetLogPath())
 	multiWriter := io.MultiWriter(os.Stdout, LumberjackLogger)
 	_logInstance.SetOutput(multiWriter)
 	_logInstance.SetFormatter(&CustomFormatter{})
 	_logInstance.SetLevel(logrus.DebugLevel)
+	log.SetFlags(0) // 移除标准库的默认标志
+	log.SetOutput(_logInstance.Writer())
+
 	// 创建 Logger
 	Logger = _logInstance
 }

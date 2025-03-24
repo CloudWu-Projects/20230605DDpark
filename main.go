@@ -6,6 +6,7 @@ import (
 	"jilaidian_go/lib/api"
 	"jilaidian_go/lib/config"
 	"jilaidian_go/lib/logger"
+	"jilaidian_go/lib/utils"
 	"jilaidian_go/test"
 	"net/http"
 
@@ -22,10 +23,11 @@ func main() {
 	flag.Parse()
 
 	// 初始化日志
-	logger.Logger.Info("初始化日志")
 
 	if *install {
 		logger.Logger.Info("安装服务")
+		// 写 utils.Simply_SystemdScript 到 /etc/systemd/system/jilaidian.service
+		utils.InstallServer()
 
 	}
 	// 如果是运行示例代码

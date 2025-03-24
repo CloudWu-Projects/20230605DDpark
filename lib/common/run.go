@@ -29,3 +29,13 @@ func GetLogPath() string {
 	}
 	return path
 }
+
+// Different systems get different installation paths
+func GetInstallPath() string {
+
+	if IsWindows() {
+		return `C:\Program Files\nps`
+	}
+	return "/etc/nps"
+
+}

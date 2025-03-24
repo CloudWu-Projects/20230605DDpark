@@ -16,7 +16,6 @@ func TestLoggerInitialization(t *testing.T) {
 	// 验证handler的日志级别设置
 	//handler := Logger.Handler().(*slog.TextHandler)
 	Logger.Info("init logger")
-
 }
 
 func TestLogOutput(t *testing.T) {
