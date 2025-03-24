@@ -7,5 +7,5 @@ ChargeInfo={
 }
 
 
-r= requests.post("http://127.0.0.1:8080/chargePile/chargingRecord",json=ChargeInfo)
+r= requests.post("http://shuyun.ddpark.fun/chargePile/chargingRecord",json=ChargeInfo)
 print(r.json())

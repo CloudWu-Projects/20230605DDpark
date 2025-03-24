@@ -8,6 +8,8 @@ import (
 	"jilaidian_go/logger"
 	"jilaidian_go/test"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 //go:embed www/config.html
@@ -29,19 +31,17 @@ func main() {
 		return
 	}
 
-	// 初始化 Gin
-	//router := gin.Default()
-
+	r := mux.NewRouter()
 	// 设置路由
 	handler := api.NewHandler()
-	handler.SetupRoutes()
+	handler.SetupRoutes(r)
 	configHandler := api.NewConfigHandler(content)
-	configHandler.SetupRoutes()
+	configHandler.SetupRoutes(r)
 	// 启动服务器
 	port := config.Global.Server.Port
 	logger.Logger.Info("启动服务器 port:", port)
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		logger.Logger.Error("启动服务器失败", err)
 	}
 }

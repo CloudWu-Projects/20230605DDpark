@@ -8,6 +8,8 @@ import (
 	"jilaidian_go/models"
 	"jilaidian_go/service"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // Handler API处理器
@@ -23,9 +25,9 @@ func NewHandler() *Handler {
 }
 
 // SetupRoutes 设置路由
-func (h *Handler) SetupRoutes() {
+func (h *Handler) SetupRoutes(r *mux.Router) {
 	// 充电记录接口
-	http.HandleFunc("/chargePile/chargingRecord", h.HandleChargingRecord)
+	r.HandleFunc("/chargePile/chargingRecord", h.HandleChargingRecord).Methods("POST")
 	//router.POST("/chargePile/chargingRecord", h.HandleChargingRecord)
 }
 
