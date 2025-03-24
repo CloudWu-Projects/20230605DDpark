@@ -1,9 +1,9 @@
 package test
 
 import (
-	"jilaidian_go/config"
-	"jilaidian_go/models"
-	"jilaidian_go/service"
+	"jilaidian_go/lib/config"
+	"jilaidian_go/lib/models"
+	"jilaidian_go/lib/service"
 )
 
 // RunExample 运行示例代码

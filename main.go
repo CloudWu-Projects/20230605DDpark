@@ -3,9 +3,9 @@ package main
 import (
 	"embed"
 	"flag"
-	"jilaidian_go/api"
-	"jilaidian_go/config"
-	"jilaidian_go/logger"
+	"jilaidian_go/lib/api"
+	"jilaidian_go/lib/config"
+	"jilaidian_go/lib/logger"
 	"jilaidian_go/test"
 	"net/http"
 

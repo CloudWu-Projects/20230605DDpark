@@ -3,10 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"jilaidian_go/config"
-	"jilaidian_go/logger"
-	"jilaidian_go/models"
-	"jilaidian_go/service"
+	"jilaidian_go/lib/config"
+	"jilaidian_go/lib/logger"
+	"jilaidian_go/lib/models"
+	"jilaidian_go/lib/service"
 	"net/http"
 
 	"github.com/gorilla/mux"

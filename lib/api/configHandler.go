@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"jilaidian_go/config"
+	"jilaidian_go/lib/config"
 	"net/http"
 	"strconv"
 	"strings"
