@@ -17,13 +17,17 @@ var content embed.FS
 
 func main() {
 	// 解析命令行参数
-
+	install := flag.Bool("install", false, "安装服务")
 	runExample := flag.Bool("example", false, "运行示例代码")
 	flag.Parse()
 
 	// 初始化日志
 	logger.Logger.Info("初始化日志")
 
+	if *install {
+		logger.Logger.Info("安装服务")
+
+	}
 	// 如果是运行示例代码
 	if *runExample {
 		logger.Logger.Info("运行示例代码")
