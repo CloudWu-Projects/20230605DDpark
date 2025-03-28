@@ -29,6 +29,15 @@ func GetLogPath() string {
 	}
 	return path
 }
+func GetConfigPath() string {
+	var path string
+	if IsWindows() {
+		path = filepath.Join(GetAppPath(), "jilaidian.json")
+	} else {
+		path = "/etc/jilaidian.json"
+	}
+	return path
+}
 
 // Different systems get different installation paths
 func GetInstallPath() string {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"jilaidian_go/lib/common"
 	"jilaidian_go/lib/logger"
 	"os"
 	"path/filepath"
@@ -86,7 +87,8 @@ func (config *Config) WriteConfigToFile(filename string) error {
 }
 
 // Load 从文件加载配置
-func (c *Config) Load(filePath string) error {
+func (c *Config) Load() error {
+	filePath := common.GetConfigPath()
 	// 读取配置文件
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -114,7 +116,7 @@ func (c *Config) Load(filePath string) error {
 	return nil
 }
 func (c *Config) SaveConfig() error {
-	return c.WriteConfigToFile("config/config.json")
+	return c.WriteConfigToFile(common.GetConfigPath())
 }
 func GetParkInfo(parkID string) *ParkInfo {
 	for _, id := range Global.Parks {
@@ -126,7 +128,7 @@ func GetParkInfo(parkID string) *ParkInfo {
 }
 func LoadConfig() *Config {
 	cc := &Config{}
-	if err := cc.Load("config/config.json"); err != nil {
+	if err := cc.Load(); err != nil {
 		logger.Logger.Error("加载配置失败xxxx", err)
 		return nil
 	}
@@ -135,7 +137,7 @@ func LoadConfig() *Config {
 func init() {
 	Global = &Config{}
 
-	if err := Global.Load("config/config.json"); err != nil {
+	if err := Global.Load(); err != nil {
 		logger.Logger.Error("加载配置失败xxxxxaaaa", err)
 		return
 	}

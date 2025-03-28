@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"jilaidian_go/lib/api"
+	"jilaidian_go/lib/common"
 	"jilaidian_go/lib/config"
 	"jilaidian_go/lib/logger"
 	"jilaidian_go/lib/utils"
@@ -28,8 +29,9 @@ func main() {
 		logger.Logger.Info("安装服务")
 		// 写 utils.Simply_SystemdScript 到 /etc/systemd/system/jilaidian.service
 		utils.InstallServer()
-
+		return
 	}
+	logger.Logger.Info("ConfigPath:", common.GetConfigPath())
 	// 如果是运行示例代码
 	if *runExample {
 		logger.Logger.Info("运行示例代码")
