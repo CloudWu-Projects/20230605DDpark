@@ -1,11 +1,11 @@
 package api
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/www"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,9 +19,8 @@ type ConfigHandler struct {
 }
 
 // NewHandler 创建新的API处理器
-func NewConfigHandler(content embed.FS) *ConfigHandler {
-
-	tmpl, err := template.ParseFS(content, "www/config.html")
+func NewConfigHandler() *ConfigHandler {
+	tmpl, err := template.ParseFS(www.Config_html, "www/config.html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		panic(err)
