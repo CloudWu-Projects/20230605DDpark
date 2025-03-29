@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"jilaidian_go/lib/common"
+	"jilaidian_go/pkg/common"
 	"log"
 	"os"
 	"path/filepath"

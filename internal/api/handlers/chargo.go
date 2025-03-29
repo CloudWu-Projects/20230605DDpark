@@ -2,10 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"jilaidian_go/lib/config"
-	"jilaidian_go/lib/logger"
-	"jilaidian_go/lib/models"
-	"jilaidian_go/lib/service"
+	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/models"
+	"jilaidian_go/internal/service"
+	"jilaidian_go/pkg/logger"
 	"net/http"
 
 	"github.com/gorilla/mux"

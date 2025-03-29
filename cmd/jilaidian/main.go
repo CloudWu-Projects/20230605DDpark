@@ -3,12 +3,11 @@ package main
 import (
 	"embed"
 	"flag"
-	"jilaidian_go/lib/api"
-	"jilaidian_go/lib/common"
-	"jilaidian_go/lib/config"
-	"jilaidian_go/lib/logger"
-	"jilaidian_go/lib/utils"
-	"jilaidian_go/test"
+	api "jilaidian_go/internal/api/handlers"
+	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/utils"
+	"jilaidian_go/pkg/common"
+	"jilaidian_go/pkg/logger"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,7 +19,6 @@ var content embed.FS
 func main() {
 	// 解析命令行参数
 	install := flag.Bool("install", false, "安装服务")
-	runExample := flag.Bool("example", false, "运行示例代码")
 	flag.Parse()
 
 	// 初始化日志
@@ -33,11 +31,6 @@ func main() {
 	}
 	logger.Logger.Info("ConfigPath:", common.GetConfigPath())
 	// 如果是运行示例代码
-	if *runExample {
-		logger.Logger.Info("运行示例代码")
-		test.RunExample()
-		return
-	}
 
 	r := mux.NewRouter()
 	// 设置路由

@@ -3,7 +3,7 @@ package logger
 import (
 	"fmt"
 	"io"
-	"jilaidian_go/lib/common"
+	"jilaidian_go/pkg/common"
 	"log"
 	"os"
 	"path/filepath"

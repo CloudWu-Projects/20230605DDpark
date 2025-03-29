@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// "io/ioutil" // 已弃用
-	"jilaidian_go/lib/common"
-	"jilaidian_go/lib/logger"
+	"jilaidian_go/pkg/common"
+	"jilaidian_go/pkg/logger"
 	"os"
 	"path/filepath"
 	"strconv"

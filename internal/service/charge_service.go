@@ -2,9 +2,9 @@ package service
 
 import (
 	"fmt"
-	"jilaidian_go/lib/client"
-	"jilaidian_go/lib/config"
-	"jilaidian_go/lib/models"
+	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/models"
+	"jilaidian_go/pkg/client"
 	"strconv"
 )
 

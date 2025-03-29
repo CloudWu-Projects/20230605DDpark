@@ -1,7 +1,7 @@
 package client
 
 import (
-	"jilaidian_go/lib/config"
+	"jilaidian_go/internal/config"
 	"testing"
 )
 
