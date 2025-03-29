@@ -10,10 +10,10 @@ func TestClientQueryOrder(t *testing.T) {
 	parkID := 10051557
 	carNumber := "鲁BFZ7606"
 	parkInfo := config.ParkInfo{
-		Deduction_money: 100,
-		Deduction_time:  60,
-		Parkid:          10051557,
-		Ukey:            "your_ukey",
+		DeductionMoney: 100,
+		DeductionTime:  60,
+		ParkID:         10051557,
+		Ukey:           "your_ukey",
 	}
 	nc := NewAPIClient()
 	orderId, err := nc.QueryOrder(parkID, carNumber, &parkInfo)

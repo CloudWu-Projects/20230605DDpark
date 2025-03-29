@@ -2,7 +2,7 @@ import requests
 
 
 ChargeInfo={
-    "parkId":"1234565",
+    "parkId":"100515570",
 "plateNo":"川ab34556"
 }
 

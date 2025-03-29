@@ -55,7 +55,7 @@ func (h *ConfigHandler) SetupRoutes(r *mux.Router) {
 		ci := config.LoadConfig()
 
 		for i, park := range ci.Parks {
-			if park.Parkid == parkID {
+			if park.ParkID == parkID {
 				ci.Parks = append(ci.Parks[:i], ci.Parks[i+1:]...)
 				break
 			}
@@ -97,10 +97,10 @@ func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 			deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
 			newParkid, _ := strconv.Atoi(r.Form.Get(key))
 			parks = append(parks, config.ParkInfo{
-				Parkid:          newParkid,
-				Ukey:            ukey,
-				Deduction_time:  deductionTime,
-				Deduction_money: deductionMoney,
+				ParkID:         newParkid,
+				Ukey:           ukey,
+				DeductionTime:  deductionTime,
+				DeductionMoney: deductionMoney,
 			})
 		}
 	}
@@ -138,10 +138,10 @@ func (h *ConfigHandler) addHandler(w http.ResponseWriter, r *http.Request) {
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
 
 	parkinfo := config.ParkInfo{
-		Parkid:          parkID,
-		Ukey:            ukey,
-		Deduction_time:  deductionTime,
-		Deduction_money: deductionMoney,
+		ParkID:         parkID,
+		Ukey:           ukey,
+		DeductionTime:  deductionTime,
+		DeductionMoney: deductionMoney,
 	}
 
 	ci := config.LoadConfig()

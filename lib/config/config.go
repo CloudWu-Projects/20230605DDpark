@@ -3,7 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	// "io/ioutil" // 已弃用
 	"jilaidian_go/lib/common"
 	"jilaidian_go/lib/logger"
 	"os"
@@ -12,11 +13,22 @@ import (
 )
 
 type ParkInfo struct {
-	Parkid          int    `json:"parkid"`
-	Ukey            string `json:"ukey"`
-	Deduction_time  int    `json:"deduction_time"`
-	Deduction_money int    `json:"deduction_money"`
-	ReduceAmount    int    `json:"reduceAmount"`
+	ParkID         int    `json:"parkid"` // 改为驼峰式
+	Ukey           string `json:"ukey"`
+	DeductionTime  int    `json:"deduction_time"`  // 改为驼峰式
+	DeductionMoney int    `json:"deduction_money"` // 改为驼峰式
+	ReduceAmount   int    `json:"reduceAmount"`
+}
+
+// 添加一个方法用于获取解密后的ukey
+func (p *ParkInfo) GetUkey() string {
+	// 这里可以添加解密逻辑，或从环境变量获取
+	// 简单示例：如果环境变量中有对应的ukey，则使用环境变量中的值
+	envKey := os.Getenv(fmt.Sprintf("PARK_UKEY_%d", p.ParkID))
+	if envKey != "" {
+		return envKey
+	}
+	return p.Ukey
 }
 
 // Config 应用配置结构体
@@ -39,18 +51,18 @@ func createDefaultConfig() *Config {
 	config.Server.Port = "8080"
 	config.Parks = []ParkInfo{
 		{
-			Parkid:          99999,
-			Ukey:            "your_ukey",
-			Deduction_time:  60,
-			Deduction_money: 60,
-			ReduceAmount:    100,
+			ParkID:         99999,
+			Ukey:           "your_ukey",
+			DeductionTime:  60,
+			DeductionMoney: 60,
+			ReduceAmount:   100,
 		},
 		{
-			Parkid:          888888,
-			Ukey:            "your_ukey",
-			Deduction_time:  60,
-			Deduction_money: 60,
-			ReduceAmount:    100,
+			ParkID:         888888,
+			Ukey:           "your_ukey",
+			DeductionTime:  60,
+			DeductionMoney: 60,
+			ReduceAmount:   100,
 		},
 	}
 	config.API.BaseURL = "http://istparking.sciseetech.com/public"
@@ -78,7 +90,8 @@ func (config *Config) WriteConfigToFile(filename string) error {
 		return fmt.Errorf("failed to marshal config: %w", err)
 	}
 	createDirIfNotExist(filename)
-	err = ioutil.WriteFile(filename, data, 0644)
+	// 使用os.WriteFile替代ioutil.WriteFile
+	err = os.WriteFile(filename, data, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
@@ -119,9 +132,10 @@ func (c *Config) SaveConfig() error {
 	return c.WriteConfigToFile(common.GetConfigPath())
 }
 func GetParkInfo(parkID string) *ParkInfo {
-	for _, id := range Global.Parks {
-		if strconv.Itoa(id.Parkid) == parkID {
-			return &id
+	for i := range Global.Parks {
+		if strconv.Itoa(Global.Parks[i].ParkID) == parkID {
+			// 返回数组元素的地址，而不是临时变量的地址
+			return &Global.Parks[i]
 		}
 	}
 	return nil
@@ -129,16 +143,20 @@ func GetParkInfo(parkID string) *ParkInfo {
 func LoadConfig() *Config {
 	cc := &Config{}
 	if err := cc.Load(); err != nil {
-		logger.Logger.Error("加载配置失败xxxx", err)
+		logger.Logger.Error("加载配置失败", err)
 		return nil
 	}
 	return cc
 }
+
 func init() {
 	Global = &Config{}
 
 	if err := Global.Load(); err != nil {
-		logger.Logger.Error("加载配置失败xxxxxaaaa", err)
+		logger.Logger.Error("初始化全局配置失败", err)
+		// 不要重复记录相同的错误信息
 		return
 	}
+
+	logger.Logger.Info("全局配置加载成功")
 }

@@ -6,6 +6,8 @@ import (
 	"jilaidian_go/lib/common"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/petermattis/goid"
 	"github.com/sirupsen/logrus"
@@ -19,10 +21,26 @@ type CustomFormatter struct{}
 func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	pid := os.Getpid()
 	ggid := goid.Get()
-	logMessage := fmt.Sprintf("%s [PID: %d][GID: %d] [%s] %s\n",
+
+	// 添加文件和行号信息
+	var fileInfo string
+	if entry.Caller != nil {
+		fileInfo = fmt.Sprintf("[%s:%d]", filepath.Base(entry.Caller.File), entry.Caller.Line)
+	}
+
+	logMessage := fmt.Sprintf("%s [PID: %d][GID: %d] %s [%s] %s\n",
 		entry.Time.Format("2006-01-02 15:04:05"),
-		pid, ggid, entry.Level, entry.Message)
-	//logMessage = strings.TrimSpace(logMessage)
+		pid, ggid, fileInfo, entry.Level, entry.Message)
+
+	// 添加字段信息
+	if len(entry.Data) > 0 {
+		fields := make([]string, 0, len(entry.Data))
+		for k, v := range entry.Data {
+			fields = append(fields, fmt.Sprintf("%s=%v", k, v))
+		}
+		logMessage = strings.TrimSuffix(logMessage, "\n") + " " + strings.Join(fields, " ") + "\n"
+	}
+
 	return []byte(logMessage), nil
 }
 

@@ -13,10 +13,10 @@ func RunExample() {
 	//apiClient := client.NewAPIClient()
 
 	parkInfo := config.ParkInfo{
-		Deduction_money: 100,
-		Deduction_time:  60,
-		Parkid:          10051557,
-		Ukey:            "your_ukey",
+		DeductionMoney: 100,
+		DeductionTime:  60,
+		ParkID:         10051557,
+		Ukey:           "your_ukey",
 	}
 	chargeService.ProcessChargingAndDiscount(&parkInfo, models.ChargeInfo{PlateNo: "京A5566TT", ParkID: "10033791"})
 
