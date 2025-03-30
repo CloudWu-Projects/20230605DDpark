@@ -15,18 +15,18 @@ import (
 
 // Handler API处理器
 type ConfigHandler struct {
-	tmpl *template.Template
+	tmplConfigHtml *template.Template
 }
 
 // NewHandler 创建新的API处理器
 func NewConfigHandler() *ConfigHandler {
-	tmpl, err := template.ParseFS(www.Config_html, "www/config.html")
+	tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		panic(err)
 	}
 	return &ConfigHandler{
-		tmpl: tmpl,
+		tmplConfigHtml: tmplConfigHtml,
 	}
 }
 
@@ -69,7 +69,7 @@ func (h *ConfigHandler) SetupRoutes(r *mux.Router) {
 
 func (h *ConfigHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	ci := config.LoadConfig()
-	h.tmpl.Execute(w, ci)
+	h.tmplConfigHtml.Execute(w, ci)
 }
 func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
