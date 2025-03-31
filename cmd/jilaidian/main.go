@@ -9,7 +9,7 @@ import (
 	"jilaidian_go/pkg/logger"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	logger.Logger.Info("ConfigPath:", common.GetConfigPath())
 	// 如果是运行示例代码
 
-	r := mux.NewRouter()
+	r := gin.Default()
 	// 设置路由
 	handler := api.NewHandler()
 	handler.SetupRoutes(r)
@@ -38,7 +38,7 @@ func main() {
 	port := config.Global.Server.Port
 	logger.Logger.Info("启动服务器 port:", port)
 
-	if err := http.ListenAndServe(":"+port, r); err != nil {
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		logger.Logger.Error("启动服务器失败", err)
 	}
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"jilaidian_go/internal/config"
@@ -10,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // Handler API处理器
@@ -31,22 +30,23 @@ func NewConfigHandler() *ConfigHandler {
 }
 
 // SetupRoutes 设置路由
-func (h *ConfigHandler) SetupRoutes(r *mux.Router) {
+func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	r.HandleFunc("/", h.indexHandler).Methods("GET")
-	r.HandleFunc("/save", h.saveHandler).Methods("POST")
-	r.HandleFunc("/add", h.addHandler).Methods("POST")
-	r.HandleFunc("/api/parks", func(w http.ResponseWriter, r *http.Request) {
+	r.GET("/", h.indexHandler)
+	r.POST("/save", h.saveHandler)
+	r.POST("/add", h.addHandler)
+	r.GET("/api/parks", func(c *gin.Context) {
 		ci := config.LoadConfig()
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(ci.Parks)
-	}).Methods("GET")
+		c.JSON(http.StatusOK, ci.Parks)
+	})
 
-	r.HandleFunc("/api/deletepark/{parkid}", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		parkID, err := strconv.Atoi(vars["parkid"])
+	r.POST("/api/deletepark/{parkid}", func(c *gin.Context) {
+
+		parkIDStr := strings.TrimPrefix(c.Request.URL.Path, "/api/deletepark/")
+		parkID, err := strconv.Atoi(parkIDStr)
+
 		if err != nil {
-			http.Error(w, "Invalid park ID", http.StatusBadRequest)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
 			return
 		}
 
@@ -60,24 +60,20 @@ func (h *ConfigHandler) SetupRoutes(r *mux.Router) {
 			}
 		}
 		if err := ci.SaveConfig(); err != nil {
-			http.Error(w, "Failed to save config", http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 			return
 		}
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}).Methods("POST")
+		c.JSON(http.StatusOK, gin.H{"message": "Park deleted successfully"})
+	})
 }
 
-func (h *ConfigHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
+func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	ci := config.LoadConfig()
-	h.tmplConfigHtml.Execute(w, ci)
+	h.tmplConfigHtml.Execute(c.Writer, ci)
 }
-func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
+func (h *ConfigHandler) saveHandler(c *gin.Context) {
 
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
+	r := c.Request
 	r.ParseForm()
 
 	serverPort := r.Form.Get("server.port")
@@ -88,7 +84,8 @@ func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 			parkID, err := strconv.Atoi(strings.TrimPrefix(key, "parks.parkid."))
 
 			if err != nil {
-				http.Error(w, "Invalid park ID", http.StatusBadRequest)
+				//http.Error(w, "Invalid park ID", http.StatusBadRequest)
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
 				return
 			}
 			ukey := r.Form.Get(fmt.Sprintf("parks.%d.ukey", parkID))
@@ -117,18 +114,17 @@ func (h *ConfigHandler) saveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := ci.SaveConfig(); err != nil {
-		http.Error(w, "Failed to save config", http.StatusInternalServerError)
+		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	///http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/")
 }
 
-func (h *ConfigHandler) addHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
+func (h *ConfigHandler) addHandler(c *gin.Context) {
+	r := c.Request
 	r.ParseForm()
 
 	ukey := r.Form.Get("add.ukey")
@@ -147,9 +143,10 @@ func (h *ConfigHandler) addHandler(w http.ResponseWriter, r *http.Request) {
 	ci.Parks = append(ci.Parks, parkinfo)
 
 	if err := ci.SaveConfig(); err != nil {
-		http.Error(w, "Failed to save config", http.StatusInternalServerError)
+		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
 }

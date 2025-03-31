@@ -8,7 +8,7 @@ import (
 	"jilaidian_go/pkg/logger"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // Handler API处理器
@@ -24,9 +24,9 @@ func NewHandler() *Handler {
 }
 
 // SetupRoutes 设置路由
-func (h *Handler) SetupRoutes(r *mux.Router) {
+func (h *Handler) SetupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	r.HandleFunc("/chargePile/chargingRecord", h.HandleChargingRecord).Methods("POST")
+	r.GET("/chargePile/chargingRecord", h.HandleChargingRecord)
 	//router.POST("/chargePile/chargingRecord", h.HandleChargingRecord)
 }
 
@@ -36,24 +36,28 @@ type Message struct {
 }
 
 func httpResponse(message Message, w http.ResponseWriter) {
+
+	//httpResponse(Message{Result: 1, Description: "非法参数"}, w)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(message)
 }
 
 // HandleChargingRecord 处理充电记录
-func (h *Handler) HandleChargingRecord(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) HandleChargingRecord(c *gin.Context) {
 	var record models.ChargeInfo
-	if err := json.NewDecoder(r.Body).Decode(&record); err != nil {
+
+	// 解析请求体
+	if err := c.ShouldBindJSON(&record); err != nil {
 		logger.Logger.Error("参数解析失败", err)
-		httpResponse(Message{Result: 1, Description: "非法参数"}, w)
+		c.JSON(http.StatusBadRequest, gin.H{"Result": 1, "Description": "非法参数"})
 		return
 	}
 
 	// 添加输入验证
 	if record.ParkID == "" || record.PlateNo == "" {
 		logger.Logger.Warn("请求缺少必要参数", "parkID", record.ParkID, "plateNo", record.PlateNo)
-		httpResponse(Message{Result: 1, Description: "缺少必要参数"}, w)
+		c.JSON(http.StatusBadRequest, gin.H{"Result": 1, "Description": "缺少必要参数"})
 		return
 	}
 
@@ -61,17 +65,17 @@ func (h *Handler) HandleChargingRecord(w http.ResponseWriter, r *http.Request) {
 	parkinfo := config.GetParkInfo(record.ParkID)
 	if parkinfo == nil {
 		logger.Logger.Warn("无效车场ID", "parkID", record.ParkID, "plateNo", record.PlateNo)
-		httpResponse(Message{Result: 1, Description: "未授权的车场"}, w)
+		c.JSON(http.StatusBadRequest, gin.H{"Result": 1, "Description": "未授权的车场"})
 		return
 	}
 
 	// 处理充电信息
 	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, record); err != nil {
 		logger.Logger.Error("处理充电和优惠失败", err, "parkID", record.ParkID, "plateNo", record.PlateNo)
-		httpResponse(Message{Result: 1, Description: "处理充电和优惠失败"}, w)
+		c.JSON(http.StatusInternalServerError, gin.H{"Result": 1, "Description": "处理充电和优惠失败"})
 		return
 	}
 
 	logger.Logger.Info("充电记录处理成功", "parkID", record.ParkID, "plateNo", record.PlateNo)
-	httpResponse(Message{Result: 0, Description: "充电记录处理成功"}, w)
+	c.JSON(http.StatusOK, gin.H{"Result": 0, "Description": "充电记录处理成功"})
 }
