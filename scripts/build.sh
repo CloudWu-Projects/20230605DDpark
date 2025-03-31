@@ -6,3 +6,4 @@ GOOS=windows GOARCH=amd64 go build -o bin/jilaidian_go.exe ../cmd/jilaidian/
 
 # Linux 64 位
 GOOS=linux GOARCH=amd64 go build -o bin/jilaidian_go ../cmd/jilaidian/
+GOOS=linux GOARCH=amd64 go build -o bin/downloader ../cmd/download7niu/

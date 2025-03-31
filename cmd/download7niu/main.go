@@ -24,6 +24,9 @@ type QiuConfig struct {
 	TargetPath string `json:"targetPath"`
 	BaseURL    string `json:"baseUrl"`
 }
+type DownLoader struct {
+	Config *QiuConfig
+}
 
 // getExecutableDir returns directory path of current executable
 func getExecutableDir() (string, error) {
@@ -34,8 +37,8 @@ func getExecutableDir() (string, error) {
 	return filepath.Dir(exePath), nil
 }
 
-// WriteConfigToFile writes the config to a file in YAML format
-func (config *QiuConfig) WriteConfigToFile(filename string) error {
+// SaveToFile 将配置保存到文件
+func (config *QiuConfig) SaveToFile(filename string) error {
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal config: %w", err)
@@ -49,7 +52,9 @@ func (config *QiuConfig) WriteConfigToFile(filename string) error {
 
 	return nil
 }
-func (c *QiuConfig) LoadConfig() error {
+
+// LoadFromFile 从文件加载配置
+func (c *QiuConfig) LoadFromFile() error {
 	exeDir, err := getExecutableDir()
 	if err != nil {
 		return fmt.Errorf("get executable dir failed: %w", err)
@@ -58,13 +63,13 @@ func (c *QiuConfig) LoadConfig() error {
 	// 创建默认配置如果不存在
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		defaultConfig := &QiuConfig{
-			AccessKey:  "YOUR_ACCESS_KEY",
-			SecretKey:  "YOUR_SECRET_KEY",
+			AccessKey:  "z8OskufSjOkWbJt7j7asi-1uWp82_ed7l66MkJNT",
+			SecretKey:  "DcXQn07x_qZU5B2h8CNopJwlv4ceosM3PTlep1gs",
 			BucketPath: "default-bucket",
 			TargetPath: "",
 			BaseURL:    "http://7niu.hyman.store/",
 		}
-		if err := defaultConfig.WriteConfigToFile(filePath); err != nil {
+		if err := defaultConfig.SaveToFile(filePath); err != nil {
 			return fmt.Errorf("创建默认配置文件失败: %w", err)
 		}
 	}
@@ -83,28 +88,27 @@ func (c *QiuConfig) LoadConfig() error {
 	return nil
 }
 
-func prepareURL(baseUrl string, config *QiuConfig) string {
+// generateSignedURL 生成带签名的URL
+func (d *DownLoader) generateSignedURL(baseUrl string) string {
 	expire := time.Now().Unix() + 3600
 	u, _ := url.Parse(baseUrl)
 	query := u.Query()
 	query.Set("e", fmt.Sprintf("%d", expire))
 	u.RawQuery = query.Encode()
 
-	accessKey := config.AccessKey
-	secretKey := config.SecretKey
-
-	mac := hmac.New(sha1.New, []byte(secretKey))
+	mac := hmac.New(sha1.New, []byte(d.Config.SecretKey))
 	mac.Write([]byte(u.String()))
 	sign := mac.Sum(nil)
 	encodedSign := base64.URLEncoding.EncodeToString(sign)
 
-	token := fmt.Sprintf("%s:%s", accessKey, encodedSign)
+	token := fmt.Sprintf("%s:%s", d.Config.AccessKey, encodedSign)
 	u.RawQuery += "&token=" + token
 
 	return u.String()
 }
 
-func download(urlStr, targetPath string) error {
+// downloadFile 下载文件到指定路径
+func (d *DownLoader) downloadFile(urlStr, targetPath string) error {
 	fmt.Printf("正在下载... %s\n", urlStr)
 	fmt.Printf("保存路径: %s\n", targetPath)
 
@@ -137,8 +141,8 @@ func download(urlStr, targetPath string) error {
 	return nil
 }
 
-// getMD5Hash returns the MD5 hash of the file
-func getMD5Hash(filePath string) (string, error) {
+// calculateMD5Hash 计算文件的MD5哈希值
+func (d *DownLoader) calculateMD5Hash(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", err
@@ -152,21 +156,22 @@ func getMD5Hash(filePath string) (string, error) {
 
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
-func downloadFromArgs(config *QiuConfig) error {
 
-	downloadURL := config.BaseURL + config.BucketPath
-	targetPath := config.TargetPath
+// downloadFileFromConfig 根据配置下载文件
+func (d *DownLoader) downloadFileFromConfig() error {
+	downloadURL, _ := url.JoinPath(d.Config.BaseURL, d.Config.BucketPath)
+	targetPath := d.Config.TargetPath
 	if targetPath == "" {
-		targetPath = filepath.Base(config.BucketPath)
+		targetPath = filepath.Base(d.Config.BucketPath)
 	}
 	log.Println("downloadURL: ", downloadURL)
 	log.Println("targetPath: ", targetPath)
-	if err := download(prepareURL(downloadURL, config), targetPath); err != nil {
+	if err := d.downloadFile(d.generateSignedURL(downloadURL), targetPath); err != nil {
 		return fmt.Errorf("文件下载失败: %w", err)
 	}
 
 	// Get MD5 hash of the downloaded file
-	md5Hash, err := getMD5Hash(targetPath)
+	md5Hash, err := d.calculateMD5Hash(targetPath)
 	if err != nil {
 		return fmt.Errorf("获取文件MD5哈希失败: %w", err)
 	}
@@ -192,7 +197,7 @@ func main() {
 		return
 	}
 	qiuc := &QiuConfig{}
-	if err := qiuc.LoadConfig(); err != nil {
+	if err := qiuc.LoadFromFile(); err != nil {
 		log.Fatalf("加载配置失败: %v\n", err)
 	}
 
@@ -200,8 +205,8 @@ func main() {
 		log.Printf("bucketPath: %s\n", *bucketPath)
 		qiuc.BucketPath = *bucketPath
 	}
-
-	if err := downloadFromArgs(qiuc); err != nil {
+	downLoader := DownLoader{Config: qiuc}
+	if err := downLoader.downloadFileFromConfig(); err != nil {
 		fmt.Printf("下载失败: %v\n", err)
 		os.Exit(1)
 	}
