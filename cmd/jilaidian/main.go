@@ -38,7 +38,7 @@ func main() {
 	port := config.Global.Server.Port
 	logger.Logger.Info("启动服务器 port:", port)
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	if err := http.ListenAndServe(":"+port, r); err != nil {
 		logger.Logger.Error("启动服务器失败", err)
 	}
 }

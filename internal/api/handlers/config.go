@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/utils"
 	"jilaidian_go/www"
 	"net/http"
 	"strconv"
@@ -35,6 +36,7 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	r.GET("/", h.indexHandler)
 	r.POST("/save", h.saveHandler)
 	r.POST("/add", h.addHandler)
+	r.GET("/log", h.logHandler)
 	r.GET("/api/parks", func(c *gin.Context) {
 		ci := config.LoadConfig()
 		c.JSON(http.StatusOK, ci.Parks)
@@ -123,6 +125,15 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/")
 }
 
+func (h *ConfigHandler) logHandler(c *gin.Context) {
+	// Read log file content using the utils package
+	logContent, err := utils.ReadLogFile()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read log file"})
+		return
+	}
+	c.Writer.WriteString(logContent)
+}
 func (h *ConfigHandler) addHandler(c *gin.Context) {
 	r := c.Request
 	r.ParseForm()

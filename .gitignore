@@ -5,3 +5,4 @@ config.json
 bin/
 jilaidian.log
 .qodo
+cmd/jilaidian/jilaidian.json

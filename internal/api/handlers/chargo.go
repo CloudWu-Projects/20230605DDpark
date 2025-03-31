@@ -26,8 +26,7 @@ func NewHandler() *Handler {
 // SetupRoutes 设置路由
 func (h *Handler) SetupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	r.GET("/chargePile/chargingRecord", h.HandleChargingRecord)
-	//router.POST("/chargePile/chargingRecord", h.HandleChargingRecord)
+	r.POST("/chargePile/chargingRecord", h.HandleChargingRecord)
 }
 
 type Message struct {
