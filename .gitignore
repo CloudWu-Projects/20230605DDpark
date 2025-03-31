@@ -5,5 +5,5 @@ config.json
 bin/
 jilaidian.log
 .qodo
-cmd/jilaidian/jilaidian.json
-scripts/7niu/jilaidian/jilaidian.zip
+j.zip
+jilaidian.zip
