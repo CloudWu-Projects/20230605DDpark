@@ -27,6 +27,8 @@ func NewHandler() *Handler {
 func (h *Handler) SetupRoutes(r *gin.Engine) {
 	// 充电记录接口
 	r.POST("/chargePile/chargingRecord", h.HandleChargingRecord)
+	r.POST("/parkpot-service/chargePile/chargingRecor", h.HandleChargingRecord)
+	r.POST("/parkpot-service/chargePile/chargingRecord", h.HandleChargingRecord)
 }
 
 type Message struct {
