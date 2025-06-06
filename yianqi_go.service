@@ -1,11 +1,11 @@
 [Unit]
-Description=20250314吉来电_go
+Description=20250604逸安启_GO
 After=network.target
 
 [Service]
 Type=simple
 Restart=always
-ExecStart=/home/admin/codes/20250314jilaidian_go/jilaidian_go
+ExecStart=/home/admin/codes/20250314yianqi_go/yianqi_go
 
 [Install]
 WantedBy=multi-user.target

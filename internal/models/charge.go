@@ -1,5 +1,14 @@
 package models
 
+// 请求结构体
+type QueryRequest struct {
+	OperatorID string `json:"OperatorID"`
+	Data       string `json:"Data"`
+	TimeStamp  string `json:"TimeStamp"`
+	Seq        string `json:"Seq"`
+	Sig        string `json:"Sig"`
+}
+
 // ChargeInfo 充电信息结构体
 type ChargeInfo struct {
 	ParkID  string `json:"parkId"`

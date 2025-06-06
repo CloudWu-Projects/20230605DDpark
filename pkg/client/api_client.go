@@ -16,14 +16,14 @@ import (
 
 // APIClient 外部API客户端
 type APIClient struct {
-	baseURL string
-	client  *http.Client
+	TingCheYunUrl string
+	client        *http.Client
 }
 
 // NewAPIClient 创建新的API客户端
 func NewAPIClient() *APIClient {
 	return &APIClient{
-		baseURL: config.Global.API.BaseURL,
+		TingCheYunUrl: config.Global.API.TingCheYunUrl,
 		client: &http.Client{
 			Timeout: 10 * time.Second,
 		},
@@ -32,7 +32,7 @@ func NewAPIClient() *APIClient {
 
 // QueryOrder 查询订单
 func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.ParkInfo) (string, error) {
-	url := fmt.Sprintf("%s/order/queryOrder", c.baseURL)
+	url := fmt.Sprintf("%s/order/queryOrder", c.TingCheYunUrl)
 
 	// 构造请求数据
 	data := struct {
@@ -66,7 +66,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 
 // SendDiscountNotice 下发优惠信息
 func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.ParkInfo) error {
-	url := fmt.Sprintf("%s/charge/discountNotice", c.baseURL)
+	url := fmt.Sprintf("%s/charge/discountNotice", c.TingCheYunUrl)
 
 	// 构造请求数据
 	data := struct {

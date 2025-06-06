@@ -37,8 +37,14 @@ type Config struct {
 	} `json:"server"`
 	Parks []ParkInfo `json:"parks"`
 
+	YiAnqi struct {
+		AesKey  string `json:"aeskey"`
+		AesIv   string `json:"aesiv"`
+		SignKey string `json:"signKey"`
+	} `json:"yianqi"`
+
 	API struct {
-		BaseURL string `json:"baseUrl"`
+		TingCheYunUrl string `json:"tingCheYunUrl"`
 	} `json:"api"`
 }
 
@@ -64,7 +70,11 @@ func createDefaultConfig() *Config {
 			ReduceAmount:   100,
 		},
 	}
-	config.API.BaseURL = "http://istparking.sciseetech.com/public"
+	config.YiAnqi.AesKey = "1234567890abcdef"
+	config.YiAnqi.AesIv = "1234567890abcdef"
+	config.YiAnqi.SignKey = "your_sign_key"
+
+	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
 	return config
 }
 func createDirIfNotExist(filename string) error {

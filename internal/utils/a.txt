@@ -1,0 +1,1 @@
+{"total":1,"stationStatusInfo":{"operationID":"123456789","stationID":"111111111111111","connectorStatusInfos":{"connectorID":1,"equipmentID":"10000000000000000000001","status":4,"currentA":0,"currentB":0,"currentC":0,"voltageA":0,"voltageB":0,"voltageC":0,"soc":10,}}}

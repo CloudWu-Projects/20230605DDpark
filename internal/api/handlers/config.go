@@ -79,7 +79,11 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	r.ParseForm()
 
 	serverPort := r.Form.Get("server.port")
-	apiBaseURL := r.Form.Get("api.baseUrl")
+	TingCheYunUrl := r.Form.Get("api.TingCheYunUrl")
+	aesKey := r.Form.Get("YiAnqi.AesKey")
+	aesIV := r.Form.Get("YiAnqi.AesIv")
+	SignKey := r.Form.Get("YiAnqi.SignKey")
+
 	var parks []config.ParkInfo
 	for key, _ := range r.Form {
 		if strings.HasPrefix(key, "parks.parkid.") {
@@ -108,8 +112,17 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	if serverPort != "" {
 		ci.Server.Port = serverPort
 	}
-	if apiBaseURL != "" {
-		ci.API.BaseURL = apiBaseURL
+	if TingCheYunUrl != "" {
+		ci.API.TingCheYunUrl = TingCheYunUrl
+	}
+	if aesKey != "" {
+		ci.YiAnqi.AesKey = aesKey
+	}
+	if aesIV != "" {
+		ci.YiAnqi.AesIv = aesIV
+	}
+	if SignKey != "" {
+		ci.YiAnqi.SignKey = SignKey
 	}
 	if len(parks) > 0 {
 		ci.Parks = parks

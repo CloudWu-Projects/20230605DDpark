@@ -15,7 +15,7 @@
 <body>
 
   <div class="container mt-3">
-    <h3>Modal 实例</h3>
+    <h3>Modal 实例-20250606</h3>
     <p>请单击按钮打开模态。</p>
 
     <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" data-bs-toggle="modal"
@@ -91,12 +91,25 @@
                 <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
               </div>
               <div class="form-group">
-                <label for="api.baseUrl">API Base URL</label>
-                <input type="text" id="api.baseUrl" name="api.baseUrl" value="{{.API.BaseURL}}" required>
+                <label for="api.TingCheYunUrl">API Base URL</label>
+                <input type="text" id="api.TingCheYunUrl" name="api.TingCheYunUrl" value="{{.API.TingCheYunUrl}}" required>
               </div>
-              <div>
+              
+              <div class="form-group">
+                <label for="YiAnqi.SignKey">YiAnqi.SignKey</label>
+                <input type="text" id="YiAnqi.SignKey" name="YiAnqi.SignKey" value="{{.YiAnqi.SignKey}}" required>
+              </div>
 
+              <div class="form-group">
+                <label for="YiAnqi.AesKey">YiAnqi.AES key</label>
+                <input type="text" id="YiAnqi.AesKey" name="YiAnqi.AesKey" value="{{.YiAnqi.AesKey}}" required>
               </div>
+              
+              <div class="form-group">
+                <label for="YiAnqi.AesIv">YiAnqi.aes.IV</label>
+                <input type="text" id="YiAnqi.AesIv" name="YiAnqi.AesIv" value="{{.YiAnqi.AesIv}}" required>
+              </div>
+              
               <div><button type="submit">Save</button></div>
             </form>
           </div>
@@ -135,12 +148,12 @@
     };
 
     window.operateEvents = {
-      'click .like': (e, value, row) => {        
-        edit( row.parkid, row.ukey, row.deduction_time, row.deduction_money);
+      'click .like': (e, value, row) => {
+        edit(row.parkid, row.ukey, row.deduction_time, row.deduction_money);
       },
       'click .remove': (e, value, row) => {
-        
-        fetch('/api/deletepark/'+row.parkid, {
+
+        fetch('/api/deletepark/' + row.parkid, {
           method: 'POST',
         }).then(res => {
           return res.json();
