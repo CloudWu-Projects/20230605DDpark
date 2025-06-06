@@ -8,11 +8,11 @@ import (
 	"jilaidian_go/pkg/logger"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 type ParkInfo struct {
-	ParkID         int    `json:"parkid"` // 改为驼峰式
+	ParkID         int    `json:"parkid"`     // 改为驼峰式
+	StationID      string `json:"station_id"` // 改为驼峰式
 	Ukey           string `json:"ukey"`
 	DeductionTime  int    `json:"deduction_time"`  // 改为驼峰式
 	DeductionMoney int    `json:"deduction_money"` // 改为驼峰式
@@ -61,6 +61,7 @@ func createDefaultConfig() *Config {
 			DeductionTime:  60,
 			DeductionMoney: 60,
 			ReduceAmount:   100,
+			StationID:      "1234567890", // 示例站点ID
 		},
 		{
 			ParkID:         888888,
@@ -68,6 +69,7 @@ func createDefaultConfig() *Config {
 			DeductionTime:  60,
 			DeductionMoney: 60,
 			ReduceAmount:   100,
+			StationID:      "1234567890", // 示例站点ID
 		},
 	}
 	config.YiAnqi.AesKey = "1234567890abcdef"
@@ -140,9 +142,9 @@ func (c *Config) Load() error {
 func (c *Config) SaveConfig() error {
 	return c.WriteConfigToFile(common.GetConfigPath())
 }
-func GetParkInfo(parkID string) *ParkInfo {
+func GetParkInfo(stationID string) *ParkInfo {
 	for i := range Global.Parks {
-		if strconv.Itoa(Global.Parks[i].ParkID) == parkID {
+		if Global.Parks[i].StationID == stationID {
 			// 返回数组元素的地址，而不是临时变量的地址
 			return &Global.Parks[i]
 		}

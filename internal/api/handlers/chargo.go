@@ -243,21 +243,21 @@ func (h *Handler) notification_charge_end_order_info(c *gin.Context) {
 	}
 
 	// 车场校验逻辑
-	parkinfo := config.GetParkInfo(requestItem.ParkID)
+	parkinfo := config.GetParkInfo(requestItem.StationID)
 	if parkinfo == nil {
-		logger.Logger.Warn("无效车场ID", "parkID", requestItem.ParkID, "plateNo", requestItem.PlateNum)
+		logger.Logger.Warn("无效车场ID", "parkID", requestItem.StationID, "plateNo", requestItem.PlateNum)
 		h.MakeRepsonse(c, 1, "未授权的车场", respose)
 		return
 	}
 
 	// 处理充电信息
 	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, requestItem); err != nil {
-		logger.Logger.Error("处理充电和优惠失败", err, "parkID", requestItem.ParkID, "plateNo", requestItem.PlateNum)
+		logger.Logger.Error("处理充电和优惠失败", err, "parkID", parkinfo.ParkID, "plateNo", requestItem.PlateNum)
 		h.MakeRepsonse(c, 1, "处理充电和优惠失败", respose)
 		return
 	}
 
-	logger.Logger.Info("充电记录处理成功", "parkID", requestItem.ParkID, "plateNo", requestItem.PlateNum)
+	logger.Logger.Info("充电记录处理成功", "parkID", parkinfo.ParkID, "plateNo", requestItem.PlateNum)
 	respose.ConfirmResult = 0  // 假设处理成功后返回确认结果为0
 	respose.PlateAutResult = 1 // 假设车牌自动识别结果为1
 	h.MakeRepsonse(c, 1, "充电记录处理成功", respose)

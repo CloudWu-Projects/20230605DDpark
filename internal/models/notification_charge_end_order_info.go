@@ -7,7 +7,6 @@ type Notification_charge_end_order_info_Request struct {
 	         "StationID":"3702120244",
 	         "StationName":"北京中环集中办公区充电站",
 	         "ConnectorID":"1101020190301",
-	   "ParkID":"3502060030004",
 	         "ConnectorName":"301号交流",
 	         "PlateNum":"京AD06088",
 	         "ParkNo":"017",
@@ -18,7 +17,6 @@ type Notification_charge_end_order_info_Request struct {
 	StationID        string  `json:"StationID"`
 	StationName      string  `json:"StationName"`
 	ConnectorID      string  `json:"ConnectorID"`
-	ParkID           string  `json:"ParkID"`
 	ConnectorName    string  `json:"ConnectorName"`
 	PlateNum         string  `json:"PlateNum"`
 	ParkNo           string  `json:"ParkNo"`

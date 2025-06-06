@@ -98,11 +98,14 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 			deductionTime, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_time", parkID)))
 			deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
 			newParkid, _ := strconv.Atoi(r.Form.Get(key))
+
+			StationID := r.Form.Get(fmt.Sprintf("parks.%d.station_id", parkID))
 			parks = append(parks, config.ParkInfo{
 				ParkID:         newParkid,
 				Ukey:           ukey,
 				DeductionTime:  deductionTime,
 				DeductionMoney: deductionMoney,
+				StationID:      StationID,
 			})
 		}
 	}
@@ -152,19 +155,31 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 	r.ParseForm()
 
 	ukey := r.Form.Get("add.ukey")
+	oldparkid := r.Form.Get("add.old_parkid")
 	deductionTime, _ := strconv.Atoi(r.Form.Get("add.deduction_time"))
 	deductionMoney, _ := strconv.Atoi(r.Form.Get("add.deduction_money"))
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
-
+	StationID := r.Form.Get("add.station_id")
 	parkinfo := config.ParkInfo{
 		ParkID:         parkID,
 		Ukey:           ukey,
 		DeductionTime:  deductionTime,
 		DeductionMoney: deductionMoney,
+		StationID:      StationID,
 	}
-
+	fmt.Println("addHandler parkinfo:", oldparkid, parkinfo)
 	ci := config.LoadConfig()
-	ci.Parks = append(ci.Parks, parkinfo)
+	if oldparkid == "" {
+		ci.Parks = append(ci.Parks, parkinfo)
+	} else {
+		oldparkidInt, _ := strconv.Atoi(oldparkid)
+		for i, park := range ci.Parks {
+			if park.ParkID == oldparkidInt {
+				ci.Parks[i] = parkinfo
+				break
+			}
+		}
+	}
 
 	if err := ci.SaveConfig(); err != nil {
 		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)

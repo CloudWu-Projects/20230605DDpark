@@ -5,7 +5,6 @@ import (
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/models"
 	"jilaidian_go/pkg/client"
-	"strconv"
 )
 
 // ChargeService 充电服务
@@ -27,16 +26,12 @@ func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, ch
 	// 1. 处理充电信息
 
 	// 2. 查询订单信息
-	parkID, err := strconv.Atoi(chargeData.ParkID)
-	if err != nil {
-		return fmt.Errorf("停车场ID格式错误: %v", err)
-	}
 
-	order_id, err := s.apiClient.QueryOrder(parkID, chargeData.PlateNum, parkinfo)
+	order_id, err := s.apiClient.QueryOrder(parkinfo.ParkID, chargeData.PlateNum, parkinfo)
 	if err != nil {
 		return fmt.Errorf("查询订单信息失败: %v", err)
 	}
-	err = s.apiClient.SendDiscountNotice(parkID, chargeData.PlateNum, order_id, parkinfo)
+	err = s.apiClient.SendDiscountNotice(parkinfo.ParkID, chargeData.PlateNum, order_id, parkinfo)
 
 	return err
 }

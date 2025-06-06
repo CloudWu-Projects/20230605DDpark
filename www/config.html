@@ -18,23 +18,24 @@
     <h3>Modal 实例-20250606</h3>
     <p>请单击按钮打开模态。</p>
 
-    <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" data-bs-toggle="modal"
+    <!-- <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" data-bs-toggle="modal"
       data-bs-target="#addParksModal">
       添加停车场 by button
     </button>
-    <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" id="addpark_Btn">
-      添加停车场 by js
-    </button>
-
+    
     <button type="button" class="btn btn-primary" data-bs-heading="22222" data-bs-toggle="modal"
       data-bs-target="#addParksModal">
       打开模态2222
     </button>
-
+     -->
+    <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" id="addpark_Btn">
+      添加停车场
+    </button>
     <button type="button" class="btn btn-primary" data-bs-heading="修改基础配置" data-bs-toggle="modal"
       data-bs-target="#modifybaseModal">
       修改基础配置
     </button>
+    
     <div id="addParksModal" class="modal fade" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -52,6 +53,11 @@
                 <label for="ukey--add">UKey</label>
                 <input type="text" id="ukey-add" name="add.ukey" value="" required>
               </div>
+              </div>
+              <div>
+                <label for="station_id-add">station_id</label>
+                <input type="text" id="station_id-add" name="add.station_id" value="" required>
+              </div>
               <div>
                 <label for="deduction-time-add">Deduction Time</label>
                 <input type="number" id="deduction-time-add" name="add.deduction_time" value="" required>
@@ -64,7 +70,7 @@
               </div>
               <div>
                 <button type="submit" id="add_or_modify_btn">Add park</button>
-                <input type="hidden" id="old_parkid" name="old_parkid" value="">
+                <input type="hidden" id="old_parkid" name="add.old_parkid" value="">
               </div>
             </form>
           </div>
@@ -149,7 +155,7 @@
 
     window.operateEvents = {
       'click .like': (e, value, row) => {
-        edit(row.parkid, row.ukey, row.deduction_time, row.deduction_money);
+        edit(row.parkid, row.ukey, row.deduction_time, row.deduction_money,row.station_id);
       },
       'click .remove': (e, value, row) => {
 
@@ -187,6 +193,10 @@
         field: 'deduction_money',
         title: 'deduction_money'
       },
+      {
+        field: 'station_id',
+        title: 'station_id'
+      },
 
       {
         field: 'operate',
@@ -197,12 +207,13 @@
     });
 
     // 示例 edit 函数（具体实现根据实际需求）
-    function edit(parkid, ukey, deductionTime, deductionMoney) {
+    function edit(parkid, ukey, deductionTime, deductionMoney,station_id) {
       $('#parkid-add').val(parkid);
       $('#old_parkid').val(parkid);
       $('#ukey-add').val(ukey);
       $('#deduction-time-add').val(deductionTime);
       $('#deduction-money-add').val(deductionMoney);
+      $('#station_id-add').val(station_id);
       $('#add_or_modify_btn').text((parkid == '') ? '添加停车场' : "修改停车场");
       // 显示 Modal
       $('#addParksModal .modal-title').text((parkid == '') ? '添加停车场' : "修改停车场");
@@ -212,7 +223,7 @@
     };
     document.addEventListener('DOMContentLoaded', function () {
       $('#addpark_Btn').click(function () {
-        edit('', '', '', '');
+        edit('', '', '', '','');
       });
     });
 
