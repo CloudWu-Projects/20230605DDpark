@@ -53,7 +53,7 @@ var Global *Config
 
 func createDefaultConfig() *Config {
 	config := &Config{}
-	config.Server.Port = "8080"
+	config.Server.Port = "8081"
 	config.Parks = []ParkInfo{
 		{
 			ParkID:         99999,
