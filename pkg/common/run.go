@@ -14,7 +14,11 @@ func GetAppPath() string {
 	return os.Args[0]
 }
 func GetAppName() string {
-	return filepath.Base(GetAppPath())
+	a := filepath.Base(os.Args[0])
+	if len(a) < 2 {
+		return filepath.Base(GetAppPath())
+	}
+	return a
 }
 
 // Determine whether the current system is a Windows system?
