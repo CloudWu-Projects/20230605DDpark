@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/utils"
@@ -13,6 +14,7 @@ import (
 )
 
 func main() {
+	fmt.Println(common.GetAppName())
 	// 解析命令行参数
 	install := flag.Bool("install", false, "安装服务")
 	flag.Parse()

@@ -140,7 +140,12 @@ func (c *Config) Load() error {
 	return nil
 }
 func (c *Config) SaveConfig() error {
-	return c.WriteConfigToFile(common.GetConfigPath())
+	err := c.WriteConfigToFile(common.GetConfigPath())
+	if err != nil {
+		return err
+	}
+	Global = c // 更新全局配置
+	return nil
 }
 func GetParkInfo(stationID string) *ParkInfo {
 	for i := range Global.Parks {

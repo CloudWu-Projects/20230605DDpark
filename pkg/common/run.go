@@ -13,6 +13,9 @@ func GetAppPath() string {
 	}
 	return os.Args[0]
 }
+func GetAppName() string {
+	return filepath.Base(GetAppPath())
+}
 
 // Determine whether the current system is a Windows system?
 func IsWindows() bool {
@@ -23,18 +26,18 @@ func IsWindows() bool {
 func GetLogPath() string {
 	var path string
 	if IsWindows() {
-		path = filepath.Join(GetAppPath(), "jilaidian.log")
+		path = filepath.Join(GetAppPath(), GetAppName(), ".log")
 	} else {
-		path = "/var/log/jilaidian.log"
+		path = "/var/log/" + GetAppName() + ".log"
 	}
 	return path
 }
 func GetConfigPath() string {
 	var path string
 	if IsWindows() {
-		path = filepath.Join(GetAppPath(), "jilaidian.json")
+		path = filepath.Join(GetAppPath(), GetAppName(), ".json")
 	} else {
-		path = "/etc/jilaidian.json"
+		path = "/etc/" + GetAppName() + ".json"
 	}
 	return path
 }

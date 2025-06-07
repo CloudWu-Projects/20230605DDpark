@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/utils"
+	"jilaidian_go/pkg/logger"
 	"jilaidian_go/www"
 	"net/http"
 	"strconv"
@@ -33,7 +34,13 @@ func NewConfigHandler() *ConfigHandler {
 // SetupRoutes 设置路由
 func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	r.GET("/", h.indexHandler)
+	configG := r.Group("/config")
+	{
+		configG.GET("/", h.indexHandler)
+	}
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, config.Global)
+	})
 	r.POST("/save", h.saveHandler)
 	r.POST("/add", h.addHandler)
 	r.GET("/log", h.logHandler)
@@ -41,10 +48,9 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 		ci := config.LoadConfig()
 		c.JSON(http.StatusOK, ci.Parks)
 	})
-
-	r.POST("/api/deletepark/{parkid}", func(c *gin.Context) {
-
-		parkIDStr := strings.TrimPrefix(c.Request.URL.Path, "/api/deletepark/")
+	r.DELETE("/api/park/:parkid", func(c *gin.Context) {
+		parkIDStr := c.Param("parkid")
+		logger.Logger.Error("deletepark parkIDStr:", parkIDStr)
 		parkID, err := strconv.Atoi(parkIDStr)
 
 		if err != nil {
@@ -138,7 +144,7 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	}
 
 	///http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
-	c.Redirect(http.StatusSeeOther, "/")
+	//c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (h *ConfigHandler) logHandler(c *gin.Context) {
@@ -187,5 +193,5 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 		return
 	}
 
-	http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
+	//http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
 }

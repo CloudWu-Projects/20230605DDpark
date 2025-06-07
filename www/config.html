@@ -159,8 +159,8 @@
       },
       'click .remove': (e, value, row) => {
 
-        fetch('/api/deletepark/' + row.parkid, {
-          method: 'POST',
+        fetch('/api/park/' + row.parkid, {
+          method: 'DELETE',
         }).then(res => {
           return res.json();
         }).then(data => {

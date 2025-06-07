@@ -182,11 +182,11 @@ func chMod(name string, mode os.FileMode) {
 }
 func InstallSystemd(binPath string) {
 	config := &ServiceConfig{
-		Description: "Jilaidian Service",
+		Description: "yianqi Service",
 		Path:        binPath,
 	}
 
-	err := WriteSystemdScript("/etc/systemd/system/jilaidian.service", config)
+	err := WriteSystemdScript("/etc/systemd/system/"+common.GetAppName()+".service", config)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -194,18 +194,18 @@ func InstallSystemd(binPath string) {
 }
 func InstallServer() {
 	path := common.GetInstallPath()
-	binPath := copyStaticFile(common.GetAppPath(), "jilaidian_go")
+	binPath := copyStaticFile(common.GetAppPath(), common.GetAppName())
 	log.Println("install ok!")
 	log.Println("Static files and configuration files in the current directory will be useless")
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
 		log.Println(`You can start with:
-jilaidian_go start|stop|restart|uninstall|update 
+yianqi_go start|stop|restart|uninstall|update 
 anywhere!`)
 		InstallSystemd(binPath)
 	} else {
 		log.Println(`You can copy executable files to any directory and start working with:
-jilaidian_go.exe start|stop|restart|uninstall|update 
+yianqi_go.exe start|stop|restart|uninstall|update 
 now!`)
 	}
 	chMod(common.GetLogPath(), 0777)
