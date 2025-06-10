@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 
-from qiniu import Auth, put_file, etag
+from qiniu import Auth, put_file, etag,CdnManager
 import qiniu.config
 
 #需要填写你的 Access Key 和 Secret Key
@@ -29,9 +29,16 @@ def upload(localfile,key=None):
     
 
     ret, info = put_file(token, key, localfile, version='v2')
-    print(info)
+    print(ret)
+    print("----")
+    print(info.url)
     assert ret['key'] == key
     assert ret['hash'] == etag(localfile)
+    urls = ['http://7niu.hyman.store/'+key]
+    cdn_manager = CdnManager(q)
+    refresh_url_result = cdn_manager.refresh_urls(urls)
+    print(refresh_url_result)
+    # 刷新目录
 
 import os ,re 
 
