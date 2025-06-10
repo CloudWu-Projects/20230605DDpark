@@ -76,6 +76,8 @@ func (tm *TokenMgr) GetValidToken() error {
 		logger.Logger.Errorf("GetValidToken 解析失败 %s %v", decodedStr, err)
 		return err
 	}
-	tm.validTokensA.ExpirationTime = time.Now().Add(time.Second * time.Duration(tm.validTokensA.TokenAvailableTime)).Unix() // 1小时后过期
+	delayTime := time.Second * time.Duration(tm.validTokensA.TokenAvailableTime)
+	delayTime = delayTime - time.Minute*10                            // 提前10分钟
+	tm.validTokensA.ExpirationTime = time.Now().Add(delayTime).Unix() // 1小时后过期
 	return err
 }
