@@ -1,32 +1,26 @@
 package client
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/models"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
-	"net/http"
-	"time"
 )
 
 // APIClient 外部API客户端
 type APIClient struct {
 	TingCheYunUrl string
-	client        *http.Client
+	client        *HttpPostClient
 }
 
 // NewAPIClient 创建新的API客户端
 func NewAPIClient() *APIClient {
 	return &APIClient{
 		TingCheYunUrl: config.Global.API.TingCheYunUrl,
-		client: &http.Client{
-			Timeout: 10 * time.Second,
-		},
+		client:        &HttpPostClient{},
 	}
 }
 
@@ -54,7 +48,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 	}
 
 	// 发送请求
-	response, err := c.sendRequest(url, request)
+	response, err := c.SendRequest(url, request)
 	if err != nil {
 		return "", err
 	}
@@ -107,7 +101,7 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 		Data:        data,
 	}
 	// 发送请求
-	response, err := c.sendRequest(url, request)
+	response, err := c.SendRequest(url, request)
 
 	if err != nil {
 		logger.Logger.Error("发送请求失败", (err))
@@ -122,45 +116,18 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 }
 
 // sendRequest 发送HTTP请求并解析响应
-func (c *APIClient) sendRequest(url string, request interface{}) (*models.QueryOrderResponse, error) {
-	// 序列化请求体
-	requestBody, err := json.Marshal(request)
-	if err != nil {
-		return nil, fmt.Errorf("序列化请求失败: %v", err)
-	}
-	logger.Logger.Debugf("sendRequest url:%s requestBody:%s", url, string(requestBody))
-	// 创建HTTP请求
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return nil, fmt.Errorf("创建请求失败: %v", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
+func (c *APIClient) SendRequest(url string, request interface{}) (*models.QueryOrderResponse, error) {
 
-	// 发送请求
-	resp, err := c.client.Do(req)
+	body, err := c.client.SendRequest(url, request)
 	if err != nil {
-		return nil, fmt.Errorf("发送请求失败: %v", err)
+		logger.Logger.Error("发送请求失败", err)
+		return nil, err
 	}
-	defer resp.Body.Close()
-
-	// 检查响应状态码
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("API请求失败，状态码: %d", resp.StatusCode)
-	}
-
-	// 读取响应体
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %v", err)
-	}
-
 	// 解析响应
 	var response models.QueryOrderResponse
 	if err := json.Unmarshal(body, &response); err != nil {
 		return nil, fmt.Errorf("解析响应失败: %v", err)
 	}
-
-	logger.Logger.Debugf("sendRequest  body %s", body)
 
 	return &response, nil
 }

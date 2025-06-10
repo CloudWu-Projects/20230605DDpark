@@ -90,6 +90,8 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	aesIV := r.Form.Get("YiAnqi.AesIv")
 	SignKey := r.Form.Get("YiAnqi.SignKey")
 	OperatorSecret := r.Form.Get("YiAnqi.OperatorSecret")
+	OperatorID := r.Form.Get("YiAnqi.OperatorID")
+	TokenURL := r.Form.Get("YiAnqi.TokenURL")
 
 	var parks []config.ParkInfo
 	for key, _ := range r.Form {
@@ -137,6 +139,14 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	if OperatorSecret != "" {
 		ci.YiAnqi.OperatorSecret = OperatorSecret
 	}
+
+	if OperatorID != "" {
+		ci.YiAnqi.OperatorID = OperatorID
+	}
+	if TokenURL != "" {
+		ci.YiAnqi.TokenURL = TokenURL
+	}
+
 	if len(parks) > 0 {
 		ci.Parks = parks
 	}
@@ -147,8 +157,7 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 		return
 	}
 
-	///http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
-	//c.Redirect(http.StatusSeeOther, "/")
+	c.Redirect(http.StatusSeeOther, "/config/")
 }
 
 func (h *ConfigHandler) logHandler(c *gin.Context) {
@@ -196,6 +205,5 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
-
-	//http.Redirect(c.Writer, r, "/", http.StatusSeeOther)
+	c.Redirect(http.StatusSeeOther, "/config/")
 }

@@ -38,6 +38,8 @@ type Config struct {
 	Parks []ParkInfo `json:"parks"`
 
 	YiAnqi struct {
+		TokenURL       string `json:"tokenUrl"`
+		OperatorID     string `json:"operatorID"`
 		OperatorSecret string `json:"operatorSecret"`
 		AesKey         string `json:"aeskey"`
 		AesIv          string `json:"aesiv"`
@@ -73,11 +75,21 @@ func createDefaultConfig() *Config {
 			StationID:      "1234567890", // 示例站点ID
 		},
 	}
-	config.YiAnqi.AesKey = "1234567890abcdef"
-	config.YiAnqi.AesIv = "1234567890abcdef"
-	config.YiAnqi.SignKey = "your_sign_key"
-	config.YiAnqi.OperatorSecret = "your_operator_secret"
+	// 	贵方的组织机构代码：cdist2025
+	// 推送地址：http://yianqi.ddpark.fun/
+	// 我们调用你们的秘钥：
+	// 商户密钥u8wLRTOTkjKmVpoP
+	// 签名密钥Q2YAboqxfmrtbfsw
+	// 加密密钥2RU7xUBhsyW5SnCY
+	// 加密向量sExIBhW3Y4mYr0ne
 
+	config.YiAnqi.AesKey = "2RU7xUBhsyW5SnCY"
+	config.YiAnqi.AesIv = "sExIBhW3Y4mYr0ne"
+	config.YiAnqi.SignKey = "Q2YAboqxfmrtbfsw"
+	config.YiAnqi.OperatorSecret = "u8wLRTOTkjKmVpoP"
+	config.YiAnqi.OperatorID = "cdist2025"
+	config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v2016/query_token"
+	//config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v20161110/query_token"
 	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
 	return config
 }

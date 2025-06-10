@@ -1,4 +1,4 @@
-package api
+package yianqiservice
 
 import (
 	"bytes"
@@ -8,11 +8,9 @@ import (
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/models"
 	"jilaidian_go/internal/service"
-	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
 	"net/http"
 	"strings"
-	"time"
 
 	. "jilaidian_go/internal/utils"
 
@@ -31,12 +29,6 @@ func NewHandler() *Handler {
 	}
 }
 
-type ValidToken struct {
-	Token              string `json:"token"`
-	ExpirationTime     int64  `json:"expirationTime"`
-	TokenAvailableTime int    `json:"tokenAvailableTime"` // 可用时间，单位秒
-}
-
 var validTokens ValidToken
 
 func init() {
@@ -44,17 +36,6 @@ func init() {
 	validTokens.update()
 }
 
-func (vt *ValidToken) update() {
-	if vt.ExpirationTime < time.Now().Unix() {
-		vt.Token = utils.GenerateSignString(time.Now().Format("2006-01-02 15:04:05"), config.Global.YiAnqi.SignKey)
-		vt.ExpirationTime = time.Now().Add(time.Hour).Unix() // 1小时后过期
-		vt.TokenAvailableTime = 3600                         // 可用时间，单位秒
-	}
-	logger.Logger.Info("Updated valid token:", vt.Token, " Expiration Time:", vt.ExpirationTime, " Available Time:", vt.TokenAvailableTime)
-}
-func (vt *ValidToken) isValidToken(token string) bool {
-	return vt.Token == token && vt.ExpirationTime > time.Now().Unix()
-}
 func (h *Handler) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get token from header (e.g., Authorization: Bearer <token>)
@@ -96,65 +77,9 @@ func (h *Handler) SetupRoutes(r *gin.Engine) {
 
 		authorized.POST("/notification_charge_end_order_info", h.notification_charge_end_order_info)
 	}
-	r.POST("/query_token", h.query_token)
+
 }
 
-type Message struct {
-	Result      int    `json:"result"`
-	Description string `json:"description"`
-}
-
-type QueryTokenRequest struct {
-	OperatorID     string `json:"OperatorID"`
-	OperatorSecret string `json:"OperatorSecret"`
-}
-type QueryTokenResponse struct {
-	OperatorID         string `json:"OperatorID"`
-	SuccStat           int    `json:"SuccStat"`
-	AccessToken        string `json:"AccessToken"`
-	TokenAvailableTime int    `json:"TokenAvailableTime"`
-	FailReason         int    `json:"FailReason"`
-}
-type TotalResponse struct {
-	Ret  int    `json:"Ret"`
-	Msg  string `json:"Msg"`
-	Data string `json:"Data"`
-	Sig  string `json:"Sig"`
-}
-
-func (tr *TotalResponse) MakeSig() {
-	/*
-		Sig（签名）采用HMAC-MD5算法，采用MD5作为散列函数，
-		通过SigSecret（签名密钥）对整个消息主体各参数的值拼接后进行加密，
-		入参拼接顺序为：OperatorID（运营商标识）、Data（参数内容）、TimeStamp（时间戳）、Seq（自增序列），
-		出参拼接顺序为：Ret（返回值）、Msg（返回信息）、Data（参数内容），
-		然后采用MD5信息摘要的方式形成新密文，参数签名必须大写，详见附录B。
-	*/
-	prestr := fmt.Sprintf("%d%s%s", tr.Ret, tr.Msg, tr.Data)
-
-	tr.Sig = GenerateSignString(prestr, config.Global.YiAnqi.SignKey)
-}
-func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, data interface{}) {
-
-	var jsonData []byte
-	switch v := data.(type) {
-	case string:
-		jsonData = []byte(v)
-	default:
-		jsonData, _ = json.Marshal(data)
-	}
-
-	encodedStr, _ := CBCEncrypt_Base64(string(jsonData), config.Global.YiAnqi.AesKey, config.Global.YiAnqi.AesIv)
-
-	tr := TotalResponse{
-		Ret:  result,
-		Msg:  description,
-		Data: encodedStr,
-		Sig:  "",
-	}
-	tr.MakeSig()
-	c.JSON(http.StatusOK, tr)
-}
 func (h *Handler) extractRequest(c *gin.Context) (string, error) {
 	var queryRequest models.QueryRequest
 
@@ -185,33 +110,6 @@ func (h *Handler) extractRequest(c *gin.Context) (string, error) {
 	}
 	logger.Logger.Debugf("解密内容: %s", decodedStr)
 	return decodedStr, nil
-}
-
-// query_token 查询token接口
-func (h *Handler) query_token(c *gin.Context) {
-	decodedStr, err := h.extractRequest(c)
-	if err != nil {
-		return
-	}
-	var queryToken QueryTokenRequest
-	if err := json.Unmarshal([]byte(decodedStr), &queryToken); err != nil {
-		logger.Logger.Errorf("JSON解析失败 %s  %v", decodedStr, err)
-		h.MakeRepsonse(c, 1, "JSON解析失败", "")
-		return
-	}
-	validTokens.update()
-	response := QueryTokenResponse{
-		OperatorID:         queryToken.OperatorID,
-		SuccStat:           1,
-		AccessToken:        validTokens.Token,
-		TokenAvailableTime: validTokens.TokenAvailableTime,
-		FailReason:         0,
-	}
-	// 将 struct 转为 JSON 字符串
-	jsonData, _ := json.Marshal(response)
-
-	fmt.Println(string(jsonData))
-	h.MakeRepsonse(c, 0, "查询成功", string(jsonData))
 }
 
 // HandleChargingRecord 处理充电记录
