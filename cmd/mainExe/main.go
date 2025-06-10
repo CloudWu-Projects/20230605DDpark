@@ -9,12 +9,14 @@ import (
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println(common.GetAppName())
+
+	fmt.Println("\n欢迎使用", common.GetAppName(), os.Args[0])
 	// 解析命令行参数
 	install := flag.Bool("install", false, "安装服务")
 	flag.Parse()

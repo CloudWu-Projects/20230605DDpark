@@ -30,7 +30,7 @@ func IsWindows() bool {
 func GetLogPath() string {
 	var path string
 	if IsWindows() {
-		path = filepath.Join(GetAppPath(), GetAppName(), ".log")
+		path = filepath.Join(GetAppPath(), GetAppName()+".log")
 	} else {
 		path = "/var/log/" + GetAppName() + ".log"
 	}
@@ -39,7 +39,7 @@ func GetLogPath() string {
 func GetConfigPath() string {
 	var path string
 	if IsWindows() {
-		path = filepath.Join(GetAppPath(), GetAppName(), ".json")
+		path = filepath.Join(GetAppPath(), GetAppName()+".json")
 	} else {
 		path = "/etc/" + GetAppName() + ".json"
 	}

@@ -89,6 +89,7 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	aesKey := r.Form.Get("YiAnqi.AesKey")
 	aesIV := r.Form.Get("YiAnqi.AesIv")
 	SignKey := r.Form.Get("YiAnqi.SignKey")
+	OperatorSecret := r.Form.Get("YiAnqi.OperatorSecret")
 
 	var parks []config.ParkInfo
 	for key, _ := range r.Form {
@@ -132,6 +133,9 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	}
 	if SignKey != "" {
 		ci.YiAnqi.SignKey = SignKey
+	}
+	if OperatorSecret != "" {
+		ci.YiAnqi.OperatorSecret = OperatorSecret
 	}
 	if len(parks) > 0 {
 		ci.Parks = parks

@@ -38,9 +38,10 @@ type Config struct {
 	Parks []ParkInfo `json:"parks"`
 
 	YiAnqi struct {
-		AesKey  string `json:"aeskey"`
-		AesIv   string `json:"aesiv"`
-		SignKey string `json:"signKey"`
+		OperatorSecret string `json:"operatorSecret"`
+		AesKey         string `json:"aeskey"`
+		AesIv          string `json:"aesiv"`
+		SignKey        string `json:"signKey"`
 	} `json:"yianqi"`
 
 	API struct {
@@ -75,6 +76,7 @@ func createDefaultConfig() *Config {
 	config.YiAnqi.AesKey = "1234567890abcdef"
 	config.YiAnqi.AesIv = "1234567890abcdef"
 	config.YiAnqi.SignKey = "your_sign_key"
+	config.YiAnqi.OperatorSecret = "your_operator_secret"
 
 	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
 	return config
