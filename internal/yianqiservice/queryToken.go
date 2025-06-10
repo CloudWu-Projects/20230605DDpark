@@ -41,9 +41,6 @@ func init() {
 					logger.Logger.Infof("获取到新的token: %s, 过期时间: %d",
 						tm.validTokensA.AccessToken, tm.validTokensA.ExpirationTime)
 				}
-			} else {
-				logger.Logger.Infof("token未过期: %s, 过期时间: %d",
-					tm.validTokensA.AccessToken, tm.validTokensA.ExpirationTime)
 			}
 			time.Sleep(time.Minute) // 每小时更新一次
 		}
@@ -60,7 +57,7 @@ func (tm *TokenMgr) GetValidToken() error {
 	request := MakeRequest(q)
 	body, err := tm.apiClient.SendRequest(config.Global.YiAnqi.TokenURL, request)
 	if err != nil {
-		logger.Logger.Errorf("获取token失败: %v", err)
+		logger.Logger.Errorf("GetValidToken 获取token失败: %v", err)
 		return err
 	}
 	TotalResponse := TotalResponse{}
@@ -70,13 +67,13 @@ func (tm *TokenMgr) GetValidToken() error {
 		config.Global.YiAnqi.AesIv)
 
 	if err != nil {
-		logger.Logger.Errorf("解密失败 %s %v", body, err)
+		logger.Logger.Errorf("GetValidToken 解密失败 %s %v", body, err)
 		return err
 	}
 
 	err = json.Unmarshal([]byte(decodedStr), &tm.validTokensA)
 	if err != nil {
-		logger.Logger.Errorf("解析失败 %s %v", decodedStr, err)
+		logger.Logger.Errorf("GetValidToken 解析失败 %s %v", decodedStr, err)
 		return err
 	}
 	tm.validTokensA.ExpirationTime = time.Now().Add(time.Second * time.Duration(tm.validTokensA.TokenAvailableTime)).Unix() // 1小时后过期
