@@ -7,13 +7,13 @@ import (
 
 func TestClientQueryOrder(t *testing.T) {
 
-	parkID := 10051557
-	carNumber := "鲁BFZ7606"
+	parkID := 10051834
+	carNumber := "京A11116"
 	parkInfo := config.ParkInfo{
 		DeductionMoney: 100,
 		DeductionTime:  60,
-		ParkID:         10051557,
-		Ukey:           "your_ukey",
+		ParkID:         10051834,
+		Ukey:           "J445O54V3REDI0NT",
 	}
 	nc := NewAPIClient()
 	orderId, err := nc.QueryOrder(parkID, carNumber, &parkInfo)
