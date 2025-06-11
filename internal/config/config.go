@@ -35,20 +35,14 @@ type Config struct {
 	Server struct {
 		Port string `json:"port"`
 	} `json:"server"`
-	Parks []ParkInfo `json:"parks"`
-
-	YiAnqi struct {
-		TokenURL       string `json:"tokenUrl"`
-		OperatorID     string `json:"operatorID"`
-		OperatorSecret string `json:"operatorSecret"`
-		AesKey         string `json:"aeskey"`
-		AesIv          string `json:"aesiv"`
-		SignKey        string `json:"signKey"`
-	} `json:"yianqi"`
-
+	Parks       []ParkInfo `json:"parks"`
+	ThridServer struct {
+		In_url  string `json:"in_url"`
+		Out_url string `json:"out_url"`
+	}
 	API struct {
-		TingCheYunUrl string `json:"tingCheYunUrl"`
-	} `json:"api"`
+		TingCheYunUrl string `json:"TingCheYunUrl"`
+	}
 }
 
 // Global 全局配置实例
@@ -75,22 +69,8 @@ func createDefaultConfig() *Config {
 			StationID:      "1234567890", // 示例站点ID
 		},
 	}
-	// 	贵方的组织机构代码：cdist2025
-	// 推送地址：http://yianqi.ddpark.fun/
-	// 我们调用你们的秘钥：
-	// 商户密钥u8wLRTOTkjKmVpoP
-	// 签名密钥Q2YAboqxfmrtbfsw
-	// 加密密钥2RU7xUBhsyW5SnCY
-	// 加密向量sExIBhW3Y4mYr0ne
-
-	config.YiAnqi.AesKey = "2RU7xUBhsyW5SnCY"
-	config.YiAnqi.AesIv = "sExIBhW3Y4mYr0ne"
-	config.YiAnqi.SignKey = "Q2YAboqxfmrtbfsw"
-	config.YiAnqi.OperatorSecret = "u8wLRTOTkjKmVpoP"
-	config.YiAnqi.OperatorID = "cdist2025"
-	config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v2016/query_token"
-	//config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v20161110/query_token"
-	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
+	config.ThridServer.In_url = "https://www.zhyx.cloud/prod-api/fire/bisen/carIn"
+	config.ThridServer.Out_url = "https://www.zhyx.cloud/prod-api/fire/bisen/carIn"
 	return config
 }
 func createDirIfNotExist(filename string) error {

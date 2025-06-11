@@ -5,8 +5,8 @@ import (
 	"fmt"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
+	tingcheyunservice "jilaidian_go/internal/tingcheyunService"
 	"jilaidian_go/internal/utils"
-	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
 	"net/http"
@@ -35,7 +35,7 @@ func main() {
 
 	r := gin.Default()
 	// 设置路由
-	handler := yianqiservice.NewHandler()
+	handler := tingcheyunservice.NewHandler()
 	handler.SetupRoutes(r)
 	configHandler := api.NewConfigHandler()
 	configHandler.SetupRoutes(r)

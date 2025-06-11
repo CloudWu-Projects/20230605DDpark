@@ -1,12 +1,15 @@
-systemctl stop yianqi_go.service
+export servername="yianqi_go"
 
-python3 down7niu.py yianqi_go/yianqi_go.zip
+echo $servername
+systemctl stop $servername.service
 
-mv yianqi_go/yianqi_go.zip yianqi_go/yianqi_go -f
+python3 down7niu.py $servername/$servername.zip
 
-chmod +x ./yianqi_go/yianqi_go
-./yianqi_go/yianqi_go -install
+mv $servername/$servername.zip $servername/$servername -f
 
-md5sum ./yianqi_go/yianqi_go
+chmod +x ./$servername/$servername
+./$servername/$servername -install
 
-systemctl start yianqi_go.service
+md5sum ./$servername/$servername
+
+systemctl start $servername.service

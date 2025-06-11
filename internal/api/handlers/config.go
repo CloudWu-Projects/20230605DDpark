@@ -85,13 +85,8 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	r.ParseForm()
 
 	serverPort := r.Form.Get("server.port")
-	TingCheYunUrl := r.Form.Get("api.TingCheYunUrl")
-	aesKey := r.Form.Get("YiAnqi.AesKey")
-	aesIV := r.Form.Get("YiAnqi.AesIv")
-	SignKey := r.Form.Get("YiAnqi.SignKey")
-	OperatorSecret := r.Form.Get("YiAnqi.OperatorSecret")
-	OperatorID := r.Form.Get("YiAnqi.OperatorID")
-	TokenURL := r.Form.Get("YiAnqi.TokenURL")
+	outUrl := r.Form.Get("ThridServer.Out_url")
+	inUrl := r.Form.Get("ThridServer.In_url")
 
 	var parks []config.ParkInfo
 	for key, _ := range r.Form {
@@ -124,27 +119,11 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	if serverPort != "" {
 		ci.Server.Port = serverPort
 	}
-	if TingCheYunUrl != "" {
-		ci.API.TingCheYunUrl = TingCheYunUrl
+	if outUrl != "" {
+		ci.ThridServer.Out_url = outUrl
 	}
-	if aesKey != "" {
-		ci.YiAnqi.AesKey = aesKey
-	}
-	if aesIV != "" {
-		ci.YiAnqi.AesIv = aesIV
-	}
-	if SignKey != "" {
-		ci.YiAnqi.SignKey = SignKey
-	}
-	if OperatorSecret != "" {
-		ci.YiAnqi.OperatorSecret = OperatorSecret
-	}
-
-	if OperatorID != "" {
-		ci.YiAnqi.OperatorID = OperatorID
-	}
-	if TokenURL != "" {
-		ci.YiAnqi.TokenURL = TokenURL
+	if inUrl != "" {
+		ci.ThridServer.In_url = inUrl
 	}
 
 	if len(parks) > 0 {
