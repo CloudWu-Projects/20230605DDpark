@@ -1,6 +1,9 @@
 package thirdservice
 
-import "jilaidian_go/pkg/client"
+import (
+	"jilaidian_go/internal/config"
+	"jilaidian_go/pkg/client"
+)
 
 // Handler API处理器
 type Thirdservice struct {
@@ -23,13 +26,13 @@ type ThirdOutObj struct {
 func PostInData(data ThirdInObj) error {
 	apiClient := client.NewAPIClient()
 	// 构造请求数据
-	_, err := apiClient.SendRequest("", data)
+	_, err := apiClient.SendRequest(config.Global.ThridServer.In_url, data)
 	return err
 }
 
 func PostOutData(data ThirdOutObj) error {
 	apiClient := client.NewAPIClient()
 	// 构造请求数据
-	_, err := apiClient.SendRequest("", data)
+	_, err := apiClient.SendRequest(config.Global.ThridServer.Out_url, data)
 	return err
 }

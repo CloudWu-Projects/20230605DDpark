@@ -17,6 +17,8 @@ type ParkInfo struct {
 	DeductionTime  int    `json:"deduction_time"`  // 改为驼峰式
 	DeductionMoney int    `json:"deduction_money"` // 改为驼峰式
 	ReduceAmount   int    `json:"reduceAmount"`
+	Duration       int    `json:"Duration"`
+	Remark         string `json:"remark"`
 }
 
 // 添加一个方法用于获取解密后的ukey
@@ -55,9 +57,11 @@ func createDefaultConfig() *Config {
 		{
 			ParkID:         99999,
 			Ukey:           "your_ukey",
-			DeductionTime:  60,
-			DeductionMoney: 60,
-			ReduceAmount:   100,
+			DeductionTime:  61,
+			DeductionMoney: 62,
+			ReduceAmount:   101,
+			Duration:       0,
+			Remark:         "备注",
 			StationID:      "1234567890", // 示例站点ID
 		},
 		{
@@ -66,6 +70,8 @@ func createDefaultConfig() *Config {
 			DeductionTime:  60,
 			DeductionMoney: 60,
 			ReduceAmount:   100,
+			Duration:       0,
+			Remark:         "备注",
 			StationID:      "1234567890", // 示例站点ID
 		},
 	}
