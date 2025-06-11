@@ -25,26 +25,26 @@ func NewTokenMgr() *TokenMgr {
 func init() {
 	// start a thread to update the token every hour
 
-	tm := NewTokenMgr()
-	tm.apiClient = client.NewHttpPostClient()
-	tm.validTokensA.ExpirationTime = 0
-	go func() {
-		tm := NewTokenMgr()
-		for {
-			if !tm.validTokensA.IsValid() {
+	// tm := NewTokenMgr()
+	// tm.apiClient = client.NewHttpPostClient()
+	// tm.validTokensA.ExpirationTime = 0
+	// go func() {
+	// 	tm := NewTokenMgr()
+	// 	for {
+	// 		if !tm.validTokensA.IsValid() {
 
-				err := tm.GetValidToken()
-				if err != nil {
-					logger.Logger.Errorf("获取token失败: %v", err)
-				} else {
-					//	validTokensA.update()
-					logger.Logger.Infof("获取到新的token: %s, 过期时间: %d",
-						tm.validTokensA.AccessToken, tm.validTokensA.ExpirationTime)
-				}
-			}
-			time.Sleep(time.Minute) // 每小时更新一次
-		}
-	}()
+	// 			err := tm.GetValidToken()
+	// 			if err != nil {
+	// 				logger.Logger.Errorf("获取token失败: %v", err)
+	// 			} else {
+	// 				//	validTokensA.update()
+	// 				logger.Logger.Infof("获取到新的token: %s, 过期时间: %d",
+	// 					tm.validTokensA.AccessToken, tm.validTokensA.ExpirationTime)
+	// 			}
+	// 		}
+	// 		time.Sleep(time.Minute) // 每小时更新一次
+	// 	}
+	// }()
 
 }
 

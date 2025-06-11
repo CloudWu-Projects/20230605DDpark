@@ -8,14 +8,15 @@ qJson={
   "Sig": "D2D584A14F3F284445DF85D0E8C0697C"
 }
 
-r = requests.post("http://127.0.0.1:8080/query_token", json=qJson)
+r = requests.post("http://127.0.0.1:8081/query_token", json=qJson)
 
 print(r.text)
 
 
+print("=======================================")
 headers={
     'Authorization': 'Bearer FFDD0D8C66C7A6C1C537FD4D6F52CB15',
 }
-r= requests.post("http://127.0.0.1:8080/test",headers=headers, json=qJson)
+r= requests.post("http://127.0.0.1:8081/test",headers=headers, json=qJson)
 
 print(r.text)

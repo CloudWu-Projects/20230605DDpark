@@ -29,11 +29,11 @@ func NewHandler() *Handler {
 	}
 }
 
-var validTokens ValidToken
+var myValidToken ValidToken
 
 func init() {
-	validTokens.ExpirationTime = 0
-	validTokens.update()
+	myValidToken.ExpirationTime = 0
+	myValidToken.update()
 }
 
 func (h *Handler) AuthMiddleware() gin.HandlerFunc {
@@ -55,7 +55,7 @@ func (h *Handler) AuthMiddleware() gin.HandlerFunc {
 
 		fmt.Println("Received token:", tokenString)
 		// Validate token (example: check against a list of valid tokens or use JWT)
-		if !validTokens.isValidToken(tokenString) {
+		if !myValidToken.isValidToken(tokenString) {
 			h.MakeRepsonse(c, 4002, "Invalid or expired token", "")
 			return
 		}
@@ -77,6 +77,8 @@ func (h *Handler) SetupRoutes(r *gin.Engine) {
 
 		authorized.POST("/notification_charge_end_order_info", h.notification_charge_end_order_info)
 	}
+
+	r.POST("/query_token", h.query_token)
 
 }
 
@@ -159,4 +161,31 @@ func (h *Handler) notification_charge_end_order_info(c *gin.Context) {
 	respose.ConfirmResult = 0  // 假设处理成功后返回确认结果为0
 	respose.PlateAutResult = 1 // 假设车牌自动识别结果为1
 	h.MakeRepsonse(c, 1, "充电记录处理成功", respose)
+}
+
+// query_token 查询token接口
+func (h *Handler) query_token(c *gin.Context) {
+	decodedStr, err := h.extractRequest(c)
+	if err != nil {
+		return
+	}
+	var queryToken QueryTokenRequest
+	if err := json.Unmarshal([]byte(decodedStr), &queryToken); err != nil {
+		logger.Logger.Errorf("query_token JSON解析失败 %s  %v", decodedStr, err)
+		h.MakeRepsonse(c, 1, "query_token JSON解析失败", "")
+		return
+	}
+	myValidToken.update()
+	response := QueryTokenResponse{
+		OperatorID:         queryToken.OperatorID,
+		SuccStat:           1,
+		AccessToken:        myValidToken.AccessToken,
+		TokenAvailableTime: myValidToken.TokenAvailableTime,
+		FailReason:         0,
+	}
+	// 将 struct 转为 JSON 字符串
+	jsonData, _ := json.Marshal(response)
+
+	fmt.Println(string(jsonData))
+	h.MakeRepsonse(c, 0, "查询成功", string(jsonData))
 }
