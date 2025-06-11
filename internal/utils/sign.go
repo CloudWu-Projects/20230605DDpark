@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"crypto/hmac"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -17,9 +16,10 @@ func generateSign(data map[string]interface{}, ukey string) string {
 }
 func GenerateSignString(dataStr string, ukey string) string {
 	// 拼接 key=ukey
-	signStr := dataStr
+	signStr := dataStr + "key=" + ukey
 	// 计算 MD5 并转为大写
-	h := hmac.New(md5.New, []byte(ukey))
+	h := md5.New()
+
 	h.Write([]byte(signStr))
 	hash := h.Sum(nil)
 	hexStr := hex.EncodeToString(hash)
