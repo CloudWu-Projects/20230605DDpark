@@ -9,7 +9,6 @@ import (
 	"jilaidian_go/www"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,30 +93,30 @@ func (h *ConfigHandler) saveHandler(c *gin.Context) {
 	TokenURL := r.Form.Get("YiAnqi.TokenURL")
 
 	var parks []config.ParkInfo
-	for key, _ := range r.Form {
-		if strings.HasPrefix(key, "parks.parkid.") {
-			parkID, err := strconv.Atoi(strings.TrimPrefix(key, "parks.parkid."))
+	// for key, _ := range r.Form {
+	// 	if strings.HasPrefix(key, "parks.parkid.") {
+	// 		parkID, err := strconv.Atoi(strings.TrimPrefix(key, "parks.parkid."))
 
-			if err != nil {
-				//http.Error(w, "Invalid park ID", http.StatusBadRequest)
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
-				return
-			}
-			ukey := r.Form.Get(fmt.Sprintf("parks.%d.ukey", parkID))
-			deductionTime, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_time", parkID)))
-			deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
-			newParkid, _ := strconv.Atoi(r.Form.Get(key))
+	// 		if err != nil {
+	// 			//http.Error(w, "Invalid park ID", http.StatusBadRequest)
+	// 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
+	// 			return
+	// 		}
+	// 		ukey := r.Form.Get(fmt.Sprintf("parks.%d.ukey", parkID))
+	// 		deductionTime, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_time", parkID)))
+	// 		deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
+	// 		newParkid, _ := strconv.Atoi(r.Form.Get(key))
 
-			StationID := r.Form.Get(fmt.Sprintf("parks.%d.station_id", parkID))
-			parks = append(parks, config.ParkInfo{
-				ParkID:         newParkid,
-				Ukey:           ukey,
-				DeductionTime:  deductionTime,
-				DeductionMoney: deductionMoney,
-				StationID:      StationID,
-			})
-		}
-	}
+	// 		StationID := r.Form.Get(fmt.Sprintf("parks.%d.station_id", parkID))
+	// 		parks = append(parks, config.ParkInfo{
+	// 			ParkID:         newParkid,
+	// 			Ukey:           ukey,
+	// 			DeductionTime:  deductionTime,
+	// 			DeductionMoney: deductionMoney,
+	// 			StationID:      StationID,
+	// 		})
+	// 	}
+	// }
 	fmt.Println(parks)
 	fmt.Println(len(parks))
 	ci := config.LoadConfig()
@@ -179,12 +178,18 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 	deductionMoney, _ := strconv.Atoi(r.Form.Get("add.deduction_money"))
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
 	StationID := r.Form.Get("add.station_id")
+	Deduction, _ := strconv.Atoi(r.Form.Get("add.deduction"))
+	Remark := r.Form.Get("add.remark")
+	//	Deduction:   100,
+	//	Remark:        "备注",
 	parkinfo := config.ParkInfo{
 		ParkID:         parkID,
 		Ukey:           ukey,
 		DeductionTime:  deductionTime,
 		DeductionMoney: deductionMoney,
 		StationID:      StationID,
+		Deduction:      Deduction,
+		Remark:         Remark,
 	}
 	fmt.Println("addHandler parkinfo:", oldparkid, parkinfo)
 	ci := config.LoadConfig()
