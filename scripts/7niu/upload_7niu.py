@@ -117,7 +117,7 @@ def upload_from_args():
         help="upload localfile to qiniu"
     )
     args = parser.parse_args()
-    filename="yianqi_go"
+    filename="yilingshequ_go"
     upload(args.localfile,key=f"{filename}/{filename}.zip")
 
 if __name__ == '__main__':

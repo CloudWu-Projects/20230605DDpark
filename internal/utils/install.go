@@ -182,7 +182,7 @@ func chMod(name string, mode os.FileMode) {
 }
 func InstallSystemd(binPath string) {
 	config := &ServiceConfig{
-		Description: "yianqi Service",
+		Description: "yilingshequ Service",
 		Path:        binPath,
 	}
 
@@ -200,12 +200,12 @@ func InstallServer() {
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
 		log.Println(`You can start with:
-yianqi_go start|stop|restart|uninstall|update 
+yilingshequ_go start|stop|restart|uninstall|update 
 anywhere!`)
 		InstallSystemd(binPath)
 	} else {
 		log.Println(`You can copy executable files to any directory and start working with:
-yianqi_go.exe start|stop|restart|uninstall|update 
+yilingshequ_go.exe start|stop|restart|uninstall|update 
 now!`)
 	}
 	chMod(common.GetLogPath(), 0777)

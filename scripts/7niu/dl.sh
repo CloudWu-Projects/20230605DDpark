@@ -1,4 +1,4 @@
-export servername="yianqi_go"
+export servername="yilingshequ_go"
 
 echo $servername
 systemctl stop $servername.service
