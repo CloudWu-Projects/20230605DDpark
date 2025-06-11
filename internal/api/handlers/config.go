@@ -178,7 +178,7 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 	deductionMoney, _ := strconv.Atoi(r.Form.Get("add.deduction_money"))
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
 	StationID := r.Form.Get("add.station_id")
-	Deduction, _ := strconv.Atoi(r.Form.Get("add.deduction"))
+	Duration, _ := strconv.Atoi(r.Form.Get("add.Duration"))
 	Remark := r.Form.Get("add.remark")
 	//	Deduction:   100,
 	//	Remark:        "备注",
@@ -188,7 +188,7 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 		DeductionTime:  deductionTime,
 		DeductionMoney: deductionMoney,
 		StationID:      StationID,
-		Deduction:      Deduction,
+		Duration:       Duration,
 		Remark:         Remark,
 	}
 	fmt.Println("addHandler parkinfo:", oldparkid, parkinfo)

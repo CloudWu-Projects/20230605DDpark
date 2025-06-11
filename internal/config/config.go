@@ -17,7 +17,7 @@ type ParkInfo struct {
 	DeductionTime  int    `json:"deduction_time"`  // 改为驼峰式
 	DeductionMoney int    `json:"deduction_money"` // 改为驼峰式
 	ReduceAmount   int    `json:"reduceAmount"`
-	Deduction      int    `json:"deduction"`
+	Duration       int    `json:"Duration"`
 	Remark         string `json:"remark"`
 }
 
@@ -66,7 +66,7 @@ func createDefaultConfig() *Config {
 			DeductionTime:  61,
 			DeductionMoney: 62,
 			ReduceAmount:   101,
-			Deduction:      1,
+			Duration:       0,
 			Remark:         "备注",
 			StationID:      "1234567890", // 示例站点ID
 		},
@@ -76,7 +76,7 @@ func createDefaultConfig() *Config {
 			DeductionTime:  60,
 			DeductionMoney: 60,
 			ReduceAmount:   100,
-			Deduction:      100,
+			Duration:       0,
 			Remark:         "备注",
 			StationID:      "1234567890", // 示例站点ID
 		},

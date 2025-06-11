@@ -8,6 +8,8 @@ import (
 	"jilaidian_go/internal/models"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
+
+	"github.com/Microsoft/go-winio/pkg/guid"
 )
 
 // APIClient 外部API客户端
@@ -62,6 +64,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.ParkInfo) error {
 	url := fmt.Sprintf("%s/charge/discountNotice", c.TingCheYunUrl)
 
+	uuid, _ := guid.NewV4()
 	// 构造请求数据
 	data := struct {
 		CarNumber         string  `json:"car_number"`
@@ -77,14 +80,14 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 	}{
 		CarNumber:         carNumber,
 		OrderID:           orderID,
-		ReduceAmount:      0,
+		ReduceAmount:      0, //parkinfo.ReduceAmount,
 		DeductionTime:     parkinfo.DeductionTime,
 		DeductionMoney:    parkinfo.DeductionMoney,
-		Duration:          20,
-		Remark:            "备注",
+		Duration:          parkinfo.Duration,
+		Remark:            parkinfo.Remark,
 		StartChargingTime: "2020-08-27 00:02:09",
 		StopChargingTime:  "2020-08-27 00:25:07",
-		UUID:              "de6c26a945c9478295d7cffa7631d7f9",
+		UUID:              uuid.String(), //GUID//"de6c26a945c9478295d7cffa7631d7f9",
 	}
 
 	dataBytes, _ := json.Marshal(data)
