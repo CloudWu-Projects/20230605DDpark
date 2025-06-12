@@ -178,7 +178,7 @@ func (h *Handler) query_token(c *gin.Context) {
 	myValidToken.update()
 	response := QueryTokenResponse{
 		OperatorID:         queryToken.OperatorID,
-		SuccStat:           1,
+		SuccStat:           0,
 		AccessToken:        myValidToken.AccessToken,
 		TokenAvailableTime: myValidToken.TokenAvailableTime,
 		FailReason:         0,

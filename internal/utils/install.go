@@ -199,14 +199,14 @@ func InstallServer() {
 	log.Println("Static files and configuration files in the current directory will be useless")
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
-		log.Println(`You can start with:
-yianqi_go start|stop|restart|uninstall|update 
-anywhere!`)
+		log.Printf(`You can start with:
+%s start|stop|restart|uninstall|update 
+anywhere!\n`, common.GetAppName())
 		InstallSystemd(binPath)
 	} else {
-		log.Println(`You can copy executable files to any directory and start working with:
-yianqi_go.exe start|stop|restart|uninstall|update 
-now!`)
+		log.Printf(`You can copy executable files to any directory and start working with:
+%s start|stop|restart|uninstall|update 
+now!\n`, common.GetAppName())
 	}
 	chMod(common.GetLogPath(), 0777)
 }
