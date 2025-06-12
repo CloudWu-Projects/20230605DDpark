@@ -33,6 +33,7 @@ type ThirdResponse struct {
 }
 
 func PostInData(data ThirdInObj) error {
+	data.Api = "carInBefore"
 	apiClient := client.NewHttpPostClient()
 	// 构造请求数据
 	body, err := apiClient.SendRequest(config.Global.ThridServer.In_url, data)
@@ -50,6 +51,7 @@ func PostInData(data ThirdInObj) error {
 }
 
 func PostOutData(data ThirdOutObj) error {
+	data.Api = "carOutBefore"
 	apiClient := client.NewHttpPostClient()
 	// 构造请求数据
 	body, err := apiClient.SendRequest(config.Global.ThridServer.Out_url, data)
