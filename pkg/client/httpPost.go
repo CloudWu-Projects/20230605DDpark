@@ -36,7 +36,6 @@ func (c *HttpPostClient) SendRequest(url string, request interface{}) ([]byte, e
 		return nil, fmt.Errorf("创建请求失败: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-
 	// 发送请求
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -55,7 +54,7 @@ func (c *HttpPostClient) SendRequest(url string, request interface{}) ([]byte, e
 		return nil, fmt.Errorf("读取响应失败: %v", err)
 	}
 
-	logger.Logger.Debugf("sendRequest  body %s", body)
+	logger.Logger.Debugf("sendRequest  Recvbody %s", body)
 
 	return body, nil
 }

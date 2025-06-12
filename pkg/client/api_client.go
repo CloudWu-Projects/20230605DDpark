@@ -8,19 +8,21 @@ import (
 	"jilaidian_go/internal/models"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
+
+	"github.com/Microsoft/go-winio/pkg/guid"
 )
 
 // APIClient 外部API客户端
 type APIClient struct {
 	TingCheYunUrl string
-	client        *HttpPostClient
+	Client        *HttpPostClient
 }
 
 // NewAPIClient 创建新的API客户端
 func NewAPIClient() *APIClient {
 	return &APIClient{
 		TingCheYunUrl: config.Global.API.TingCheYunUrl,
-		client:        &HttpPostClient{},
+		Client:        NewHttpPostClient(),
 	}
 }
 
@@ -46,12 +48,18 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 		ParkID:      parkID,
 		Data:        data,
 	}
-
 	// 发送请求
-	response, err := c.SendRequest(url, request)
+	body, err := c.Client.SendRequest(url, request)
 	if err != nil {
+		logger.Logger.Error("发送请求失败", err)
 		return "", err
 	}
+	// 解析响应
+	var response models.QueryOrderResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return "", fmt.Errorf("QueryOrderResponse 解析响应失败: %v", err)
+	}
+
 	if response.State == 0 {
 		return "", fmt.Errorf("查询订单失败，状态码：%d", response.State)
 	}
@@ -62,6 +70,7 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.ParkInfo) error {
 	url := fmt.Sprintf("%s/charge/discountNotice", c.TingCheYunUrl)
 
+	uuid, _ := guid.NewV4()
 	// 构造请求数据
 	data := struct {
 		CarNumber         string  `json:"car_number"`
@@ -77,14 +86,14 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 	}{
 		CarNumber:         carNumber,
 		OrderID:           orderID,
-		ReduceAmount:      0,
+		ReduceAmount:      0, //parkinfo.ReduceAmount,
 		DeductionTime:     parkinfo.DeductionTime,
 		DeductionMoney:    parkinfo.DeductionMoney,
-		Duration:          20,
-		Remark:            "备注",
+		Duration:          parkinfo.Duration,
+		Remark:            parkinfo.Remark,
 		StartChargingTime: "2020-08-27 00:02:09",
 		StopChargingTime:  "2020-08-27 00:25:07",
-		UUID:              "de6c26a945c9478295d7cffa7631d7f9",
+		UUID:              uuid.String(), //GUID//"de6c26a945c9478295d7cffa7631d7f9",
 	}
 
 	dataBytes, _ := json.Marshal(data)
@@ -101,11 +110,16 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 		Data:        data,
 	}
 	// 发送请求
-	response, err := c.SendRequest(url, request)
+	body, err := c.Client.SendRequest(url, request)
 
 	if err != nil {
 		logger.Logger.Error("发送请求失败", (err))
 		return err
+	}
+	// 解析响应
+	var response models.TingCheyunResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return fmt.Errorf("TingCheyunResponse 解析响应失败: %v", err)
 	}
 	logger.Logger.Debugf(fmt.Sprintf("SendDiscountNotice response %+v", response))
 	if response.State == 0 {
@@ -113,21 +127,4 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 		return errors.New("处理优惠失败")
 	}
 	return nil
-}
-
-// sendRequest 发送HTTP请求并解析响应
-func (c *APIClient) SendRequest(url string, request interface{}) (*models.QueryOrderResponse, error) {
-
-	body, err := c.client.SendRequest(url, request)
-	if err != nil {
-		logger.Logger.Error("发送请求失败", err)
-		return nil, err
-	}
-	// 解析响应
-	var response models.QueryOrderResponse
-	if err := json.Unmarshal(body, &response); err != nil {
-		return nil, fmt.Errorf("解析响应失败: %v", err)
-	}
-
-	return &response, nil
 }

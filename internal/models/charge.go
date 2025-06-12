@@ -59,6 +59,12 @@ type QueryOrderResponse struct {
 	ErrMsg string `json:"errmsg"`
 	State  int    `json:"state"`
 }
+type TingCheyunResponse struct {
+	ServiceName string `json:"service_name"`
+	ErrMsg      string `json:"errmsg"`
+	State       int    `json:"state"`
+	UUID        string `json:"uuid"`
+}
 
 // DiscountNoticeRequest 下发优惠信息请求结构体
 type DiscountNoticeRequest struct {

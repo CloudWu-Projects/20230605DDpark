@@ -1,6 +1,8 @@
 package thirdservice
 
 import (
+	"encoding/json"
+	"fmt"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/pkg/client"
 )
@@ -22,17 +24,44 @@ type ThirdOutObj struct {
 	ParkingId   string `json:"parkingId"`
 	PlateNumber string `json:"plateNumber"`
 }
+type ThirdResponse struct {
+	/*
+	   {"code":0,"msg":"成功","data":""}
+	*/
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
 
 func PostInData(data ThirdInObj) error {
-	apiClient := client.NewAPIClient()
+	apiClient := client.NewHttpPostClient()
 	// 构造请求数据
-	_, err := apiClient.SendRequest(config.Global.ThridServer.In_url, data)
+	body, err := apiClient.SendRequest(config.Global.ThridServer.In_url, data)
+	if err != nil {
+		return fmt.Errorf("PostInData 发送请求失败: %v data:%v", err, data)
+	}
+	var response ThirdResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return fmt.Errorf("ThirdResponse 解析响应失败: %v %v", err, string(body))
+	}
+	if response.Code != 0 {
+		return fmt.Errorf("ThirdResponse 返回失败: %v", response)
+	}
 	return err
 }
 
 func PostOutData(data ThirdOutObj) error {
-	apiClient := client.NewAPIClient()
+	apiClient := client.NewHttpPostClient()
 	// 构造请求数据
-	_, err := apiClient.SendRequest(config.Global.ThridServer.Out_url, data)
+	body, err := apiClient.SendRequest(config.Global.ThridServer.Out_url, data)
+	if err != nil {
+		return fmt.Errorf("PostOutData 发送请求失败: %v data:%v", err, data)
+	}
+	var response ThirdResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return fmt.Errorf("ThirdResponse 解析响应失败: %v %v", err, string(body))
+	}
+	if response.Code != 0 {
+		return fmt.Errorf("ThirdResponse 返回失败: %v", response)
+	}
 	return err
 }
