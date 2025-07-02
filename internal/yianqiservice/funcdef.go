@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/pkg/logger"
 	"net/http"
 	"strconv"
 	"time"
@@ -80,6 +81,7 @@ func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, d
 		jsonData, _ = json.Marshal(data)
 	}
 
+	logger.Logger.Debug("yianqi MakeRepsonse Data :", data)
 	encodedStr, _ := CBCEncrypt_Base64(string(jsonData), config.Global.YiAnqi.AesKey, config.Global.YiAnqi.AesIv)
 
 	tr := TotalResponse{
@@ -89,5 +91,8 @@ func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, d
 		Sig:  "",
 	}
 	tr.MakeSig()
+	logger.Logger.Debugf("yianqi MakeRepsonse jsonData : %s", string(jsonData))
+	logger.Logger.Debug("yianqi MakeRepsonse TotalResponse : ", tr)
+
 	c.JSON(http.StatusOK, tr)
 }

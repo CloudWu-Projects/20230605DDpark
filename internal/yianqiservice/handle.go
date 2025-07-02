@@ -160,7 +160,7 @@ func (h *Handler) notification_charge_end_order_info(c *gin.Context) {
 	logger.Logger.Info("充电记录处理成功", "parkID", parkinfo.ParkID, "plateNo", requestItem.PlateNum)
 	respose.ConfirmResult = 0  // 假设处理成功后返回确认结果为0
 	respose.PlateAutResult = 1 // 假设车牌自动识别结果为1
-	h.MakeRepsonse(c, 1, "充电记录处理成功", respose)
+	h.MakeRepsonse(c, 0, "充电记录处理成功", respose)
 }
 
 // query_token 查询token接口
