@@ -11,7 +11,7 @@ import (
 )
 
 type TokenMgr struct {
-	validTokensA ValidToken
+	ValidToken ValidToken
 
 	apiClient *client.HttpPostClient
 }
@@ -71,13 +71,13 @@ func (tm *TokenMgr) GetValidToken() error {
 		return err
 	}
 
-	err = json.Unmarshal([]byte(decodedStr), &tm.validTokensA)
+	err = json.Unmarshal([]byte(decodedStr), &tm.ValidToken)
 	if err != nil {
 		logger.Logger.Errorf("GetValidToken 解析失败 %s %v", decodedStr, err)
 		return err
 	}
-	delayTime := time.Second * time.Duration(tm.validTokensA.TokenAvailableTime)
-	delayTime = delayTime - time.Minute*10                            // 提前10分钟
-	tm.validTokensA.ExpirationTime = time.Now().Add(delayTime).Unix() // 1小时后过期
+	delayTime := time.Second * time.Duration(tm.ValidToken.TokenAvailableTime)
+	delayTime = delayTime - time.Minute*10                          // 提前10分钟
+	tm.ValidToken.ExpirationTime = time.Now().Add(delayTime).Unix() // 1小时后过期
 	return err
 }
