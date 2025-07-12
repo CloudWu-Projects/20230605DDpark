@@ -9,7 +9,6 @@ import (
 	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
-	"jilaidian_go/version"
 	"net/http"
 	"os"
 
@@ -18,11 +17,6 @@ import (
 
 func main() {
 
-	fmt.Printf("Version: %s\nGit: %s\nBuilt: %s\nGo: %s\n",
-		version.Version,
-		version.GitHash,
-		version.BuildTime,
-		version.GoVersion)
 	fmt.Println("\n欢迎使用", common.GetAppName(), os.Args[0])
 	// 解析命令行参数
 	install := flag.Bool("install", false, "安装服务")
@@ -36,9 +30,11 @@ func main() {
 		utils.InstallServer()
 		return
 	}
+	logger.Logger.Info(config.Global.Version)
 	logger.Logger.Info("ConfigPath:", common.GetConfigPath())
 	// 如果是运行示例代码
 
+	//gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	// 设置路由
 	handler := yianqiservice.NewHandler()

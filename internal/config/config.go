@@ -101,7 +101,7 @@ func createDefaultConfig() *Config {
 		SignKey:        "Q2YAboqxfmrtbfsw",
 		TokenURL:       "https://api.ddpark.fun/api/yianqi/token",
 	}
-	config.Version = fmt.Sprintf("v:%s hash:%s build:%s go:%s git:%s", version.Version, version.GitHash, version.BuildTime, version.GoVersion, version.GitVersion)
+	config.Version = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
 
 	config.Debug = os.Getenv("DEBUG") == "1"
 	return config

@@ -3,6 +3,8 @@ appName="yianqi_go"
 
 echo $appName
 rm -rf bin
+go generate ../...
+
 # Windows 64 位
 if ! GOOS=windows GOARCH=amd64 go build -o bin/$appName.exe ../cmd/mainExe/;then
     echo "编译失败"
