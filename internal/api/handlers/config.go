@@ -100,8 +100,9 @@ func (h *ConfigHandler) saveYianqiConfigHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "Config saved successfully"})
 
-	c.Redirect(http.StatusSeeOther, "/config/")
+	//c.Redirect(http.StatusSeeOther, "/config/")
 }
 
 type ConfigForm struct {
@@ -128,8 +129,7 @@ func (h *ConfigHandler) saveSeverConfigHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
-
-	c.Redirect(http.StatusSeeOther, "/config/")
+	c.JSON(http.StatusOK, gin.H{"message": "Config saved successfully"})
 }
 
 func (h *ConfigHandler) logHandler(c *gin.Context) {
