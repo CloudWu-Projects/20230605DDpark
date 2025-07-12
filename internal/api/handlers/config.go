@@ -36,11 +36,13 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	configG := r.Group("/config")
 	{
 		configG.GET("/", h.indexHandler)
+
+		configG.POST("/baseserver", h.saveSeverConfigHandler)
+		configG.POST("/Yianqi", h.saveYianqiConfigHandler)
 	}
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
 	})
-	r.POST("/save", h.saveHandler)
 	r.POST("/add", h.addHandler)
 	r.GET("/log", h.logHandler)
 	r.GET("/api/parks", func(c *gin.Context) {
@@ -76,80 +78,51 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 
 func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	ci := config.LoadConfig()
+	logger.Logger.Info("indexHandler ", ci.Debug)
+	if ci.Debug {
+
+		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html"))
+	}
+
 	h.tmplConfigHtml.Execute(c.Writer, ci)
 }
-func (h *ConfigHandler) saveHandler(c *gin.Context) {
 
-	r := c.Request
-	r.ParseForm()
+func (h *ConfigHandler) saveYianqiConfigHandler(c *gin.Context) {
+	var yianqiConfig config.YiAnqi
+	if err := c.ShouldBind(&yianqiConfig); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	serverPort := r.Form.Get("server.port")
-	TingCheYunUrl := r.Form.Get("api.TingCheYunUrl")
-	aesKey := r.Form.Get("YiAnqi.AesKey")
-	aesIV := r.Form.Get("YiAnqi.AesIv")
-	SignKey := r.Form.Get("YiAnqi.SignKey")
-	OperatorSecret := r.Form.Get("YiAnqi.OperatorSecret")
-	OperatorID := r.Form.Get("YiAnqi.OperatorID")
-	TokenURL := r.Form.Get("YiAnqi.TokenURL")
-
-	var parks []config.ParkInfo
-	// for key, _ := range r.Form {
-	// 	if strings.HasPrefix(key, "parks.parkid.") {
-	// 		parkID, err := strconv.Atoi(strings.TrimPrefix(key, "parks.parkid."))
-
-	// 		if err != nil {
-	// 			//http.Error(w, "Invalid park ID", http.StatusBadRequest)
-	// 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
-	// 			return
-	// 		}
-	// 		ukey := r.Form.Get(fmt.Sprintf("parks.%d.ukey", parkID))
-	// 		deductionTime, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_time", parkID)))
-	// 		deductionMoney, _ := strconv.Atoi(r.Form.Get(fmt.Sprintf("parks.%d.deduction_money", parkID)))
-	// 		newParkid, _ := strconv.Atoi(r.Form.Get(key))
-
-	// 		StationID := r.Form.Get(fmt.Sprintf("parks.%d.station_id", parkID))
-	// 		parks = append(parks, config.ParkInfo{
-	// 			ParkID:         newParkid,
-	// 			Ukey:           ukey,
-	// 			DeductionTime:  deductionTime,
-	// 			DeductionMoney: deductionMoney,
-	// 			StationID:      StationID,
-	// 		})
-	// 	}
-	// }
-	fmt.Println(parks)
-	fmt.Println(len(parks))
 	ci := config.LoadConfig()
-	if serverPort != "" {
-		ci.Server.Port = serverPort
-	}
-	if TingCheYunUrl != "" {
-		ci.API.TingCheYunUrl = TingCheYunUrl
-	}
-	if aesKey != "" {
-		ci.YiAnqi.AesKey = aesKey
-	}
-	if aesIV != "" {
-		ci.YiAnqi.AesIv = aesIV
-	}
-	if SignKey != "" {
-		ci.YiAnqi.SignKey = SignKey
-	}
-	if OperatorSecret != "" {
-		ci.YiAnqi.OperatorSecret = OperatorSecret
+	ci.YiAnqi = yianqiConfig
+	if err := ci.SaveConfig(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
+		return
 	}
 
-	if OperatorID != "" {
-		ci.YiAnqi.OperatorID = OperatorID
-	}
-	if TokenURL != "" {
-		ci.YiAnqi.TokenURL = TokenURL
-	}
+	c.Redirect(http.StatusSeeOther, "/config/")
+}
 
-	if len(parks) > 0 {
-		ci.Parks = parks
-	}
+type ConfigForm struct {
+	ServerPort    string `form:"server.port"`
+	TingCheYunUrl string `form:"api.TingCheYunUrl"`
+}
 
+func (h *ConfigHandler) saveSeverConfigHandler(c *gin.Context) {
+
+	var form ConfigForm
+	if err := c.ShouldBind(&form); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ci := config.LoadConfig()
+	if form.ServerPort != "" {
+		ci.Server.Port = form.ServerPort
+	}
+	if form.TingCheYunUrl != "" {
+		ci.API.TingCheYunUrl = form.TingCheYunUrl
+	}
 	if err := ci.SaveConfig(); err != nil {
 		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})

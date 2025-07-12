@@ -6,20 +6,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Config setting</title>
-<!--
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/bootstrap-table.min.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/bootstrap-table.min.js"></script>
--->
-  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-  <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.24.1/bootstrap-table.min.css" rel="stylesheet">
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-table/1.24.1/bootstrap-table.min.js"></script>
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-icons/1.8.1/font/bootstrap-icons.css">
+  <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-table/1.19.1/bootstrap-table.min.css" rel="stylesheet">
+  
+  <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+  <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-table/1.19.1/bootstrap-table.min.js"></script>
 
 
 <style>
@@ -52,25 +45,19 @@
 <body>
 
   <div class="container mt-3">
-    <h3>逸安启 -202506011</h3>
+    <h3>逸安启 -20250601111 {{.Debug}}</h3>
     <p>请单击按钮打开模态。</p>
-
-    <!-- <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" data-bs-toggle="modal"
-      data-bs-target="#addParksModal">
-      添加停车场 by button
-    </button>
-    
-    <button type="button" class="btn btn-primary" data-bs-heading="22222" data-bs-toggle="modal"
-      data-bs-target="#addParksModal">
-      打开模态2222
-    </button>
-     -->
     <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" id="addpark_Btn">
       添加停车场
     </button>
     <button type="button" class="btn btn-primary" data-bs-heading="修改基础配置" data-bs-toggle="modal"
       data-bs-target="#modifybaseModal">
       修改基础配置
+    </button>
+    
+    <button type="button" class="btn btn-primary" data-bs-heading="修改逸安启配置" data-bs-toggle="modal"
+      data-bs-target="#modifyYianqiModal">
+      修改逸安启配置
     </button>
     
     <div id="addParksModal" class="modal fade" role="dialog">
@@ -139,7 +126,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <form action="/save" method="post">
+            <form action="/config/baseserver" method="post">
 
               <div class="form-group">
                 <label for="server.port">Server Port</label>
@@ -150,6 +137,27 @@
                 <input type="text" id="api.TingCheYunUrl" name="api.TingCheYunUrl" value="{{.API.TingCheYunUrl}}" required>
               </div>
               
+              <div class="form-group"><button type="submit">Save</button></div>
+            </form>
+          </div>
+          <!-- 模态页脚 -->
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+
+    <div id="modifyYianqiModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">修改逸安启配置</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/config/Yianqi" method="post">
+
               <div class="form-group">
                 <label for="YiAnqi.TokenURL">YiAnqi.TokenURL</label>
                 <input type="text" id="YiAnqi.TokenURL" name="YiAnqi.TokenURL" value="{{.YiAnqi.TokenURL}}" required>

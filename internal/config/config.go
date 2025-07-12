@@ -20,6 +20,14 @@ type ParkInfo struct {
 	Duration       int    `json:"Duration"`
 	Remark         string `json:"remark"`
 }
+type YiAnqi struct {
+	TokenURL       string `json:"tokenUrl" form:"YiAnqi.TokenURL"`
+	OperatorID     string `json:"operatorID" form:"YiAnqi.OperatorID"`
+	OperatorSecret string `json:"operatorSecret" form:"YiAnqi.OperatorSecret"`
+	AesKey         string `json:"aeskey" form:"YiAnqi.AesKey"`
+	AesIv          string `json:"aesiv" form:"YiAnqi.AesIv"`
+	SignKey        string `json:"signKey" form:"YiAnqi.SignKey"`
+}
 
 // 添加一个方法用于获取解密后的ukey
 func (p *ParkInfo) GetUkey() string {
@@ -39,18 +47,12 @@ type Config struct {
 	} `json:"server"`
 	Parks []ParkInfo `json:"parks"`
 
-	YiAnqi struct {
-		TokenURL       string `json:"tokenUrl"`
-		OperatorID     string `json:"operatorID"`
-		OperatorSecret string `json:"operatorSecret"`
-		AesKey         string `json:"aeskey"`
-		AesIv          string `json:"aesiv"`
-		SignKey        string `json:"signKey"`
-	} `json:"yianqi"`
+	YiAnqi YiAnqi `json:"yianqi"`
 
 	API struct {
 		TingCheYunUrl string `json:"tingCheYunUrl"`
 	} `json:"api"`
+	Debug bool
 }
 
 // Global 全局配置实例
@@ -81,22 +83,17 @@ func createDefaultConfig() *Config {
 			StationID:      "1234567890", // 示例站点ID
 		},
 	}
-	// 	贵方的组织机构代码：cdist2025
-	// 推送地址：http://yianqi.ddpark.fun/
-	// 我们调用你们的秘钥：
-	// 商户密钥u8wLRTOTkjKmVpoP
-	// 签名密钥Q2YAboqxfmrtbfsw
-	// 加密密钥2RU7xUBhsyW5SnCY
-	// 加密向量sExIBhW3Y4mYr0ne
+	config.YiAnqi = YiAnqi{
+		AesIv:          "sExIBhW3Y4mYr0ne",
+		AesKey:         "2RU7xUBhsyW5SnCY",
+		OperatorID:     "cdist2025",
+		OperatorSecret: "u8wLRTOTkjKmVpoP",
+		SignKey:        "Q2YAboqxfmrtbfsw",
+		TokenURL:       "https://api.ddpark.fun/api/yianqi/token",
+	}
 
-	config.YiAnqi.AesKey = "2RU7xUBhsyW5SnCY"
-	config.YiAnqi.AesIv = "sExIBhW3Y4mYr0ne"
-	config.YiAnqi.SignKey = "Q2YAboqxfmrtbfsw"
-	config.YiAnqi.OperatorSecret = "u8wLRTOTkjKmVpoP"
-	config.YiAnqi.OperatorID = "cdist2025"
-	config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v2016/query_token"
-	//config.YiAnqi.TokenURL = "https://sgi.ionchi.com.cn/evcs/v20161110/query_token"
 	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
+	config.Debug = os.Getenv("DEBUG") == "1"
 	return config
 }
 func createDirIfNotExist(filename string) error {
