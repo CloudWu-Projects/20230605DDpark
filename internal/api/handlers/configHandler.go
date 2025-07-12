@@ -96,7 +96,11 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		Fields:     structToStringMap(ci.ServerConfig)})
 	data := struct {
 		Groups []FieldGroup
-	}{Groups: groups}
+		Debug  bool
+	}{
+		Groups: groups,
+		Debug:  ci.Debug,
+	}
 
 	if ci.Debug {
 		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html", "www/modalForm.html"))

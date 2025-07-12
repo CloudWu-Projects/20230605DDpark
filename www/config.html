@@ -51,6 +51,10 @@
 
   <div class="container mt-3">
     <h3>逸安启 -20250601111 </h3>
+    {{if .Debug }}
+    <div class="alert alert-danger">Debug Mode</div>
+    {{end}}
+
     <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" id="addpark_Btn">
       添加停车场
     </button>
