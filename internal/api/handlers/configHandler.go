@@ -20,7 +20,7 @@ type ConfigHandler struct {
 
 // NewHandler 创建新的API处理器
 func NewConfigHandler() *ConfigHandler {
-	tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html")
+	tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html", "modalForm.html")
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
 		panic(err)
@@ -36,9 +36,9 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	configG := r.Group("/config")
 	{
 		configG.GET("/", h.indexHandler)
-
 		configG.POST("/baseserver", h.saveSeverConfigHandler)
 		configG.POST("/Yianqi", h.saveYianqiConfigHandler)
+		configG.POST("/Tianpin", h.saveTianpinConfigHandler)
 	}
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
@@ -76,53 +76,48 @@ func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
 	})
 }
 
+func (h *ConfigHandler) saveTianpinConfigHandler(c *gin.Context) {
+
+}
+
 func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	ci := config.LoadConfig()
-	logger.Logger.Info("indexHandler ", ci.Debug)
+
+	groups := []FieldGroup{}
+
+	groups = append(groups, FieldGroup{
+		GroupLabel: "逸安启配置",
+		Url:        "/config/Yianqi",
+		Fields:     structToStringMap(ci.YiAnqi),
+	})
+	groups = append(groups, FieldGroup{
+		GroupLabel: "系统配置",
+		Url:        "/config/Server",
+		Fields:     structToStringMap(ci.ServerConfig)})
+	data := struct {
+		Groups []FieldGroup
+	}{Groups: groups}
+
 	if ci.Debug {
-
-		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html"))
+		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html", "www/modalForm.html"))
 	}
-
-	h.tmplConfigHtml.Execute(c.Writer, ci)
-}
-
-func (h *ConfigHandler) saveYianqiConfigHandler(c *gin.Context) {
-	var yianqiConfig config.YiAnqi
-	if err := c.ShouldBind(&yianqiConfig); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ci := config.LoadConfig()
-	ci.YiAnqi = yianqiConfig
-	if err := ci.SaveConfig(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Config saved successfully"})
-
-	//c.Redirect(http.StatusSeeOther, "/config/")
-}
-
-type ConfigForm struct {
-	ServerPort    string `form:"server.port"`
-	TingCheYunUrl string `form:"api.TingCheYunUrl"`
+	h.tmplConfigHtml.Execute(c.Writer, data)
 }
 
 func (h *ConfigHandler) saveSeverConfigHandler(c *gin.Context) {
 
-	var form ConfigForm
-	if err := c.ShouldBind(&form); err != nil {
+	var serverConfig config.ServerConfig
+	if err := c.ShouldBindJSON(&serverConfig); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	ci := config.LoadConfig()
-	if form.ServerPort != "" {
-		ci.Server.Port = form.ServerPort
+	if serverConfig.Port != "" {
+		ci.ServerConfig.Port = serverConfig.Port
+
 	}
-	if form.TingCheYunUrl != "" {
-		ci.API.TingCheYunUrl = form.TingCheYunUrl
+	if serverConfig.TingCheYunUrl != "" {
+		ci.ServerConfig.TingCheYunUrl = serverConfig.TingCheYunUrl
 	}
 	if err := ci.SaveConfig(); err != nil {
 		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)

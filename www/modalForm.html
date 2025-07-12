@@ -1,0 +1,59 @@
+{{define "modalForm"}}
+<script>
+    function bindAjaxForm(modalSelector, url) {
+        $(modalSelector).find('form').on('submit', function (e) {
+            e.preventDefault();
+            var formArray = $(this).serializeArray();
+            var jsonData = {};
+            formArray.forEach(function (item) {
+                jsonData[item.name] = item.value;
+            })
+            console.log(jsonData);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(jsonData),
+                success: function (res) {
+                    $(modalSelector).modal('hide');
+                },
+                error: function (res) {
+                    alert('保存失败: ' + (res.responseJSON?.error || res.statusText));
+                }
+            });
+        });
+    }
+</script>
+
+{{range .Groups}}
+<button type="button" class="btn btn-primary" data-bs-heading="修改{{.GroupLabel}}配置" data-bs-toggle="modal"
+    data-bs-target="#modify{{.GroupLabel}}Modal">
+    修改{{.GroupLabel}}配置
+</button>
+<div id="modify{{.GroupLabel}}Modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{.GroupLabel}}配置</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    {{range $index, $field := .Fields}}
+                    <div class="form-group">
+                        <label for="{{$field.Name}}">{{$field.Label}}</label>
+                        <input type="{{$field.Type}}" id="{{$field.Name}}" name="{{$field.Name}}"
+                            value="{{$field.Value}}" required>
+                    </div>
+                    {{end}}
+                    <div class="form-group"><button type="submit">Save</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    bindAjaxForm('#modify{{.GroupLabel}}Modal', '{{.Url}}');
+</script>
+{{end}}
+{{end}}

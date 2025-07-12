@@ -50,20 +50,11 @@
 <body>
 
   <div class="container mt-3">
-    <h3>逸安启 -20250601111 {{.Debug}}</h3>
-    <p>请单击按钮打开模态。</p>
+    <h3>逸安启 -20250601111 </h3>
     <button type="button" class="btn btn-primary" data-bs-heading="添加停车场" id="addpark_Btn">
       添加停车场
     </button>
-    <button type="button" class="btn btn-primary" data-bs-heading="修改基础配置" data-bs-toggle="modal"
-      data-bs-target="#modifybaseModal">
-      修改基础配置
-    </button>
-
-    <button type="button" class="btn btn-primary" data-bs-heading="修改逸安启配置" data-bs-toggle="modal"
-      data-bs-target="#modifyYianqiModal">
-      修改逸安启配置
-    </button>
+    {{template "modalForm" .}}
 
     <div id="addParksModal" class="modal fade" role="dialog">
       <div class="modal-dialog">
@@ -123,87 +114,7 @@
       </div>
 
     </div>
-    <div id="modifybaseModal" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">修改基础配置</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="form-group">
-                <label for="server.port">Server Port</label>
-                <input type="text" id="server.port" name="server.port" value="{{.Server.Port}}" required>
-              </div>
-              <div class="form-group">
-                <label for="api.TingCheYunUrl">TingCheYunUrl</label>
-                <input type="text" id="api.TingCheYunUrl" name="api.TingCheYunUrl" value="{{.API.TingCheYunUrl}}"
-                  required>
-              </div>
-
-              <div class="form-group"><button type="submit">Save</button></div>
-            </form>
-          </div>
-          <!-- 模态页脚 -->
-          <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
-          </div> -->
-        </div>
-      </div>
-    </div>
-
-    <div id="modifyYianqiModal" class="modal fade" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">修改逸安启配置</h4>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="form-group">
-                <label for="YiAnqi.TokenURL">YiAnqi.TokenURL</label>
-                <input type="text" id="YiAnqi.TokenURL" name="YiAnqi.TokenURL" value="{{.YiAnqi.TokenURL}}" required>
-              </div>
-
-              <div class="form-group">
-                <label for="YiAnqi.SignKey">YiAnqi.SignKey</label>
-                <input type="text" id="YiAnqi.SignKey" name="YiAnqi.SignKey" value="{{.YiAnqi.SignKey}}" required>
-              </div>
-
-              <div class="form-group">
-                <label for="YiAnqi.OperatorSecret">YiAnqi.OperatorSecret</label>
-                <input type="text" id="YiAnqi.OperatorSecret" name="YiAnqi.OperatorSecret"
-                  value="{{.YiAnqi.OperatorSecret}}" required>
-              </div>
-
-              <div class="form-group">
-                <label for="YiAnqi.OperatorID">YiAnqi.OperatorID</label>
-                <input type="text" id="YiAnqi.OperatorID" name="YiAnqi.OperatorID" value="{{.YiAnqi.OperatorID}}"
-                  required>
-              </div>
-
-              <div class="form-group">
-                <label for="YiAnqi.AesKey">YiAnqi.AES key</label>
-                <input type="text" id="YiAnqi.AesKey" name="YiAnqi.AesKey" value="{{.YiAnqi.AesKey}}" required>
-              </div>
-
-              <div class="form-group">
-                <label for="YiAnqi.AesIv">YiAnqi.aes.IV</label>
-                <input type="text" id="YiAnqi.AesIv" name="YiAnqi.AesIv" value="{{.YiAnqi.AesIv}}" required>
-              </div>
-
-              <div class="form-group"><button type="submit">Save</button></div>
-            </form>
-          </div>
-          <!-- 模态页脚 -->
-          <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
-          </div> -->
-        </div>
-      </div>
-    </div>
+    
 
 
     <table id="table"></table>
@@ -313,30 +224,7 @@
         edit('', '', '', '', '');
       });
     });
-    /**
- * 通用表单AJAX提交函数
- * @param {string} formSelector 表单选择器
- * @param {string} url 提交地址
- * @param {string} modalSelector 模态框选择器
- */
-    function bindAjaxForm(modalSelector, url) {
-      $(modalSelector).find('form').on('submit', function (e) {
-        e.preventDefault();
-        $.post(url, $(this).serialize())
-          .done(function (res) {
-            $(modalSelector).modal('hide');
-          })
-          .fail(function (res) {
-            alert('保存失败: ' + (res.responseJSON?.error || res.statusText));
-          });
-      });
-    }
-
-    // 绑定基础配置表单
-    bindAjaxForm('#modifybaseModal', '/config/baseserver');
-    // 绑定逸安启配置表单
-    bindAjaxForm('#modifyYianqiModal', '/config/Yianqi');
-
+    
   </script>
 </body>
 

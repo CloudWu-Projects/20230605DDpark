@@ -21,7 +21,7 @@ type APIClient struct {
 // NewAPIClient 创建新的API客户端
 func NewAPIClient() *APIClient {
 	return &APIClient{
-		TingCheYunUrl: config.Global.API.TingCheYunUrl,
+		TingCheYunUrl: config.Global.ServerConfig.TingCheYunUrl,
 		client:        NewHttpPostClient(),
 	}
 }

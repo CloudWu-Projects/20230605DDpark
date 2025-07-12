@@ -28,6 +28,9 @@ type YiAnqi struct {
 	AesIv          string `json:"aesiv" form:"YiAnqi.AesIv"`
 	SignKey        string `json:"signKey" form:"YiAnqi.SignKey"`
 }
+type Tianpin struct {
+	SignKey string `json:"signKey" form:"Tianpin.SignKey"`
+}
 
 // 添加一个方法用于获取解密后的ukey
 func (p *ParkInfo) GetUkey() string {
@@ -40,19 +43,20 @@ func (p *ParkInfo) GetUkey() string {
 	return p.Ukey
 }
 
+type ServerConfig struct {
+	Port          string `json:"port"`
+	TingCheYunUrl string `json:"tingCheYunUrl"`
+}
+
 // Config 应用配置结构体
 type Config struct {
-	Server struct {
-		Port string `json:"port"`
-	} `json:"server"`
-	Parks []ParkInfo `json:"parks"`
+	ServerConfig ServerConfig `json:"server"`
+	Parks        []ParkInfo   `json:"parks"`
 
 	YiAnqi YiAnqi `json:"yianqi"`
 
-	API struct {
-		TingCheYunUrl string `json:"tingCheYunUrl"`
-	} `json:"api"`
-	Debug bool
+	Debug   bool
+	Tianpin Tianpin `json:"tianpin"`
 }
 
 // Global 全局配置实例
@@ -60,7 +64,11 @@ var Global *Config
 
 func createDefaultConfig() *Config {
 	config := &Config{}
-	config.Server.Port = "8081"
+	config.ServerConfig = ServerConfig{
+		Port:          "8080",
+		TingCheYunUrl: "http://istparking.sciseetech.com/public",
+	}
+
 	config.Parks = []ParkInfo{
 		{
 			ParkID:         99999,
@@ -92,7 +100,6 @@ func createDefaultConfig() *Config {
 		TokenURL:       "https://api.ddpark.fun/api/yianqi/token",
 	}
 
-	config.API.TingCheYunUrl = "http://istparking.sciseetech.com/public"
 	config.Debug = os.Getenv("DEBUG") == "1"
 	return config
 }

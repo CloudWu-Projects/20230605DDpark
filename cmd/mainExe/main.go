@@ -40,7 +40,7 @@ func main() {
 	configHandler := api.NewConfigHandler()
 	configHandler.SetupRoutes(r)
 	// 启动服务器
-	port := config.Global.Server.Port
+	port := config.Global.ServerConfig.Port
 	logger.Logger.Info("启动服务器 port:", port)
 
 	if err := http.ListenAndServe(":"+port, r); err != nil {
