@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Config setting</title>
   <link rel="stylesheet"
-    href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-icons/1.8.1/font/bootstrap-icons.css">
+    href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-icons/1.8.1/font/bootstrap.min.css">
   <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/5.1.3/css/bootstrap.min.css"
     rel="stylesheet">
   <link href="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-table/1.19.1/bootstrap-table.min.css"
@@ -18,7 +18,6 @@
     src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
   <script
     src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap-table/1.19.1/bootstrap-table.min.js"></script>
-
 
   <style>
     .form-group {
@@ -48,8 +47,9 @@
 </head>
 
 <body>
-
-  <div class="alert alert-success" >{{.Version}}</div>
+  <div  class="alert alert-success" style="position: fixed; bottom: 0; left: 0; z-index: 1050;">{{.Version}}</div>
+  
+  <div id="alertMessage" class="alert alert-success text-center" style=""></div>
   <div class="container mt-3">
     <h3>逸安启 -20250601111 </h3>
     {{if .Debug }}
@@ -65,11 +65,11 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">Modal Header</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
           </div>
           <div class="modal-body">
-            <form action="/add" method="post">
+            <form action="/add" method="post" id="parkForm">
               <div class="form-group">
                 <label>Park ID</label>
                 <input type="text" id="parkid-add" name="add.parkid" value="" required>
@@ -92,14 +92,11 @@
                 <input type="number" id="deduction-money-add" name="add.deduction_money" value="" required>
                 <span class="unit">￥</span>
               </div>
-
-
               <div class="form-group">
                 <label for="Duration-add">Duration</label>
                 <input type="number" id="Duration-add" name="add.Duration" value="" required>
                 <span class="unit">分钟</span>
               </div>
-
               <div class="form-group">
                 <label for="remark-add">remark</label>
                 <input type="text" id="remark-add" name="add.remark" value="" required>
@@ -110,37 +107,41 @@
               </div>
             </form>
           </div>
-          <!-- 模态页脚 -->
-          <!--<div class="modal-footer">
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">关闭</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
           </div>
-        -->
         </div>
       </div>
-
     </div>
-    
-
 
     <table id="table"></table>
-
   </div>
+
   <script>
     const $table = $('#table');
-    window.nameFormatter = (value, row, index) => {
-      return `<a href="javascript:void(0)" class="edit" data-index="${index}" data-name="${value}">${value}</a>`
-    };
-    window.operateFormatter = (value, row, index) => {
-      b = [
-        '<a class="like" href="javascript:void(0)" title="Like">',
-        'Edit',
-        '</a>  ',
-        '<a class="remove" href="javascript:void(0)" title="Remove">',
-        'Remove',
-        '</a>'
-      ].join('');
+    const parkModal = document.getElementById('addParksModal');
+    const modalInstance = parkModal ? new bootstrap.Modal(parkModal) : null;
 
-      return b;
+    // Sanitize input to prevent XSS
+    function sanitizeInput(input) {
+      return $('<div>').text(input).html();
+    }
+  function showAlert(message) {
+        $('#alertMessage').text(message).show();
+        setTimeout(() => {
+          $('#alertMessage').hide();
+        }, 3000);
+      }
+    window.nameFormatter = (value, row, index) => {
+      const safeValue = sanitizeInput(value);
+      return `<a href="javascript:void(0)" class="edit" data-index="${index}" data-name="${safeValue}">${safeValue}</a>`;
+    };
+
+    window.operateFormatter = () => {
+      return [
+        '<a class="like" href="javascript:void(0)" title="Like">Edit</a>  ',
+        '<a class="remove" href="javascript:void(0)" title="Remove">Remove</a>'
+      ].join('');
     };
 
     window.operateEvents = {
@@ -148,28 +149,44 @@
         edit(row);
       },
       'click .remove': (e, value, row) => {
+        if (!confirm(`确定要删除这个停车场吗？${row.parkid}`)) return;
 
-        fetch('/api/park/' + row.parkid, {
+        fetch(`/api/park/${row.parkid}`, {
           method: 'DELETE',
-        }).then(res => {
-          return res.json();
-        }).then(data => {
-          console.log(data);
-        }).catch(err => {
-          console.log(err);
-        });
-
-        $table.bootstrapTable('remove', {
-          field: 'parkid',
-          values: [row.parkid]
+          headers: {
+            //'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value || ''
+          }
         })
+        .then(res => {
+          if (!res.ok) throw new Error('网络响应异常');
+          return res.json();
+        })
+        .then(data => {
+          showAlert('删除成功'+data);
+          $table.bootstrapTable('remove', {
+            field: 'parkid',
+            values: [row.parkid]
+          });
+        })
+        .catch(err => {
+          console.error('删除失败:', err);
+          showAlert('删除失败'+err);
+        });
       }
     };
+
     $('#table').bootstrapTable({
-      url: '/api/parks', // 数据源 URL
+      url: '/api/parks',
       pagination: true,
       search: true,
       sortable: true,
+      onError: (status) => {
+        console.error('表格数据加载失败:', status);
+        alert('无法加载数据，请检查网络连接');
+      },
+      onLoadSuccess: (data) => {
+        showAlert('表格数据加载成功');
+      },
       columns: [{
         field: 'parkid',
         title: 'parkid'
@@ -182,54 +199,47 @@
       }, {
         field: 'deduction_money',
         title: 'deduction_money'
-      },
-      {
+      }, {
         field: 'station_id',
         title: 'station_id'
-      },
-      {
+      }, {
         field: 'remark',
         title: 'remark'
-      },
-      {
+      }, {
         field: 'Duration',
         title: 'Duration'
-      },
-
-      {
+      }, {
         field: 'operate',
         title: 'operate',
-        formatter: operateFormatter,
-        events: operateEvents
+        formatter: window.operateFormatter,
+        events: window.operateEvents
       }]
     });
 
-    // 示例 edit 函数（具体实现根据实际需求）
-    function edit(row) {
-      //row.parkid, row.ukey, row.deduction_time, row.deduction_money,row.station_id
-      $('#parkid-add').val(row.parkid);
-      $('#old_parkid').val(row.parkid);
-      $('#ukey-add').val(row.ukey);
-      $('#deduction-time-add').val(row.deduction_time);
-      $('#deduction-money-add').val(row.deduction_money);
-      $('#remark-add').val(row.remark);
-      $('#Duration-add').val(row.Duration);
-      $('#station_id-add').val(row.station_id);
+    function edit(row = {}) {
+      const isEditMode = !!row.parkid;
+      
+      $('#parkid-add').val(sanitizeInput(row.parkid || ''));
+      $('#old_parkid').val(sanitizeInput(row.parkid || ''));
+      $('#ukey-add').val(sanitizeInput(row.ukey || ''));
+      $('#deduction-time-add').val(row.deduction_time || '');
+      $('#deduction-money-add').val(row.deduction_money || '');
+      $('#remark-add').val(sanitizeInput(row.remark || ''));
+      $('#Duration-add').val(row.Duration || '');
+      $('#station_id-add').val(sanitizeInput(row.station_id || ''));
 
+      const buttonText = isEditMode ? '修改停车场' : '添加停车场';
+      $('#add_or_modify_btn').text(buttonText);
+      $('#addParksModal .modal-title').text(buttonText);
 
-      $('#add_or_modify_btn').text((row.parkid == '') ? '添加停车场' : "修改停车场");
-      // 显示 Modal
-      $('#addParksModal .modal-title').text((row.parkid == '') ? '添加停车场' : "修改停车场");
-      const myModal = new bootstrap.Modal(document.getElementById('addParksModal'));
+      if (modalInstance) modalInstance.show();
+    }
 
-      myModal.show();
-    };
     document.addEventListener('DOMContentLoaded', function () {
       $('#addpark_Btn').click(function () {
-        edit('', '', '', '', '');
+        edit({});
       });
     });
-    
   </script>
 </body>
 
