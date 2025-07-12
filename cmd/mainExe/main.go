@@ -9,6 +9,7 @@ import (
 	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
+	"jilaidian_go/version"
 	"net/http"
 	"os"
 
@@ -17,6 +18,11 @@ import (
 
 func main() {
 
+	fmt.Printf("Version: %s\nGit: %s\nBuilt: %s\nGo: %s\n",
+		version.Version,
+		version.GitHash,
+		version.BuildTime,
+		version.GoVersion)
 	fmt.Println("\n欢迎使用", common.GetAppName(), os.Args[0])
 	// 解析命令行参数
 	install := flag.Bool("install", false, "安装服务")

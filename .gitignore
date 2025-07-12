@@ -9,3 +9,4 @@ j.zip
 jilaidian.zip
 *.zip
 *.7z
+version/version_generated.go

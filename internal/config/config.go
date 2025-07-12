@@ -6,6 +6,7 @@ import (
 
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
+	"jilaidian_go/version"
 	"os"
 	"path/filepath"
 )
@@ -56,6 +57,7 @@ type Config struct {
 	YiAnqi YiAnqi `json:"yianqi"`
 
 	Debug   bool
+	Version string
 	Tianpin Tianpin `json:"tianpin"`
 }
 
@@ -99,6 +101,7 @@ func createDefaultConfig() *Config {
 		SignKey:        "Q2YAboqxfmrtbfsw",
 		TokenURL:       "https://api.ddpark.fun/api/yianqi/token",
 	}
+	config.Version = fmt.Sprintf("v:%s hash:%s build:%s go:%s git:%s", version.Version, version.GitHash, version.BuildTime, version.GoVersion, version.GitVersion)
 
 	config.Debug = os.Getenv("DEBUG") == "1"
 	return config

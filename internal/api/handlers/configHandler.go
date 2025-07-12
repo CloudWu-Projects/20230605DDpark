@@ -95,11 +95,13 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		Url:        "/config/Server",
 		Fields:     structToStringMap(ci.ServerConfig)})
 	data := struct {
-		Groups []FieldGroup
-		Debug  bool
+		Groups  []FieldGroup
+		Debug   bool
+		Version string
 	}{
-		Groups: groups,
-		Debug:  ci.Debug,
+		Groups:  groups,
+		Debug:   ci.Debug,
+		Version: ci.Version,
 	}
 
 	if ci.Debug {
