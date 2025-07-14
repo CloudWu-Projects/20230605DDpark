@@ -56,9 +56,10 @@ type Config struct {
 
 	YiAnqi YiAnqi `json:"yianqi"`
 
-	Debug   bool
-	Version string
-	Tianpin Tianpin `json:"tianpin"`
+	Debug       bool `json:"debug"`
+	NeedQQLogin bool `json:"need_qq_login"`
+	Version     string
+	Tianpin     Tianpin `json:"tianpin"`
 }
 
 // Global 全局配置实例
@@ -104,6 +105,7 @@ func createDefaultConfig() *Config {
 	config.Version = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
 
 	config.Debug = os.Getenv("DEBUG") == "1"
+	config.NeedQQLogin = os.Getenv("NEED_QQ_LOGIN") == "1"
 	return config
 }
 func createDirIfNotExist(filename string) error {

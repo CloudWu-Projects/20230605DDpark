@@ -45,6 +45,9 @@ func NewConfigHandler(r *gin.Engine) *ConfigHandler {
 
 // 认证中间件
 func CheckSessionValid(c *gin.Context) bool {
+	if !config.Global.NeedQQLogin {
+		return true
+	}
 	session := sessions.Default(c)
 	user := session.Get("user")
 	if user == nil {
@@ -57,6 +60,7 @@ func CheckSessionValid(c *gin.Context) bool {
 	if time.Since(userSession.LastActive) > MaxSessionDuration {
 		return false
 	}
+	fmt.Println("Session valid")
 	return true
 }
 
@@ -68,6 +72,9 @@ func SessionAuthMiddleware() gin.HandlerFunc {
 				scheme = "https"
 			}
 			redirectURL := fmt.Sprintf("%s://%s%s", scheme, c.Request.Host, c.Request.RequestURI)
+			if c.Request.Method != http.MethodGet {
+				redirectURL = fmt.Sprintf("%s://%s%s", scheme, c.Request.Host)
+			}
 			c.Redirect(http.StatusFound, "/toLogin?redirect_url="+redirectURL)
 			c.Abort()
 			return
@@ -79,50 +86,51 @@ func SessionAuthMiddleware() gin.HandlerFunc {
 // SetupRoutes 设置路由
 func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	configG := r.Group("/config")
+	configG := r.Group("/config", SessionAuthMiddleware())
 	{
-		configG.GET("/", SessionAuthMiddleware(), h.indexHandler)
-		configG.GET("/no", h.indexHandler)
+		configG.GET("/", h.indexHandler)
 		configG.POST("/baseserver", h.saveSeverConfigHandler)
 		configG.POST("/Yianqi", h.saveYianqiConfigHandler)
 		configG.POST("/Tianpin", h.saveTianpinConfigHandler)
+		configG.POST("/add", h.addHandler)
+		configG.DELETE("/park/:parkid", h.deleteParkHandler)
+		configG.GET("/parks", func(c *gin.Context) {
+			ci := config.LoadConfig()
+			c.JSON(http.StatusOK, ci.Parks)
+		})
 	}
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
 	})
-	r.POST("/add", h.addHandler)
 	r.GET("/log", h.logHandler)
-	r.GET("/api/parks", func(c *gin.Context) {
-		ci := config.LoadConfig()
-		c.JSON(http.StatusOK, ci.Parks)
-	})
-	r.DELETE("/api/park/:parkid", func(c *gin.Context) {
-		parkIDStr := c.Param("parkid")
-		logger.Logger.Error("deletepark parkIDStr:", parkIDStr)
-		parkID, err := strconv.Atoi(parkIDStr)
 
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
-			return
-		}
-
-		fmt.Printf("\ndeletepark parkID: %d \n", parkID)
-		ci := config.LoadConfig()
-
-		for i, park := range ci.Parks {
-			if park.ParkID == parkID {
-				ci.Parks = append(ci.Parks[:i], ci.Parks[i+1:]...)
-				break
-			}
-		}
-		if err := ci.SaveConfig(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "Park deleted successfully"})
-	})
 }
+func (h *ConfigHandler) deleteParkHandler(c *gin.Context) {
+	parkIDStr := c.Param("parkid")
+	logger.Logger.Error("deletepark parkIDStr:", parkIDStr)
+	parkID, err := strconv.Atoi(parkIDStr)
 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid park ID"})
+		return
+	}
+
+	fmt.Printf("\ndeletepark parkID: %d \n", parkID)
+	ci := config.LoadConfig()
+
+	for i, park := range ci.Parks {
+		if park.ParkID == parkID {
+			ci.Parks = append(ci.Parks[:i], ci.Parks[i+1:]...)
+			break
+		}
+	}
+	if err := ci.SaveConfig(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Park deleted successfully"})
+}
 func (h *ConfigHandler) saveTianpinConfigHandler(c *gin.Context) {
 
 }
@@ -139,7 +147,7 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	})
 	groups = append(groups, FieldGroup{
 		GroupLabel: "系统配置",
-		Url:        "/config/Server",
+		Url:        "/config/baseserver",
 		Fields:     structToStringMap(ci.ServerConfig)})
 	data := struct {
 		Groups  []FieldGroup

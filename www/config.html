@@ -69,7 +69,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
           </div>
           <div class="modal-body">
-            <form action="/add" method="post" id="parkForm">
+            <form action="/config/add" method="post" id="parkForm">
               <div class="form-group">
                 <label>Park ID</label>
                 <input type="text" id="parkid-add" name="add.parkid" value="" required>
@@ -151,7 +151,7 @@
       'click .remove': (e, value, row) => {
         if (!confirm(`确定要删除这个停车场吗？${row.parkid}`)) return;
 
-        fetch(`/api/park/${row.parkid}`, {
+        fetch(`/config/park/${row.parkid}`, {
           method: 'DELETE',
           headers: {
             //'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value || ''
@@ -176,7 +176,7 @@
     };
 
     $('#table').bootstrapTable({
-      url: '/api/parks',
+      url: '/config/parks',
       pagination: true,
       search: true,
       sortable: true,
