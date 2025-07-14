@@ -67,7 +67,7 @@ var Global *Config
 func createDefaultConfig() *Config {
 	config := &Config{}
 	config.ServerConfig = ServerConfig{
-		Port:          "8080",
+		Port:          "9090",
 		TingCheYunUrl: "http://istparking.sciseetech.com/public",
 	}
 

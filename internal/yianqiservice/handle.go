@@ -11,6 +11,7 @@ import (
 	"jilaidian_go/pkg/logger"
 	"net/http"
 	"strings"
+	"sync"
 
 	. "jilaidian_go/internal/utils"
 
@@ -22,14 +23,22 @@ type Handler struct {
 	chargeService *service.ChargeService
 }
 
-// NewHandler 创建新的API处理器
-func NewHandler() *Handler {
-	return &Handler{
-		chargeService: service.NewChargeService(),
-	}
-}
+var (
+	myValidToken ValidToken
+	instance     *Handler
+	once         sync.Once
+)
 
-var myValidToken ValidToken
+// NewHandler 创建新的API处理器
+func NewHandler(r *gin.Engine) *Handler {
+	once.Do(func() {
+		instance = &Handler{
+			chargeService: service.NewChargeService(),
+		}
+		instance.SetupRoutes(r)
+	})
+	return instance
+}
 
 func init() {
 	myValidToken.ExpirationTime = 0

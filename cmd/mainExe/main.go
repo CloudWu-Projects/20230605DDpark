@@ -36,11 +36,14 @@ func main() {
 
 	//gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+
+	// 配置Session存储
+	api.SetSession(r)
 	// 设置路由
-	handler := yianqiservice.NewHandler()
-	handler.SetupRoutes(r)
-	configHandler := api.NewConfigHandler()
-	configHandler.SetupRoutes(r)
+	yianqiservice.NewHandler(r)
+	api.NewConfigHandler(r)
+
+	api.NewQQLoginHandler(r)
 	// 启动服务器
 	port := config.Global.ServerConfig.Port
 	logger.Logger.Info("启动服务器 port:", port)

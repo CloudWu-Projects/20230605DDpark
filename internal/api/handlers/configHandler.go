@@ -9,8 +9,16 @@ import (
 	"jilaidian_go/www"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	configHandlerInstance *ConfigHandler
+	configHandlerOnce     sync.Once
 )
 
 // Handler API处理器
@@ -19,23 +27,62 @@ type ConfigHandler struct {
 }
 
 // NewHandler 创建新的API处理器
-func NewConfigHandler() *ConfigHandler {
-	tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html", "modalForm.html")
-	if err != nil {
-		fmt.Println("Error parsing template:", err)
-		panic(err)
+func NewConfigHandler(r *gin.Engine) *ConfigHandler {
+	configHandlerOnce.Do(func() {
+
+		tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html", "modalForm.html")
+		if err != nil {
+			fmt.Println("Error parsing template:", err)
+			panic(err)
+		}
+		configHandlerInstance = &ConfigHandler{
+			tmplConfigHtml: tmplConfigHtml,
+		}
+		configHandlerInstance.setupRoutes(r)
+	})
+	return configHandlerInstance
+}
+
+// 认证中间件
+func CheckSessionValid(c *gin.Context) bool {
+	session := sessions.Default(c)
+	user := session.Get("user")
+	if user == nil {
+		return false
 	}
-	return &ConfigHandler{
-		tmplConfigHtml: tmplConfigHtml,
+	userSession, ok := user.(UserSession)
+	if !ok || !userSession.IsLogin {
+		return false
+	}
+	if time.Since(userSession.LastActive) > MaxSessionDuration {
+		return false
+	}
+	return true
+}
+
+func SessionAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if !CheckSessionValid(c) {
+			scheme := "http"
+			if c.Request.TLS != nil {
+				scheme = "https"
+			}
+			redirectURL := fmt.Sprintf("%s://%s%s", scheme, c.Request.Host, c.Request.RequestURI)
+			c.Redirect(http.StatusFound, "/toLogin?redirect_url="+redirectURL)
+			c.Abort()
+			return
+		}
+		c.Next()
 	}
 }
 
 // SetupRoutes 设置路由
-func (h *ConfigHandler) SetupRoutes(r *gin.Engine) {
+func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	// 充电记录接口
 	configG := r.Group("/config")
 	{
-		configG.GET("/", h.indexHandler)
+		configG.GET("/", SessionAuthMiddleware(), h.indexHandler)
+		configG.GET("/no", h.indexHandler)
 		configG.POST("/baseserver", h.saveSeverConfigHandler)
 		configG.POST("/Yianqi", h.saveYianqiConfigHandler)
 		configG.POST("/Tianpin", h.saveTianpinConfigHandler)
