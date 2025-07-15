@@ -25,3 +25,7 @@ if  [ "$1" = "up" ]; then
 else
     echo "不进行上传"
 fi
+
+echo "md5"
+md5sum ./bin/$appName 
+md5sum ./bin/$appName.exe
