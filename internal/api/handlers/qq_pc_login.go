@@ -17,9 +17,9 @@ import (
 // this code  from
 // https://github.com/pibigstar/go-demo/blob/master/sdk/qq/qq_pc_login.go
 const (
-	AppId       = "101827468"
-	AppKey      = "0d2d856e48e0ebf6b98e0d0c879fe74d"
-	redirectURI = "http://127.0.0.1:9090/qqLogin"
+	AppId       = "102798309"
+	AppKey      = "Yx63mGUWKsAG8nDR"
+	redirectURI = "http://c.hyman.store/qqLogin"
 )
 
 type PrivateInfo struct {
