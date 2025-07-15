@@ -29,7 +29,8 @@ def upload(localfile,key=None):
     
 
     ret, info = put_file(token, key, localfile, version='v2')
-    print(ret)
+    print("ret",ret)
+    print("info",info)
     print("----")
     print(info.url)
     assert ret['key'] == key
