@@ -24,6 +24,7 @@ var (
 // Handler API处理器
 type ConfigHandler struct {
 	tmplConfigHtml *template.Template
+	tmplIndexHtml  *template.Template
 }
 
 // NewHandler 创建新的API处理器
@@ -35,8 +36,10 @@ func NewConfigHandler(r *gin.Engine) *ConfigHandler {
 			fmt.Println("Error parsing template:", err)
 			panic(err)
 		}
+		tmplIndexHtml, err := template.ParseFS(www.HtmlFS, "index.html")
 		configHandlerInstance = &ConfigHandler{
 			tmplConfigHtml: tmplConfigHtml,
+			tmplIndexHtml:  tmplIndexHtml,
 		}
 		configHandlerInstance.setupRoutes(r)
 	})
@@ -101,6 +104,12 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	}
 
 	r.GET("/", func(c *gin.Context) {
+		//c.JSON(http.StatusOK, config.Global)
+
+		h.tmplIndexHtml.Execute(c.Writer, config.Global)
+	})
+
+	r.GET("/c", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
 	})
 	r.GET("/log", h.logHandler)
