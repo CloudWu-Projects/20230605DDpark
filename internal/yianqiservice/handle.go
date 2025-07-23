@@ -160,7 +160,7 @@ func (h *Handler) notification_charge_end_order_info(c *gin.Context) {
 	}
 
 	// 处理充电信息
-	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, requestItem); err != nil {
+	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, requestItem.PlateNum); err != nil {
 		logger.Logger.Error("处理充电和优惠失败", err, "parkID", parkinfo.ParkID, "plateNo", requestItem.PlateNum)
 		h.MakeRepsonse(c, 1, "处理充电和优惠失败", respose)
 		return

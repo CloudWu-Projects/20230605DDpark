@@ -190,6 +190,15 @@ func GetParkInfo(stationID string) *ParkInfo {
 	}
 	return nil
 }
+func GetParkInfo_withParkid(parkID int) *ParkInfo {
+	for i := range Global.Parks {
+		if Global.Parks[i].ParkID == parkID {
+			// 返回数组元素的地址，而不是临时变量的地址
+			return &Global.Parks[i]
+		}
+	}
+	return nil
+}
 func LoadConfig() *Config {
 	cc := &Config{}
 	if err := cc.Load(); err != nil {

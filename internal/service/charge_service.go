@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"jilaidian_go/internal/config"
-	"jilaidian_go/internal/models"
 	"jilaidian_go/pkg/client"
 )
 
@@ -22,16 +21,16 @@ func NewChargeService() *ChargeService {
 // ValidateParkID 校验停车场ID
 
 // ProcessChargingAndDiscount 处理充电和优惠
-func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, chargeData models.Notification_charge_end_order_info_Request) error {
+func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, PlateNum string) error {
 	// 1. 处理充电信息
 
 	// 2. 查询订单信息
 
-	order_id, err := s.apiClient.QueryOrder(parkinfo.ParkID, chargeData.PlateNum, parkinfo)
+	order_id, err := s.apiClient.QueryOrder(parkinfo.ParkID, PlateNum, parkinfo)
 	if err != nil {
 		return fmt.Errorf("查询订单信息失败: %v", err)
 	}
-	err = s.apiClient.SendDiscountNotice(parkinfo.ParkID, chargeData.PlateNum, order_id, parkinfo)
+	err = s.apiClient.SendDiscountNotice(parkinfo.ParkID, PlateNum, order_id, parkinfo)
 
 	return err
 }

@@ -7,6 +7,12 @@ import (
 	"strings"
 )
 
+// 替换 service.MD5 的调用为此函数
+func MD5(text string) string {
+	hash := md5.Sum([]byte(text))
+	return hex.EncodeToString(hash[:])
+}
+
 // GenerateSign 生成签名
 func generateSign(data map[string]interface{}, ukey string) string {
 	// 将 data 转换为 JSON 字符串
