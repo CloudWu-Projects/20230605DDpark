@@ -31,12 +31,12 @@ type ConfigHandler struct {
 func NewConfigHandler(r *gin.Engine) *ConfigHandler {
 	configHandlerOnce.Do(func() {
 
-		tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "config.html", "modalForm.html")
+		tmplConfigHtml, err := template.ParseFS(www.HtmlFS, "www/config.html", "www/modalForm.html")
 		if err != nil {
 			fmt.Println("Error parsing template:", err)
 			panic(err)
 		}
-		tmplIndexHtml, err := template.ParseFS(www.HtmlFS, "index.html")
+		tmplIndexHtml, err := template.ParseFS(www.HtmlFS, "www/index.html")
 		configHandlerInstance = &ConfigHandler{
 			tmplConfigHtml: tmplConfigHtml,
 			tmplIndexHtml:  tmplIndexHtml,
@@ -111,6 +111,17 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 
 	r.GET("/c", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
+	})
+
+	// GET      "/www/bootstrap-table.min.css"
+	// GET      "/www/bootstrap.min.css"
+	// GET      "/www/bootstrap-table.min.js"
+	// GET      "/www/bootstrap.bundle.min.js"
+	r.GET("/www/*filepath", func(c *gin.Context) {
+		filepath := c.Param("filepath")
+		fmt.Println("www", filepath)
+		//c.FileFromFS("config.html", www.HtmlFS)
+		c.FileFromFS("www/"+filepath, http.FS(www.HtmlFS))
 	})
 	r.GET("/log", h.logHandler)
 
