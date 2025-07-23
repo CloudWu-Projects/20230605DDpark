@@ -29,8 +29,9 @@ type YiAnqi struct {
 	AesIv          string `json:"aesiv" form:"YiAnqi.AesIv"`
 	SignKey        string `json:"signKey" form:"YiAnqi.SignKey"`
 }
-type Tianpin struct {
-	SignKey string `json:"signKey" form:"Tianpin.SignKey"`
+type NanjingNengRui struct {
+	AppSercert string `json:"appSercert" form:"NanjingNengRui.appSercert"`
+	AppId      string `json:"appId" form:"NanjingNengRui.appId"`
 }
 
 // 添加一个方法用于获取解密后的ukey
@@ -56,10 +57,10 @@ type Config struct {
 
 	YiAnqi YiAnqi `json:"yianqi"`
 
-	Debug       bool `json:"debug"`
-	NeedQQLogin bool `json:"need_qq_login"`
-	Version     string
-	Tianpin     Tianpin `json:"tianpin"`
+	Debug          bool `json:"debug"`
+	NeedQQLogin    bool `json:"need_qq_login"`
+	Version        string
+	NanjingNengRui NanjingNengRui `json:"nanjingnengrui"`
 }
 
 // Global 全局配置实例
@@ -101,6 +102,10 @@ func createDefaultConfig() *Config {
 		OperatorSecret: "u8wLRTOTkjKmVpoP",
 		SignKey:        "Q2YAboqxfmrtbfsw",
 		TokenURL:       "https://api.ddpark.fun/api/yianqi/token",
+	}
+	config.NanjingNengRui = NanjingNengRui{
+		AppSercert: "I654HUNOU250AX45",
+		AppId:      "cdist",
 	}
 	config.Version = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
 

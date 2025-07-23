@@ -19,7 +19,7 @@ type FieldConfig struct {
 	Type  string // "text" "password" 等
 }
 
-func structToStringMap(s interface{}) []FieldConfig {
+func structToStringMap(s interface{}, hiddenValue string) []FieldConfig {
 	result := []FieldConfig{}
 	v := reflect.ValueOf(s)
 	t := v.Type()
@@ -68,6 +68,12 @@ func structToStringMap(s interface{}) []FieldConfig {
 			Type:  "text",
 		})
 	}
-
+	if hiddenValue != "" {
+		result = append(result, FieldConfig{
+			Name:  "hiddenValue",
+			Value: hiddenValue,
+			Type:  "hidden",
+		})
+	}
 	return result
 }

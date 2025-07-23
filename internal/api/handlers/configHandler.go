@@ -93,8 +93,7 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	{
 		configG.GET("/", h.indexHandler)
 		configG.POST("/baseserver", h.saveSeverConfigHandler)
-		configG.POST("/Yianqi", h.saveYianqiConfigHandler)
-		configG.POST("/Tianpin", h.saveTianpinConfigHandler)
+		configG.POST("/save", h.saveConfigHandler)
 		configG.POST("/add", h.addHandler)
 		configG.DELETE("/park/:parkid", h.deleteParkHandler)
 		configG.GET("/parks", func(c *gin.Context) {
@@ -112,20 +111,14 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	r.GET("/c", func(c *gin.Context) {
 		c.JSON(http.StatusOK, config.Global)
 	})
-
-	// GET      "/www/bootstrap-table.min.css"
-	// GET      "/www/bootstrap.min.css"
-	// GET      "/www/bootstrap-table.min.js"
-	// GET      "/www/bootstrap.bundle.min.js"
 	r.GET("/www/*filepath", func(c *gin.Context) {
 		filepath := c.Param("filepath")
-		fmt.Println("www", filepath)
-		//c.FileFromFS("config.html", www.HtmlFS)
 		c.FileFromFS("www/"+filepath, http.FS(www.HtmlFS))
 	})
 	r.GET("/log", h.logHandler)
 
 }
+
 func (h *ConfigHandler) deleteParkHandler(c *gin.Context) {
 	parkIDStr := c.Param("parkid")
 	logger.Logger.Error("deletepark parkIDStr:", parkIDStr)
@@ -151,9 +144,6 @@ func (h *ConfigHandler) deleteParkHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Park deleted successfully"})
 }
-func (h *ConfigHandler) saveTianpinConfigHandler(c *gin.Context) {
-
-}
 
 func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	ci := config.LoadConfig()
@@ -162,13 +152,19 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 
 	groups = append(groups, FieldGroup{
 		GroupLabel: "逸安启配置",
-		Url:        "/config/Yianqi",
-		Fields:     structToStringMap(ci.YiAnqi),
+		Url:        "/config/save",
+		Fields:     structToStringMap(ci.YiAnqi, "yianqi"),
 	})
 	groups = append(groups, FieldGroup{
 		GroupLabel: "系统配置",
-		Url:        "/config/baseserver",
-		Fields:     structToStringMap(ci.ServerConfig)})
+		Url:        "/config/save",
+		Fields:     structToStringMap(ci.ServerConfig, "baseserver"),
+	})
+	groups = append(groups, FieldGroup{
+		GroupLabel: "南京能瑞配置",
+		Url:        "/config/save",
+		Fields:     structToStringMap(ci.NanjingNengRui, "nanjingnengrui"),
+	})
 	data := struct {
 		Groups  []FieldGroup
 		Debug   bool
@@ -183,29 +179,6 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html", "www/modalForm.html"))
 	}
 	h.tmplConfigHtml.Execute(c.Writer, data)
-}
-
-func (h *ConfigHandler) saveSeverConfigHandler(c *gin.Context) {
-
-	var serverConfig config.ServerConfig
-	if err := c.ShouldBindJSON(&serverConfig); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	ci := config.LoadConfig()
-	if serverConfig.Port != "" {
-		ci.ServerConfig.Port = serverConfig.Port
-
-	}
-	if serverConfig.TingCheYunUrl != "" {
-		ci.ServerConfig.TingCheYunUrl = serverConfig.TingCheYunUrl
-	}
-	if err := ci.SaveConfig(); err != nil {
-		//http.Error(c.Writer, "Failed to save config", http.StatusInternalServerError)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Config saved successfully"})
 }
 
 func (h *ConfigHandler) logHandler(c *gin.Context) {
