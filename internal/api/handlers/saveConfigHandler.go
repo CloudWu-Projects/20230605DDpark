@@ -10,6 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	hiddenValueBaseServer     = "baseserver"
+	hiddenValueYianqi         = "yianqi"
+	hiddenValueNanjingNengrui = "nanjingnengrui"
+)
+
 type HiddenObject struct {
 	HiddenValue string `json:"hiddenValue"`
 }
@@ -46,7 +52,6 @@ func (h *ConfigHandler) saveConfigHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read request body"})
 		return
 	}
-	fmt.Printf("Request Body: %s\n", body)
 
 	var hiddenValue HiddenObject
 	err = json.Unmarshal(body, &hiddenValue)
@@ -56,12 +61,12 @@ func (h *ConfigHandler) saveConfigHandler(c *gin.Context) {
 		return
 	}
 	ci := config.LoadConfig()
-
+	var unmarshalErr error
 	switch hiddenValue.HiddenValue {
-	case "baseserver":
+	case hiddenValueBaseServer:
 		var serverConfig config.ServerConfig
-		err = json.Unmarshal(body, &serverConfig)
-		if err == nil {
+		unmarshalErr = json.Unmarshal(body, &serverConfig)
+		if unmarshalErr == nil {
 			if serverConfig.Port != "" {
 				ci.ServerConfig.Port = serverConfig.Port
 
@@ -70,12 +75,12 @@ func (h *ConfigHandler) saveConfigHandler(c *gin.Context) {
 				ci.ServerConfig.TingCheYunUrl = serverConfig.TingCheYunUrl
 			}
 		}
-	case "yianqi":
+	case hiddenValueYianqi:
 		err = json.Unmarshal(body, &ci.YiAnqi)
-	case "nanjingnengrui":
+	case hiddenValueNanjingNengrui:
 		err = json.Unmarshal(body, &ci.NanjingNengRui)
 	}
-	if err != nil {
+	if unmarshalErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"aaaa error": err.Error()})
 		return
 	}
