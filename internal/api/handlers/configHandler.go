@@ -151,14 +151,14 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	groups := []FieldGroup{}
 
 	groups = append(groups, FieldGroup{
-		GroupLabel: "逸安启配置",
-		Url:        "/config/save",
-		Fields:     structToStringMap(ci.YiAnqi, hiddenValueYianqi),
-	})
-	groups = append(groups, FieldGroup{
 		GroupLabel: "系统配置",
 		Url:        "/config/save",
 		Fields:     structToStringMap(ci.ServerConfig, hiddenValueBaseServer),
+	})
+	groups = append(groups, FieldGroup{
+		GroupLabel: "逸安启配置",
+		Url:        "/config/save",
+		Fields:     structToStringMap(ci.YiAnqi, hiddenValueYianqi),
 	})
 	groups = append(groups, FieldGroup{
 		GroupLabel: "南京能瑞配置",
