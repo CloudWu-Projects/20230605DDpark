@@ -172,7 +172,7 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	}{
 		Groups:  groups,
 		Debug:   ci.Debug,
-		Version: ci.Version,
+		Version: config.GlobalVersion,
 	}
 
 	if ci.Debug {

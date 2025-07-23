@@ -30,7 +30,7 @@ func main() {
 		utils.InstallServer()
 		return
 	}
-	logger.Logger.Info(config.Global.Version)
+	logger.Logger.Info(config.GlobalVersion)
 	logger.Logger.Info("ConfigPath:", common.GetConfigPath())
 	// 如果是运行示例代码
 

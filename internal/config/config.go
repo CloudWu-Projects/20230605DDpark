@@ -57,14 +57,18 @@ type Config struct {
 
 	YiAnqi YiAnqi `json:"yianqi"`
 
-	Debug          bool `json:"debug"`
-	NeedQQLogin    bool `json:"need_qq_login"`
-	Version        string
+	Debug          bool           `json:"debug"`
+	NeedQQLogin    bool           `json:"need_qq_login"`
 	NanjingNengRui NanjingNengRui `json:"nanjingnengrui"`
 }
 
 // Global 全局配置实例
 var Global *Config
+var GlobalVersion string
+
+func init() {
+	GlobalVersion = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
+}
 
 func createDefaultConfig() *Config {
 	config := &Config{}
@@ -107,7 +111,6 @@ func createDefaultConfig() *Config {
 		AppSercert: "I654HUNOU250AX45",
 		AppId:      "cdist",
 	}
-	config.Version = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
 
 	config.Debug = os.Getenv("DEBUG") == "1"
 	config.NeedQQLogin = os.Getenv("NEED_QQ_LOGIN") == "1"
