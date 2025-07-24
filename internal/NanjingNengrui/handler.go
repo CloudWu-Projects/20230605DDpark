@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/debugHandler"
 	"jilaidian_go/internal/service"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
@@ -20,6 +21,7 @@ import (
 // Handler API处理器
 type Handler struct {
 	chargeService *service.ChargeService
+	DebugInfo     debugHandler.DebugInfo
 }
 
 var (
@@ -34,6 +36,7 @@ func NewHandler(r *gin.Engine) *Handler {
 			chargeService: service.NewChargeService(),
 		}
 		instance.SetupRoutes(r)
+		instance.DebugInfo = debugHandler.GetDebugInfo("NanjingNengRui")
 	})
 	return instance
 }
@@ -193,7 +196,7 @@ func (h *Handler) SyncChargePilePay(c *gin.Context) {
 		return
 	}
 	var req SyncChargePilePayRequest
-
+	h.DebugInfo.LastReuqestJson = string(body)
 	err = json.Unmarshal(body, &req)
 	if err != nil {
 		h.MakeRepsonse(c, 1201, "json解析失败"+err.Error(), nil)
@@ -233,5 +236,7 @@ func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, d
 		ResCode: strconv.Itoa(result),
 		ResMsg:  description,
 	}
+	jsonData, _ := json.Marshal(res)
+	h.DebugInfo.LastResponseJson = string(jsonData)
 	c.JSON(http.StatusOK, res)
 }

@@ -93,6 +93,6 @@ func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, d
 	tr.MakeSig()
 	logger.Logger.Debugf("yianqi MakeRepsonse jsonData : %s", string(jsonData))
 	logger.Logger.Debug("yianqi MakeRepsonse TotalResponse : ", tr)
-
+	h.DebugInfo.LastResponseJson = string(jsonData)
 	c.JSON(http.StatusOK, tr)
 }

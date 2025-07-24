@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/debugHandler"
 	"jilaidian_go/internal/models"
 	"jilaidian_go/internal/service"
 	"jilaidian_go/pkg/logger"
@@ -21,6 +22,7 @@ import (
 // Handler API处理器
 type Handler struct {
 	chargeService *service.ChargeService
+	DebugInfo     debugHandler.DebugInfo
 }
 
 var (
@@ -36,6 +38,8 @@ func NewHandler(r *gin.Engine) *Handler {
 			chargeService: service.NewChargeService(),
 		}
 		instance.SetupRoutes(r)
+		instance.DebugInfo = debugHandler.GetDebugInfo("YianqiService")
+
 	})
 	return instance
 }
@@ -138,7 +142,7 @@ func (h *Handler) notification_charge_end_order_info(c *gin.Context) {
 		h.MakeRepsonse(c, 1, "JSON解析失败", "")
 		return
 	}
-
+	h.DebugInfo.LastReuqestJson = decodedStr
 	respose := models.Notification_charge_end_order_info_Response{
 		StartChargeSeq: requestItem.StartChargeSeq,
 		ConfirmResult:  1,

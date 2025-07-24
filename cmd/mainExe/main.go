@@ -6,6 +6,7 @@ import (
 	NanjingNengRui "jilaidian_go/internal/NanjingNengrui"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/debugHandler"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
@@ -43,6 +44,8 @@ func main() {
 	// 设置路由
 	yianqiservice.NewHandler(r)
 	NanjingNengRui.NewHandler(r)
+	debugHandler.NewHandler(r)
+	// 注册API处理器
 	api.NewConfigHandler(r)
 
 	api.NewQQLoginHandler(r)
