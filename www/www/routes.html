@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Application Routes</title>
+</head>
+
+<body>
+    <h1>Available Routes</h1>
+    <ul style="font-size: 20px;">
+        {{range .}}
+            {{if (eq .Method "GET")}}
+                <li>{{.Method}} <a href="{{.Path}}">{{.Path}}</a></li>
+            {{else}}
+                <li>{{.Method}} {{.Path}} </li>
+            {{end}}
+        {{end}}
+    </ul>
+</body>
+
+</html>

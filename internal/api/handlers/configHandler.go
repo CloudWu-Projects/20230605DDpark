@@ -91,6 +91,9 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	// 充电记录接口
 	configG := r.Group("/config", SessionAuthMiddleware())
 	{
+		configG.GET("/c", func(c *gin.Context) {
+			c.JSON(http.StatusOK, config.Global)
+		})
 		configG.GET("/", h.indexHandler)
 		configG.POST("/baseserver", h.saveSeverConfigHandler)
 		configG.POST("/save", h.saveConfigHandler)
@@ -100,17 +103,17 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 			ci := config.LoadConfig()
 			c.JSON(http.StatusOK, ci.Parks)
 		})
+		// Add endpoint to list all routes
+		configG.GET("/r", func(c *gin.Context) {
+			routeshtml, _ := template.ParseFS(www.HtmlFS, "www/routes.html")
+			routeshtml.Execute(c.Writer, r.Routes())
+		})
 	}
 
 	r.GET("/", func(c *gin.Context) {
-		//c.JSON(http.StatusOK, config.Global)
-
 		h.tmplIndexHtml.Execute(c.Writer, config.Global)
 	})
 
-	r.GET("/c", func(c *gin.Context) {
-		c.JSON(http.StatusOK, config.Global)
-	})
 	r.GET("/www/*filepath", func(c *gin.Context) {
 		filepath := c.Param("filepath")
 		c.FileFromFS("www/"+filepath, http.FS(www.HtmlFS))
@@ -149,23 +152,23 @@ func (h *ConfigHandler) deleteParkHandler(c *gin.Context) {
 func (h *ConfigHandler) indexHandler(c *gin.Context) {
 	ci := config.LoadConfig()
 
-	groups := []FieldGroup{}
-
-	groups = append(groups, FieldGroup{
-		GroupLabel: "系统配置",
-		Url:        "/config/save",
-		Fields:     structToStringMap(ci.ServerConfig, hiddenValueBaseServer),
-	})
-	groups = append(groups, FieldGroup{
-		GroupLabel: "逸安启配置",
-		Url:        "/config/save",
-		Fields:     structToStringMap(ci.YiAnqi, hiddenValueYianqi),
-	})
-	groups = append(groups, FieldGroup{
-		GroupLabel: "南京能瑞配置",
-		Url:        "/config/save",
-		Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
-	})
+	groups := []FieldGroup{
+		{
+			GroupLabel: "系统配置",
+			Url:        "/config/save",
+			Fields:     structToStringMap(ci.ServerConfig, hiddenValueBaseServer),
+		},
+		{
+			GroupLabel: "逸安启配置",
+			Url:        "/config/save",
+			Fields:     structToStringMap(ci.YiAnqi, hiddenValueYianqi),
+		},
+		{
+			GroupLabel: "南京能瑞配置",
+			Url:        "/config/save",
+			Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
+		},
+	}
 	data := struct {
 		Groups  []FieldGroup
 		Debug   bool
@@ -176,9 +179,6 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		Version: config.GlobalVersion,
 	}
 
-	if ci.Debug {
-		h.tmplConfigHtml = template.Must(template.ParseFiles("www/config.html", "www/modalForm.html"))
-	}
 	h.tmplConfigHtml.Execute(c.Writer, data)
 }
 
