@@ -21,7 +21,7 @@ import (
 // Handler API处理器
 type Handler struct {
 	chargeService *service.ChargeService
-	DebugInfo     debugHandler.DebugInfo
+	DebugInfo     *debugHandler.DebugInfo
 }
 
 var (

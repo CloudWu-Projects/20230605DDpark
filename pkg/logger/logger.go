@@ -46,8 +46,8 @@ func (f *CustomFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 var LumberjackLogger = &lumberjack.Logger{
 	Filename:   common.GetLogPath(),
-	MaxSize:    10,
-	MaxBackups: 3,
+	MaxSize:    1,
+	MaxBackups: 5,
 	MaxAge:     28,
 	Compress:   true,
 }

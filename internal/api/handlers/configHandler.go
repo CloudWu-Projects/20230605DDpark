@@ -115,7 +115,8 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 		filepath := c.Param("filepath")
 		c.FileFromFS("www/"+filepath, http.FS(www.HtmlFS))
 	})
-	r.GET("/log", h.logHandler)
+	r.GET("/log/:lastbytes", h.logHandler)
+	r.GET("/log/", h.logHandler)
 
 }
 
@@ -182,12 +183,14 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 }
 
 func (h *ConfigHandler) logHandler(c *gin.Context) {
-	// Read log file content using the utils package
-	logContent, err := utils.ReadLogFile()
+	lastBytesStr := c.Param("lastbytes")
+	lastBytes, _ := strconv.ParseInt(lastBytesStr, 10, 64)
+	logContent, err := utils.ReadLogFile(lastBytes)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read log file"})
 		return
 	}
+
 	c.Writer.WriteString(logContent)
 }
 func (h *ConfigHandler) addHandler(c *gin.Context) {

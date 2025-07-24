@@ -12,20 +12,18 @@ type DebugInfo struct {
 }
 
 type DebugInfoHandler struct {
-	DebugInfo map[string]DebugInfo `json:"debug_info"`
+	DebugInfo map[string]*DebugInfo `json:"debug_info"`
 }
 
 var (
-	instance = DebugInfoHandler{DebugInfo: make(map[string]DebugInfo)}
+	instance = DebugInfoHandler{DebugInfo: make(map[string]*DebugInfo)}
 	once     sync.Once
 )
 
 // NewHandler 创建新的API处理器
 func NewHandler(r *gin.Engine) DebugInfoHandler {
 	once.Do(func() {
-		instance = DebugInfoHandler{
-			DebugInfo: make(map[string]DebugInfo),
-		}
+
 		instance.SetupRoutes(r)
 	})
 	return instance
@@ -44,13 +42,14 @@ func (h *DebugInfoHandler) SetupRoutes(r *gin.Engine) {
 	})
 }
 
-func GetDebugInfo(serviceName string) DebugInfo {
+func GetDebugInfo(serviceName string) *DebugInfo {
 	if info, exists := instance.DebugInfo[serviceName]; exists {
 		return info
 	}
-	instance.DebugInfo[serviceName] = DebugInfo{
+	info := &DebugInfo{
 		LastReuqestJson:  "",
 		LastResponseJson: "",
 	}
-	return instance.DebugInfo[serviceName]
+	instance.DebugInfo[serviceName] = info
+	return info
 }
