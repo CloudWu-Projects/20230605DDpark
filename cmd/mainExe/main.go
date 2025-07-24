@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	NanjingNengRui "jilaidian_go/internal/NanjingNengrui"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/utils"
@@ -41,9 +42,11 @@ func main() {
 	api.SetSession(r)
 	// 设置路由
 	yianqiservice.NewHandler(r)
+	NanjingNengRui.NewHandler(r)
 	api.NewConfigHandler(r)
 
 	api.NewQQLoginHandler(r)
+
 	// 启动服务器
 	port := config.Global.ServerConfig.Port
 	logger.Logger.Info("启动服务器 port:", port)
