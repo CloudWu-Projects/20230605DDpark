@@ -10,7 +10,7 @@ import (
 // 替换 service.MD5 的调用为此函数
 func MD5(text string) string {
 	hash := md5.Sum([]byte(text))
-	return hex.EncodeToString(hash[:])
+	return strings.ToUpper(hex.EncodeToString(hash[:]))
 }
 
 // GenerateSign 生成签名

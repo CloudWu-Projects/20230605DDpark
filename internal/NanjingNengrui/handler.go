@@ -2,12 +2,14 @@ package NanjingNengRui
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/service"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -106,34 +108,84 @@ type SyncChargePilePayResponse struct {
 }
 
 func checkSign(jsonBody []byte, req SyncChargePilePayRequest, appSercert string) bool {
-	// 	1、将json的所有非空属性名(属性值不为null且不为空字符串以及appId与appSercert除外)ASCII码从小到大排序（字典序），使用URL键值对的格式（即key1=value1&key2=value2…）拼接成字符串stringA；注意（参数为空值、json对象、数组的，不参与加密）
 	stringA := ""
-	if req.AppId != "" {
-		stringA += "appId=" + req.AppId + "&"
-	}
-	params := map[string]string{}
+
+	params := map[string]interface{}{}
 
 	//req to  map
 	json.Unmarshal([]byte(jsonBody), &params)
-	//属性值不为null且不为空字符串以及appId与appSercert除外
-	for key, value := range params {
-		if value != "" && key != "appId" && key != "appSercert" {
-			stringA += key + "=" + value + "&"
+	// params need  sort by key
+
+	// 	1、将json的所有非空属性名(属性值不为null且不为空字符串以及appId与appSercert除外)
+	// ASCII码从小到大排序（字典序），使用URL键值对的格式（即key1=value1&key2=value2…）
+	// 拼接成字符串stringA；注意（参数为空值、json对象、数组的，不参与加密）
+	// 提取所有键
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+
+	// 对键排序
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		value := params[key]
+		// 只处理非空值的键值对，排除appId和appSercert
+		if key != "appId" && key != "appSercert" && key != "key" {
+			// Check for nil values
+			if value == nil {
+				continue
+			}
+
+			// Handle different types properly
+			var stringValue string
+			switch v := value.(type) {
+			case string:
+				if v == "" {
+					continue
+				}
+				stringValue = v
+			case float64:
+				// JSON numbers are float64 by default
+				stringValue = strconv.FormatFloat(v, 'f', -1, 64)
+			case int:
+				stringValue = strconv.Itoa(v)
+			case bool:
+				stringValue = strconv.FormatBool(v)
+			default:
+				// For other types, convert to string
+				stringValue = fmt.Sprintf("%v", v)
+				if stringValue == "" {
+					continue
+				}
+			}
+
+			stringA += key + "=" + stringValue + "&"
 		}
 	}
 
-	// 2、stringA用“&”拼接上appSercert得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。
-	stringSignTemp := strings.Join([]string{stringA, config.Global.NanjingNengRui.AppSercert}, "&")
+	// Remove trailing &
+	if len(stringA) > 0 && stringA[len(stringA)-1] == '&' {
+		stringA = stringA[:len(stringA)-1]
+	}
 
-	signValue := utils.MD5(stringSignTemp)
+	// 2、stringA用“&”拼接上appSercert得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。
+	stringSignTemp := stringA + "&" + appSercert
+
+	signValue := strings.ToUpper(utils.MD5(stringSignTemp))
 	// 3、将signValue与请求参数中的sign进行比较，如果相同则认为请求合法。
 	if strings.EqualFold(signValue, req.Key) {
 		return true
 	}
-	logger.Logger.Warn("签名校验失败", "expectedSign", signValue, "receivedSign", req.Key)
-	logger.Logger.Warn("请求参数", stringSignTemp)
+
+	logger.Logger.Warn("签名校验失败 ")
+	logger.Logger.Warn("expectedSign ", signValue)
+	logger.Logger.Warn("receivedSign ", req.Key)
+	logger.Logger.Warn("stringSignTemp: ", stringSignTemp)
+	logger.Logger.Warn("jsonBody:", string(jsonBody))
 	return false
 }
+
 func (h *Handler) SyncChargePilePay(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
@@ -150,6 +202,10 @@ func (h *Handler) SyncChargePilePay(c *gin.Context) {
 	//sign check
 	if !checkSign(body, req, config.Global.NanjingNengRui.AppSercert) {
 		h.MakeRepsonse(c, 1101, "签名校验失败", nil)
+		return
+	}
+	if req.AppId != config.Global.NanjingNengRui.AppId {
+		h.MakeRepsonse(c, 1102, "未授权的车场 appid", nil)
 		return
 	}
 	// 车场校验逻辑
