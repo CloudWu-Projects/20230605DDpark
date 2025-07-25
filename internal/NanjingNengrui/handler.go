@@ -202,6 +202,8 @@ func (h *Handler) SyncChargePilePay(c *gin.Context) {
 		h.MakeRepsonse(c, 1201, "json解析失败"+err.Error(), nil)
 		return
 	}
+
+	h.DebugInfo.LastReuqestJson = req
 	//sign check
 	if !checkSign(body, req, config.Global.NanjingNengRui.AppSercert) {
 		h.MakeRepsonse(c, 1101, "签名校验失败", nil)
@@ -236,7 +238,6 @@ func (h *Handler) MakeRepsonse(c *gin.Context, result int, description string, d
 		ResCode: strconv.Itoa(result),
 		ResMsg:  description,
 	}
-	jsonData, _ := json.Marshal(res)
-	h.DebugInfo.LastResponseJson = string(jsonData)
+	h.DebugInfo.LastResponseJson = res
 	c.JSON(http.StatusOK, res)
 }

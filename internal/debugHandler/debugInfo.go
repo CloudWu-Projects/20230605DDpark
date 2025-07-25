@@ -7,8 +7,8 @@ import (
 )
 
 type DebugInfo struct {
-	LastReuqestJson  string `json:"last_request_json"`
-	LastResponseJson string `json:"last_response_json"`
+	LastReuqestJson  interface{} `json:"last_request_json"`
+	LastResponseJson interface{} `json:"last_response_json"`
 }
 
 type DebugInfoHandler struct {
