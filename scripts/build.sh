@@ -1,5 +1,5 @@
 #!/bin/bash
-appName="yianqi_go"
+appName="hbproxy"
 
 echo $appName
 rm -rf bin

@@ -1,12 +1,13 @@
-systemctl stop yianqi_go.service
+export serverName=hbproxy
+systemctl stop $serverName.service
 
-python3 down7niu.py yianqi_go/yianqi_go.zip
+python3 down7niu.py $serverName/$serverName.zip
 
-mv yianqi_go/yianqi_go.zip yianqi_go/yianqi_go -f
+mv $serverName/$serverName.zip $serverName/$serverName -f
 
-chmod +x ./yianqi_go/yianqi_go
-./yianqi_go/yianqi_go -install
+chmod +x ./$serverName/$serverName
+.$serverName/$serverName -install
 
-md5sum ./yianqi_go/yianqi_go
+md5sum ./$serverName/$serverName
 
-systemctl start yianqi_go.service
+systemctl start $serverName.service
