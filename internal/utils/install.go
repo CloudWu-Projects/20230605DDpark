@@ -182,7 +182,7 @@ func chMod(name string, mode os.FileMode) {
 }
 func InstallSystemd(binPath string) {
 	config := &ServiceConfig{
-		Description: "yianqi Service",
+		Description: common.GetAppName() + " Service",
 		Path:        binPath,
 	}
 
