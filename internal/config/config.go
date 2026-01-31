@@ -3,12 +3,15 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
 	"jilaidian_go/version"
 	"os"
 	"path/filepath"
+
+	"github.com/joho/godotenv"
 )
 
 type ParkInfo struct {
@@ -212,6 +215,11 @@ func LoadConfig() *Config {
 }
 
 func init() {
+	// 加载 .env 文件
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file:", err)
+	}
 	Global = &Config{}
 
 	if err := Global.Load(); err != nil {
