@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
@@ -23,6 +24,7 @@ type ParkInfo struct {
 	ReduceAmount   int    `json:"reduceAmount"`
 	Duration       int    `json:"Duration"`
 	Remark         string `json:"remark"`
+	ProxyUrl       string `json:"proxy_url"`
 }
 type YiAnqi struct {
 	TokenURL       string `json:"tokenUrl" form:"YiAnqi.TokenURL"`
@@ -89,7 +91,8 @@ func createDefaultConfig() *Config {
 			ReduceAmount:   101,
 			Duration:       0,
 			Remark:         "备注",
-			StationID:      "1234567890", // 示例站点ID
+			StationID:      "007B45C733038000", // 示例站点ID
+			ProxyUrl:       "http://127.0.0.1:28080/proxy",
 		},
 		{
 			ParkID:         888888,
@@ -99,7 +102,8 @@ func createDefaultConfig() *Config {
 			ReduceAmount:   100,
 			Duration:       0,
 			Remark:         "备注",
-			StationID:      "1234567890", // 示例站点ID
+			StationID:      "346790", // 示例站点ID
+			ProxyUrl:       "https://api.ddpark.fun:33124/api/yianqi/proxy",
 		},
 	}
 	config.YiAnqi = YiAnqi{
@@ -205,6 +209,16 @@ func GetParkInfo_withParkid(parkID int) *ParkInfo {
 	}
 	return nil
 }
+func GetParkInfoByAppId(appId string) *ParkInfo {
+	for i := range Global.Parks {
+		if strconv.Itoa(Global.Parks[i].ParkID) == appId || Global.Parks[i].StationID == appId {
+			// 返回数组元素的地址，而不是临时变量的地址
+			return &Global.Parks[i]
+		}
+	}
+	return nil
+}
+
 func LoadConfig() *Config {
 	cc := &Config{}
 	if err := cc.Load(); err != nil {

@@ -7,6 +7,7 @@ import (
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/debugHandler"
+	proxyserver "jilaidian_go/internal/proxyServer"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
@@ -45,6 +46,7 @@ func main() {
 	yianqiservice.NewHandler(r)
 	NanjingNengRui.NewHandler(r)
 	debugHandler.NewHandler(r)
+	proxyserver.NewHandler(r)
 	// 注册API处理器
 	api.NewConfigHandler(r)
 
