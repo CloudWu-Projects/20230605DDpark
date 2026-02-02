@@ -1,5 +1,5 @@
 #!/bin/bash
-appName="hbproxy"
+appName="hbProxy"
 
 echo $appName
 rm -rf bin

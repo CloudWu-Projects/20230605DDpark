@@ -39,7 +39,7 @@ func NewHandler(r *gin.Engine) *Handler {
 
 func (h *Handler) SetupRoutes(r *gin.Engine) {
 
-	r.POST("/proxyHandler", h.HandleProxy)
+	r.POST("/v2/heetc/payNotify", h.HandleProxy)
 
 }
 
