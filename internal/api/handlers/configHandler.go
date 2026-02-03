@@ -168,11 +168,11 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		// 	Url:        "/config/save",
 		// 	Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
 		// },
-		// {
-		// 	GroupLabel: "河北配置",
-		// 	Url:        "/config/save",
-		// 	Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
-		// },
+		{
+			GroupLabel: "河北配置",
+			Url:        "/config/save",
+			Fields:     structToStringMap(ci.HeiBeiProxy, hiddenValueHeiBeiProxy),
+		},
 	}
 	data := struct {
 		Groups  []FieldGroup
@@ -208,7 +208,8 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 	deductionMoney, _ := strconv.Atoi(r.Form.Get("add.deduction_money"))
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
 	StationID := r.Form.Get("add.station_id")
-	ProxyUrl := r.Form.Get("add.proxy_url")
+	//ProxyUrl := r.Form.Get("add.proxy_url")
+	NpcPort := r.Form.Get("add.npc_port")
 	Duration, _ := strconv.Atoi(r.Form.Get("add.Duration"))
 	Remark := r.Form.Get("add.remark")
 	//	Deduction:   100,
@@ -221,7 +222,7 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 		StationID:      StationID,
 		Duration:       Duration,
 		Remark:         Remark,
-		ProxyUrl:       ProxyUrl,
+		NpcPort:        NpcPort,
 	}
 	fmt.Println("addHandler parkinfo:", oldparkid, parkinfo)
 	ci := config.LoadConfig()

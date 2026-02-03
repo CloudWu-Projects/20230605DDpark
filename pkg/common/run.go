@@ -25,14 +25,22 @@ func GetAppName() string {
 func IsWindows() bool {
 	return runtime.GOOS == "windows"
 }
+func IsLinux() bool {
+	return runtime.GOOS == "linux"
+}
+func IsMacOS() bool {
+	return runtime.GOOS == "darwin"
+}
 
 // interface log file path
 func GetLogPath() string {
 	var path string
 	if IsWindows() {
 		path = filepath.Join(GetAppPath(), GetAppName()+".log")
-	} else {
+	} else if IsLinux() {
 		path = "/var/log/" + GetAppName() + ".log"
+	} else if IsMacOS() {
+		path = "~/Library/Logs/" + GetAppName() + ".log"
 	}
 	return path
 }
@@ -40,9 +48,12 @@ func GetConfigPath() string {
 	var path string
 	if IsWindows() {
 		path = filepath.Join(GetAppPath(), GetAppName()+".json")
-	} else {
+	} else if IsLinux() {
 		path = "/etc/" + GetAppName() + ".json"
+	} else if IsMacOS() {
+		path = "~/Library/Logs/" + GetAppName() + ".json"
 	}
+
 	return path
 }
 

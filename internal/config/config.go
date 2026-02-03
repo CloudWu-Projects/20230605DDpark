@@ -24,7 +24,7 @@ type ParkInfo struct {
 	ReduceAmount   int    `json:"reduceAmount"`
 	Duration       int    `json:"Duration"`
 	Remark         string `json:"remark"`
-	ProxyUrl       string `json:"proxy_url"`
+	NpcPort        string `json:"npc_port"`
 }
 type YiAnqi struct {
 	TokenURL       string `json:"tokenUrl" form:"YiAnqi.TokenURL"`
@@ -37,6 +37,9 @@ type YiAnqi struct {
 type NanjingNengRui struct {
 	AppSercert string `json:"appSercert" form:"NanjingNengRui.appSercert"`
 	AppId      string `json:"appId" form:"NanjingNengRui.appId"`
+}
+type HeiBeiProxy struct {
+	ProxyUrl string `json:"proxyUrl" form:"HeiBeiProxy.proxyUrl"`
 }
 
 // 添加一个方法用于获取解密后的ukey
@@ -65,6 +68,7 @@ type Config struct {
 	Debug          bool           `json:"debug"`
 	NeedQQLogin    bool           `json:"need_qq_login"`
 	NanjingNengRui NanjingNengRui `json:"nanjingnengrui"`
+	HeiBeiProxy    HeiBeiProxy    `json:"heibieproxy"`
 }
 
 // Global 全局配置实例
@@ -92,7 +96,8 @@ func createDefaultConfig() *Config {
 			Duration:       0,
 			Remark:         "备注",
 			StationID:      "007B45C733038000", // 示例站点ID
-			ProxyUrl:       "http://127.0.0.1:28080/proxy",
+			//ProxyUrl:       "http://127.0.0.1:28080/proxy",
+			NpcPort: "33124",
 		},
 		{
 			ParkID:         888888,
@@ -103,7 +108,8 @@ func createDefaultConfig() *Config {
 			Duration:       0,
 			Remark:         "备注",
 			StationID:      "346790", // 示例站点ID
-			ProxyUrl:       "https://api.ddpark.fun:33124/api/yianqi/proxy",
+			//ProxyUrl:       "https://api.ddpark.fun:33124/api/yianqi/proxy",
+			NpcPort: "33124",
 		},
 	}
 	config.YiAnqi = YiAnqi{
@@ -117,6 +123,9 @@ func createDefaultConfig() *Config {
 	config.NanjingNengRui = NanjingNengRui{
 		AppSercert: "I654HUNOU250AX45",
 		AppId:      "cdist",
+	}
+	config.HeiBeiProxy = HeiBeiProxy{
+		ProxyUrl: "https://api.ddpark.fun:{PORT}/v2/tripartite/queryEtcOrder",
 	}
 
 	config.Debug = os.Getenv("DEBUG") == "1"

@@ -9,6 +9,7 @@ import (
 	"jilaidian_go/internal/debugHandler"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -120,7 +121,11 @@ func (h *Handler) HandleProxy(c *gin.Context) {
 		return
 	}
 	fmt.Println(parkInfo)
-	targetURL := parkInfo.ProxyUrl
+	//https://api.ddpark.fun:{PORT}/api/yianqi/proxy
+	proxyUrlTemplate := config.Global.HeiBeiProxy.ProxyUrl
+	//replace {PORT} with parkInfo.NpcPort
+	// 使用strings.Replace替换{PORT}占位符
+	targetURL := strings.Replace(proxyUrlTemplate, "{PORT}", parkInfo.NpcPort, 1)
 
 	log.Printf("Forwarding visitor[%s] request to: %s", visitor.ParkID, targetURL)
 

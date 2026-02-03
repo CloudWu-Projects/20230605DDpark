@@ -14,6 +14,7 @@ const (
 	hiddenValueBaseServer     = "baseserver"
 	hiddenValueYianqi         = "yianqi"
 	hiddenValueNanjingNengrui = "nanjingnengrui"
+	hiddenValueHeiBeiProxy    = "heibeiproxy"
 )
 
 type HiddenObject struct {
@@ -79,6 +80,8 @@ func (h *ConfigHandler) saveConfigHandler(c *gin.Context) {
 		err = json.Unmarshal(body, &ci.YiAnqi)
 	case hiddenValueNanjingNengrui:
 		err = json.Unmarshal(body, &ci.NanjingNengRui)
+	case hiddenValueHeiBeiProxy:
+		err = json.Unmarshal(body, &ci.HeiBeiProxy)
 	}
 	if unmarshalErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"aaaa error": err.Error()})

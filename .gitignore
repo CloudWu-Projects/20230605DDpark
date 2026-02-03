@@ -11,3 +11,6 @@ jilaidian.zip
 *.7z
 version/version_generated.go
 .env
+~/Library
+mainExe
+.DS_Store
