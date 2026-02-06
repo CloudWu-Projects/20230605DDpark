@@ -1,5 +1,5 @@
 #!/bin/bash
-appName="hbProxy"
+appName="xinjuncheng"
 
 echo $appName
 rm -rf bin
@@ -21,7 +21,7 @@ fi
 
 if  [ "$1" = "up" ]; then
     echo "上传到七牛"
-    python ./7niu/upload_7niu.py ./bin/$appName --filename=$appName
+    python3 ./7niu/upload_7niu.py ./bin/$appName --filename=$appName
 else
     echo "不进行上传"
 fi

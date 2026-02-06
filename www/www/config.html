@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Config setting</title>
-<!--   
+  <!--   
   <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.7/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.7/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -15,9 +15,9 @@
    -->
   <link href="../www/bootstrap.min.css" rel="stylesheet">
   <script src="../www/jquery.min.js"></script>
-<script src="../www/bootstrap.bundle.min.js"></script>
+  <script src="../www/bootstrap.bundle.min.js"></script>
   <link href="../www/bootstrap-table.min.css" rel="stylesheet">
-  
+
   <script src="../www/bootstrap-table.min.js"></script>
 
   <style>
@@ -48,11 +48,11 @@
 </head>
 
 <body>
-  <div  class="alert alert-success" style="position: fixed; bottom: 0; left: 0; z-index: 1050;">{{.Version}}</div>
-  
+  <div class="alert alert-success" style="position: fixed; bottom: 0; left: 0; z-index: 1050;">{{.Version}}</div>
+
   <div id="alertMessage" class="alert alert-success text-center" style=""></div>
   <div class="container mt-3">
-    <h3>逸安启 -20250601111 </h3>
+    <h3>新君诚 -20260203 </h3>
     {{if .Debug }}
     <div class="alert alert-danger">Debug Mode</div>
     {{end}}
@@ -70,7 +70,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">&times;</button>
           </div>
           <div class="modal-body">
-            <form action="/config/add" method="post" id="parkForm">
+            <form action="" method="post" id="parkForm">
               <div class="form-group">
                 <label>Park ID</label>
                 <input type="text" id="parkid-add" name="add.parkid" value="" required>
@@ -78,16 +78,16 @@
               <!-- <div class="form-group">
                 <label for="ukey--add">UKey</label>
                 <input type="text" id="ukey-add" name="add.ukey" value="" required>
-              </div> -->
+              </div>
               <div class="form-group">
                 <label for="station_id-add">appID</label>
                 <input type="text" id="station_id-add" name="add.station_id" value="" required>
-              </div>
-              <div class="form-group">
+              </div> -->
+              <!-- <div class="form-group">
                 <label for="npc_port-add">Npc Port</label>
                 <input type="text" id="npc_port-add" name="add.npc_port" value="" required>
-              </div>
-              
+              </div> -->
+
               <!--
               <div class="form-group">
                 <label for="deduction-time-add">Deduction Time</label>
@@ -110,7 +110,7 @@
                 <input type="text" id="remark-add" name="add.remark" value="" required>
               </div>
               <div class="form-group">
-                <button type="submit" id="add_or_modify_btn">Add park</button>
+                <button type="button" id="add_or_modify_btn">Add park</button>
                 <input type="hidden" id="old_parkid" name="add.old_parkid" value="">
               </div>
             </form>
@@ -126,6 +126,8 @@
   </div>
 
   <script>
+
+    const currentHref = window.location.href;
     const $table = $('#table');
     const parkModal = document.getElementById('addParksModal');
     const modalInstance = parkModal ? new bootstrap.Modal(parkModal) : null;
@@ -134,12 +136,12 @@
     function sanitizeInput(input) {
       return $('<div>').text(input).html();
     }
-  function showAlert(message) {
-        $('#alertMessage').text(message).show();
-        setTimeout(() => {
-          $('#alertMessage').hide();
-        }, 3000);
-      }
+    function showAlert(message) {
+      $('#alertMessage').text(message).show();
+      setTimeout(() => {
+        $('#alertMessage').hide();
+      }, 3000);
+    }
     window.nameFormatter = (value, row, index) => {
       const safeValue = sanitizeInput(value);
       return `<a href="javascript:void(0)" class="edit" data-index="${index}" data-name="${safeValue}">${safeValue}</a>`;
@@ -159,32 +161,32 @@
       'click .remove': (e, value, row) => {
         if (!confirm(`确定要删除这个停车场吗？${row.parkid}`)) return;
 
-        fetch(`/config/park/${row.parkid}`, {
+        fetch(`${currentHref}park/${row.parkid}`, {
           method: 'DELETE',
           headers: {
             //'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value || ''
           }
         })
-        .then(res => {
-          if (!res.ok) throw new Error('网络响应异常');
-          return res.json();
-        })
-        .then(data => {
-          showAlert('删除成功'+data);
-          $table.bootstrapTable('remove', {
-            field: 'parkid',
-            values: [row.parkid]
+          .then(res => {
+            if (!res.ok) throw new Error('网络响应异常');
+            return res.json();
+          })
+          .then(data => {
+            showAlert('删除成功' + data);
+            $table.bootstrapTable('remove', {
+              field: 'parkid',
+              values: [row.parkid]
+            });
+          })
+          .catch(err => {
+            console.error('删除失败:', err);
+            showAlert('删除失败' + err);
           });
-        })
-        .catch(err => {
-          console.error('删除失败:', err);
-          showAlert('删除失败'+err);
-        });
       }
     };
-
+    //get current host and port
     $('#table').bootstrapTable({
-      url: '/config/parks',
+      url: `${currentHref}parks`,
       pagination: true,
       search: true,
       sortable: true,
@@ -207,13 +209,13 @@
       }, {
         field: 'deduction_money',
         title: 'deduction_money'
-      }, */{
+      }, {
         field: 'station_id',
         title: 'appID'
-      }, {
+      },*/ /*{
         field: 'npc_port',
         title: 'npc_port'
-      }, {
+      },*/ {
         field: 'remark',
         title: 'remark'
       },/* {
@@ -229,7 +231,7 @@
 
     function edit(row = {}) {
       const isEditMode = !!row.parkid;
-      
+
       $('#parkid-add').val(sanitizeInput(row.parkid || ''));
       $('#old_parkid').val(sanitizeInput(row.parkid || ''));
       $('#ukey-add').val(sanitizeInput(row.ukey || ''));
@@ -238,7 +240,7 @@
       $('#remark-add').val(sanitizeInput(row.remark || ''));
       $('#Duration-add').val(row.Duration || '');
       $('#station_id-add').val(sanitizeInput(row.station_id || ''));
-      $('#npc_port-add').val(sanitizeInput(row.npc_port || ''));
+      //$('#npc_port-add').val(sanitizeInput(row.npc_port || ''));
 
       const buttonText = isEditMode ? '修改停车场' : '添加停车场';
       $('#add_or_modify_btn').text(buttonText);
@@ -248,8 +250,39 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('parkForm').action = `${currentHref}add`;
+
       $('#addpark_Btn').click(function () {
         edit({});
+      });
+      $('#add_or_modify_btn').click(function (e) {
+        e.preventDefault();
+        const formData = $('#parkForm').serialize();
+        const url = $('#old_parkid').val() ? 
+        `${currentHref}update` : 
+        `${currentHref}add`;
+        fetch(`${currentHref}add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            //'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value ||
+
+          },
+          body: formData
+        })
+          .then(res => {
+            if (!res.ok) throw new Error('网络响应异常');
+            return res.json();
+          })
+          .then(data => {
+            showAlert('保存成功' + data);
+            $('#table').bootstrapTable('refresh');
+            if (modalInstance) modalInstance.hide();
+          })
+          .catch(err => {
+            console.error('保存失败:', err);
+            showAlert('保存失败' + err);
+          });
       });
     });
   </script>

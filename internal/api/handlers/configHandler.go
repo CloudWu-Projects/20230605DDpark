@@ -10,9 +10,7 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
-	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -48,23 +46,24 @@ func NewConfigHandler(r *gin.Engine) *ConfigHandler {
 
 // 认证中间件
 func CheckSessionValid(c *gin.Context) bool {
-	if !config.Global.NeedQQLogin {
-		return true
-	}
-	session := sessions.Default(c)
-	user := session.Get("user")
-	if user == nil {
-		return false
-	}
-	userSession, ok := user.(UserSession)
-	if !ok || !userSession.IsLogin {
-		return false
-	}
-	if time.Since(userSession.LastActive) > MaxSessionDuration {
-		return false
-	}
-	fmt.Println("Session valid")
 	return true
+	// if !config.Global.NeedQQLogin {
+	// 	return true
+	// }
+	// session := sessions.Default(c)
+	// user := session.Get("user")
+	// if user == nil {
+	// 	return false
+	// }
+	// userSession, ok := user.(UserSession)
+	// if !ok || !userSession.IsLogin {
+	// 	return false
+	// }
+	// if time.Since(userSession.LastActive) > MaxSessionDuration {
+	// 	return false
+	// }
+	// fmt.Println("Session valid")
+	// return true
 }
 
 func SessionAuthMiddleware() gin.HandlerFunc {
@@ -154,7 +153,7 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 
 	groups := []FieldGroup{
 		{
-			GroupLabel: "系统配置",
+			GroupLabel: "系统",
 			Url:        "/config/save",
 			Fields:     structToStringMap(ci.ServerConfig, hiddenValueBaseServer),
 		},
@@ -168,10 +167,15 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		// 	Url:        "/config/save",
 		// 	Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
 		// },
+		// {
+		// 	GroupLabel: "河北配置",
+		// 	Url:        "/config/save",
+		// 	Fields:     structToStringMap(ci.HeiBeiProxy, hiddenValueHeiBeiProxy),
+		// },
 		{
-			GroupLabel: "河北配置",
+			GroupLabel: "新君诚",
 			Url:        "/config/save",
-			Fields:     structToStringMap(ci.HeiBeiProxy, hiddenValueHeiBeiProxy),
+			Fields:     structToStringMap(ci.XinJunCheng, hiddenValueXinJunCheng),
 		},
 	}
 	data := struct {
@@ -243,5 +247,6 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save config"})
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/config/")
+	//c.Redirect(http.StatusSeeOther, "/config/")
+	c.JSON(http.StatusOK, gin.H{"message": "Config saved successfully"})
 }
