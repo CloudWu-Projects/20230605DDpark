@@ -103,7 +103,10 @@ func (h *Handler) XJCdiscount(c *gin.Context) {
 	// http://istparking.sciseetech.com/public/order/queryOrder
 	// 阿里云向停车云查询订单，park_id网页配置；
 	// 处理充电信息
-	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, request.PlateNumber); err != nil {
+
+	// "deduction_money": 3.2接口下发的discountMoney
+	// "duration": 3.2接口下发的discountTime
+	if err := h.chargeService.ProcessChargingAndDiscount(parkinfo, request.PlateNumber, request.DiscountMoney, request.DiscountTime); err != nil {
 		logger.Logger.Error("处理充电和优惠失败", err, "parkID", parkinfo.ParkID, "plateNo", request.PlateNumber)
 		h.MakeRepsonse(c, XjcResponse{
 			Result:         0,

@@ -21,7 +21,9 @@ func NewChargeService() *ChargeService {
 // ValidateParkID 校验停车场ID
 
 // ProcessChargingAndDiscount 处理充电和优惠
-func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, PlateNum string) error {
+func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, PlateNum string,
+	discountMoney int,
+	discountTime int) error {
 	// 1. 处理充电信息
 
 	// 2. 查询订单信息
@@ -30,7 +32,7 @@ func (s *ChargeService) ProcessChargingAndDiscount(parkinfo *config.ParkInfo, Pl
 	if err != nil {
 		return fmt.Errorf("查询订单信息失败: %v", err)
 	}
-	err = s.apiClient.SendDiscountNotice(parkinfo.ParkID, PlateNum, order_id, parkinfo)
+	err = s.apiClient.SendDiscountNotice(parkinfo.ParkID, PlateNum, order_id, parkinfo, discountMoney, discountTime)
 
 	return err
 }

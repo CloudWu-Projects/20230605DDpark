@@ -61,7 +61,11 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 }
 
 // SendDiscountNotice 下发优惠信息
-func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, parkinfo *config.ParkInfo) error {
+func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string,
+	parkinfo *config.ParkInfo,
+	discountMoney int,
+	discountTime int,
+) error {
 	url := fmt.Sprintf("%s/charge/discountNotice", c.TingCheYunUrl)
 
 	uuid, _ := guid.NewV4()
@@ -81,9 +85,9 @@ func (c *APIClient) SendDiscountNotice(parkID int, carNumber, orderID string, pa
 		CarNumber:         carNumber,
 		OrderID:           orderID,
 		ReduceAmount:      0, //parkinfo.ReduceAmount,
-		DeductionTime:     parkinfo.DeductionTime,
-		DeductionMoney:    parkinfo.DeductionMoney,
-		Duration:          parkinfo.Duration,
+		DeductionTime:     0, //discountTime,
+		DeductionMoney:    discountMoney,
+		Duration:          discountTime, //parkinfo.Duration,
 		Remark:            parkinfo.Remark,
 		StartChargingTime: "2020-08-27 00:02:09",
 		StopChargingTime:  "2020-08-27 00:25:07",
