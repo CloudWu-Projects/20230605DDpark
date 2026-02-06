@@ -75,6 +75,7 @@ func (h *Handler) XJCdiscount(c *gin.Context) {
 		})
 		return
 	}
+	h.DebugInfo.LastReuqestJson = request
 	logger.Logger.Infof("Received XJCdiscount request: %+v", request)
 
 	//check sign here if needed
@@ -83,7 +84,7 @@ func (h *Handler) XJCdiscount(c *gin.Context) {
 		return
 	}
 	// 车场校验逻辑
-	parkinfo := config.GetParkInfo(request.PlatformNo)
+	parkinfo := config.GetParkInfo_withParkid(request.PlatformNo)
 	if parkinfo == nil {
 		logger.Logger.Warn("无效车场ID", "parkID", request.PlatformNo, "plateNo", request.PlateNumber)
 		h.MakeRepsonse(c, XjcResponse{

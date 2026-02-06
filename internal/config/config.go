@@ -166,18 +166,10 @@ func (c *Config) SaveConfig() error {
 	Global = c // 更新全局配置
 	return nil
 }
-func GetParkInfo(stationID string) *ParkInfo {
+
+func GetParkInfo_withParkid(parkID string) *ParkInfo {
 	for i := range Global.Parks {
-		if Global.Parks[i].StationID == stationID {
-			// 返回数组元素的地址，而不是临时变量的地址
-			return &Global.Parks[i]
-		}
-	}
-	return nil
-}
-func GetParkInfo_withParkid(parkID int) *ParkInfo {
-	for i := range Global.Parks {
-		if Global.Parks[i].ParkID == parkID {
+		if strconv.Itoa(Global.Parks[i].ParkID) == parkID {
 			// 返回数组元素的地址，而不是临时变量的地址
 			return &Global.Parks[i]
 		}
