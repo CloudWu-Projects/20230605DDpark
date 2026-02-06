@@ -53,7 +53,7 @@
     </div>
 </div>
 <script>
-    bindAjaxForm('#modify{{.GroupLabel}}Modal', '{{.Url}}');
+    bindAjaxForm('#modify{{.GroupLabel}}Modal', `${window.location.href}{{.Url}}`);
 </script>
 {{end}}
 {{end}}

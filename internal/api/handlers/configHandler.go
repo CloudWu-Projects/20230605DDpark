@@ -174,7 +174,7 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 		// },
 		{
 			GroupLabel: "新君诚",
-			Url:        "/config/save",
+			Url:        "/save",
 			Fields:     structToStringMap(ci.XinJunCheng, hiddenValueXinJunCheng),
 		},
 	}
