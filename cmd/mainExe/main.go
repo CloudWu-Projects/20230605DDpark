@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	NanjingNengRui "jilaidian_go/internal/NanjingNengrui"
+	shaaXiETC "jilaidian_go/internal/ShaaXiETC"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
 	"jilaidian_go/internal/debugHandler"
@@ -47,6 +48,7 @@ func main() {
 	NanjingNengRui.NewHandler(r)
 	debugHandler.NewHandler(r)
 	proxyserver.NewHandler(r)
+	shaaXiETC.NewHandler(r)
 	// 注册API处理器
 	api.NewConfigHandler(r)
 

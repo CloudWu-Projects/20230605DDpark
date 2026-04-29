@@ -173,6 +173,11 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 			Url:        "/config/save",
 			Fields:     structToStringMap(ci.HeiBeiProxy, hiddenValueHeiBeiProxy),
 		},
+		{
+			GroupLabel: "陕西ETC配置",
+			Url:        "/config/save",
+			Fields:     structToStringMap(ci.ShaaXiEtcProxy, hiddenValueShaaXiEtcProxy),
+		},
 	}
 	data := struct {
 		Groups  []FieldGroup

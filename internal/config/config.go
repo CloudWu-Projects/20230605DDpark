@@ -41,6 +41,10 @@ type NanjingNengRui struct {
 type HeiBeiProxy struct {
 	ProxyUrl string `json:"proxyUrl" form:"HeiBeiProxy.proxyUrl"`
 }
+type ShaaXiEtcProxy struct {
+	ProxyUrl214 string `json:"proxyUrl214" form:"ShaaXiEtcProxy.proxyUrl214"`
+	ProxyUrl215 string `json:"proxyUrl215" form:"ShaaXiEtcProxy.proxyUrl215"`
+}
 
 // 添加一个方法用于获取解密后的ukey
 func (p *ParkInfo) GetUkey() string {
@@ -69,6 +73,7 @@ type Config struct {
 	NeedQQLogin    bool           `json:"need_qq_login"`
 	NanjingNengRui NanjingNengRui `json:"nanjingnengrui"`
 	HeiBeiProxy    HeiBeiProxy    `json:"heibieproxy"`
+	ShaaXiEtcProxy ShaaXiEtcProxy `json:"shaaXiEtcProxy"`
 }
 
 // Global 全局配置实例
@@ -126,6 +131,10 @@ func createDefaultConfig() *Config {
 	}
 	config.HeiBeiProxy = HeiBeiProxy{
 		ProxyUrl: "https://api.ddpark.fun:{PORT}/v2/tripartite/queryEtcOrder",
+	}
+	config.ShaaXiEtcProxy = ShaaXiEtcProxy{
+		ProxyUrl214: "https://api.ddpark.fun:{PORT}/etcThirdPark/billConfirmV1",
+		ProxyUrl215: "https://api.ddpark.fun:{PORT}/etcThirdPark/billsDownV1",
 	}
 
 	config.Debug = os.Getenv("DEBUG") == "1"
