@@ -81,7 +81,7 @@ var Global *Config
 var GlobalVersion string
 
 func init() {
-	GlobalVersion = fmt.Sprintf("version:%s-%s build:%s go:%s", version.GitVersion, version.GitHash, version.BuildTime, version.GoVersion)
+	GlobalVersion = fmt.Sprintf("version:%s build:%s go:%s", version.GitVersion, version.BuildTime, version.GoVersion)
 }
 
 func createDefaultConfig() *Config {
