@@ -26,8 +26,7 @@ func NewAPIClient() *APIClient {
 	}
 }
 
-// QueryOrder 查询订单
-func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.ParkInfo) (string, error) {
+func (c *APIClient) QueryOrderDetail(parkID int, carNumber string, parkinfo *config.ParkInfo) (*models.QueryOrderResponse, error) {
 	url := fmt.Sprintf("%s/order/queryOrder", c.TingCheYunUrl)
 
 	// 构造请求数据
@@ -49,8 +48,12 @@ func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.Pa
 		Data:        data,
 	}
 
-	// 发送请求
-	response, err := c.SendRequest(url, request)
+	return c.SendRequest(url, request)
+}
+
+// QueryOrder 查询订单
+func (c *APIClient) QueryOrder(parkID int, carNumber string, parkinfo *config.ParkInfo) (string, error) {
+	response, err := c.QueryOrderDetail(parkID, carNumber, parkinfo)
 	if err != nil {
 		return "", err
 	}

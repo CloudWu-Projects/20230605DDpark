@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"html/template"
 	"jilaidian_go/internal/config"
+	"jilaidian_go/internal/service"
 	"jilaidian_go/internal/utils"
 	"jilaidian_go/pkg/logger"
 	"jilaidian_go/www"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +27,24 @@ var (
 type ConfigHandler struct {
 	tmplConfigHtml *template.Template
 	tmplIndexHtml  *template.Template
+	chargeService  *service.ChargeService
+}
+
+type QueryPageData struct {
+	Version string
+	Plate   string
+	Result  *QueryResultView
+	Error   string
+}
+
+type QueryResultView struct {
+	Found         bool
+	ParkName      string
+	Plate         string
+	OrderID       string
+	ParkedMinutes int64
+	InTimeText    string
+	Message       string
 }
 
 // NewHandler 创建新的API处理器
@@ -40,6 +60,7 @@ func NewConfigHandler(r *gin.Engine) *ConfigHandler {
 		configHandlerInstance = &ConfigHandler{
 			tmplConfigHtml: tmplConfigHtml,
 			tmplIndexHtml:  tmplIndexHtml,
+			chargeService:  service.NewChargeService(),
 		}
 		configHandlerInstance.setupRoutes(r)
 	})
@@ -89,7 +110,7 @@ func SessionAuthMiddleware() gin.HandlerFunc {
 // SetupRoutes 设置路由
 func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	// 充电记录接口
-	configG := r.Group("/config", SessionAuthMiddleware())
+	configG := r.Group("/config")
 	{
 		configG.GET("/c", func(c *gin.Context) {
 			c.JSON(http.StatusOK, config.Global)
@@ -111,8 +132,9 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	}
 
 	r.GET("/", func(c *gin.Context) {
-		h.tmplIndexHtml.Execute(c.Writer, config.Global)
+		h.renderQueryPage(c, QueryPageData{Version: config.GlobalVersion})
 	})
+	r.POST("/query", h.queryOrderHandler)
 
 	r.GET("/www/*filepath", func(c *gin.Context) {
 		filepath := c.Param("filepath")
@@ -121,6 +143,61 @@ func (h *ConfigHandler) setupRoutes(r *gin.Engine) {
 	r.GET("/log/:lastbytes", h.logHandler)
 	r.GET("/log/", h.logHandler)
 
+}
+
+func (h *ConfigHandler) renderQueryPage(c *gin.Context, data QueryPageData) {
+	if err := h.tmplIndexHtml.Execute(c.Writer, data); err != nil {
+		logger.Logger.Errorf("渲染查询页面失败: %v", err)
+		c.String(http.StatusInternalServerError, "render query page failed")
+	}
+}
+
+func (h *ConfigHandler) queryOrderHandler(c *gin.Context) {
+	plate := strings.ToUpper(strings.TrimSpace(c.PostForm("plate")))
+	pageData := QueryPageData{
+		Version: config.GlobalVersion,
+		Plate:   plate,
+	}
+
+	result, err := h.chargeService.QueryFirstMatchingOrder(plate)
+	if err != nil {
+		pageData.Error = err.Error()
+		h.renderQueryPage(c, pageData)
+		return
+	}
+	if result == nil {
+		pageData.Result = &QueryResultView{
+			Found:   false,
+			Plate:   plate,
+			Message: "未查询到当前在场订单",
+		}
+		h.renderQueryPage(c, pageData)
+		return
+	}
+
+	parkName := strings.TrimSpace(result.ParkInfo.Remark)
+	if parkName == "" {
+		parkName = fmt.Sprintf("车场 %d", result.ParkInfo.ParkID)
+	}
+
+	parkedMinutes := int64(0)
+	if result.InTime > 0 {
+		parkedMinutes = time.Now().Unix() - result.InTime
+		if parkedMinutes < 0 {
+			parkedMinutes = 0
+		}
+		parkedMinutes /= 60
+	}
+
+	pageData.Result = &QueryResultView{
+		Found:         true,
+		ParkName:      parkName,
+		Plate:         plate,
+		OrderID:       result.OrderID,
+		ParkedMinutes: parkedMinutes,
+		InTimeText:    time.Unix(result.InTime, 0).Format("2006-01-02 15:04:05"),
+	}
+	h.renderQueryPage(c, pageData)
 }
 
 func (h *ConfigHandler) deleteParkHandler(c *gin.Context) {
@@ -158,26 +235,6 @@ func (h *ConfigHandler) indexHandler(c *gin.Context) {
 			Url:        "/config/save",
 			Fields:     structToStringMap(ci.ServerConfig, hiddenValueBaseServer),
 		},
-		// {
-		// 	GroupLabel: "逸安启配置",
-		// 	Url:        "/config/save",
-		// 	Fields:     structToStringMap(ci.YiAnqi, hiddenValueYianqi),
-		// },
-		// {
-		// 	GroupLabel: "南京能瑞配置",
-		// 	Url:        "/config/save",
-		// 	Fields:     structToStringMap(ci.NanjingNengRui, hiddenValueNanjingNengrui),
-		// },
-		{
-			GroupLabel: "河北配置",
-			Url:        "/config/save",
-			Fields:     structToStringMap(ci.HeiBeiProxy, hiddenValueHeiBeiProxy),
-		},
-		{
-			GroupLabel: "陕西ETC配置",
-			Url:        "/config/save",
-			Fields:     structToStringMap(ci.ShaaXiEtcProxy, hiddenValueShaaXiEtcProxy),
-		},
 	}
 	data := struct {
 		Groups  []FieldGroup
@@ -209,25 +266,12 @@ func (h *ConfigHandler) addHandler(c *gin.Context) {
 
 	ukey := r.Form.Get("add.ukey")
 	oldparkid := r.Form.Get("add.old_parkid")
-	deductionTime, _ := strconv.Atoi(r.Form.Get("add.deduction_time"))
-	deductionMoney, _ := strconv.Atoi(r.Form.Get("add.deduction_money"))
 	parkID, _ := strconv.Atoi(r.Form.Get("add.parkid"))
-	StationID := r.Form.Get("add.station_id")
-	//ProxyUrl := r.Form.Get("add.proxy_url")
-	NpcPort := r.Form.Get("add.npc_port")
-	Duration, _ := strconv.Atoi(r.Form.Get("add.Duration"))
 	Remark := r.Form.Get("add.remark")
-	//	Deduction:   100,
-	//	Remark:        "备注",
 	parkinfo := config.ParkInfo{
-		ParkID:         parkID,
-		Ukey:           ukey,
-		DeductionTime:  deductionTime,
-		DeductionMoney: deductionMoney,
-		StationID:      StationID,
-		Duration:       Duration,
-		Remark:         Remark,
-		NpcPort:        NpcPort,
+		ParkID: parkID,
+		Ukey:   ukey,
+		Remark: Remark,
 	}
 	fmt.Println("addHandler parkinfo:", oldparkid, parkinfo)
 	ci := config.LoadConfig()

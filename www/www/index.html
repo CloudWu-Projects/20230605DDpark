@@ -1,14 +1,208 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>登录</title>
-</head>
-<body>
-    <h1>请选择登录方式</h1>
-    <a href="/toLogin"><img src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_3.png" alt="QQ登录"></a>
-    <h1>dashboard</h1>
-    <a href="/dashboard">dashboard</a>
+<!doctype html>
+<html lang="zh-CN">
 
-    <a href="/c">c2</a>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>停车订单查询</title>
+    <style>
+        :root {
+            --bg-top: #f7f2e8;
+            --bg-bottom: #efe6d3;
+            --panel: rgba(255, 252, 246, 0.92);
+            --text: #2d2418;
+            --muted: #776854;
+            --accent: #c56a1a;
+            --accent-dark: #8d4610;
+            --line: rgba(88, 58, 28, 0.12);
+            --success-bg: #eef7e8;
+            --success-text: #31541d;
+            --empty-bg: #f4efe7;
+            --empty-text: #6d5940;
+            --error-bg: #fff1ed;
+            --error-text: #9a3412;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top, rgba(255, 255, 255, 0.55), transparent 34%),
+                linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 24px 16px 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            width: min(100%, 460px);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            padding: 28px 20px 22px;
+            box-shadow: 0 18px 50px rgba(88, 58, 28, 0.12);
+            backdrop-filter: blur(8px);
+        }
+
+        .title {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            margin: 10px 0 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .query-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .plate-input {
+            width: 100%;
+            border: 1px solid rgba(120, 84, 44, 0.2);
+            border-radius: 18px;
+            padding: 16px 18px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.92);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .plate-input:focus {
+            outline: none;
+            border-color: rgba(197, 106, 26, 0.55);
+            box-shadow: 0 0 0 4px rgba(197, 106, 26, 0.12);
+        }
+
+        .submit-btn {
+            border: none;
+            border-radius: 18px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+            box-shadow: 0 12px 24px rgba(141, 70, 16, 0.22);
+        }
+
+        .panel {
+            margin-top: 18px;
+            border-radius: 20px;
+            padding: 16px 18px;
+            line-height: 1.8;
+        }
+
+        .panel strong {
+            display: inline-block;
+            min-width: 82px;
+        }
+
+        .panel-success {
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .panel-empty {
+            background: var(--empty-bg);
+            color: var(--empty-text);
+        }
+
+        .panel-error {
+            background: var(--error-bg);
+            color: var(--error-text);
+        }
+
+        .version {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .tools {
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .tools a {
+            color: var(--accent-dark);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        @media (max-width: 420px) {
+            .card {
+                border-radius: 22px;
+                padding: 24px 16px 18px;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <section class="card">
+            <h1 class="title">停车订单查询</h1>
+            <p class="subtitle">微信或支付宝扫码后，输入车牌号即可查询当前订单情况。</p>
+
+            <form class="query-form" method="post" action="/query">
+                <label class="label" for="plate">车牌号码</label>
+                <input class="plate-input" id="plate" name="plate" type="text" maxlength="10" placeholder="请输入车牌号" value="{{.Plate}}" autocomplete="off" autocapitalize="characters">
+                <button class="submit-btn" type="submit">查询</button>
+            </form>
+
+            {{if .Error}}
+            <div class="panel panel-error">{{.Error}}</div>
+            {{end}}
+
+            {{if .Result}}
+                {{if .Result.Found}}
+                <div class="panel panel-success">
+                    <div><strong>车场名称</strong>{{.Result.ParkName}}</div>
+                    <div><strong>车牌号码</strong>{{.Result.Plate}}</div>
+                    <div><strong>订单编号</strong>{{.Result.OrderID}}</div>
+                    <div><strong>入场时间</strong>{{.Result.InTimeText}}</div>
+                    <div><strong>已停时长</strong>{{.Result.ParkedMinutes}} 分钟</div>
+                </div>
+                {{else}}
+                <div class="panel panel-empty">{{.Result.Message}}</div>
+                {{end}}
+            {{end}}
+
+            <div class="tools"><a href="/config/">配置车场</a></div>
+            <div class="version">{{.Version}}</div>
+        </section>
+    </main>
 </body>
+
 </html>

@@ -3,14 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	NanjingNengRui "jilaidian_go/internal/NanjingNengrui"
-	shaaXiETC "jilaidian_go/internal/ShaaXiETC"
 	api "jilaidian_go/internal/api/handlers"
 	"jilaidian_go/internal/config"
-	"jilaidian_go/internal/debugHandler"
-	proxyserver "jilaidian_go/internal/proxyServer"
 	"jilaidian_go/internal/utils"
-	"jilaidian_go/internal/yianqiservice"
 	"jilaidian_go/pkg/common"
 	"jilaidian_go/pkg/logger"
 	"net/http"
@@ -41,18 +36,8 @@ func main() {
 	//gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
-	// 配置Session存储
-	api.SetSession(r)
 	// 设置路由
-	yianqiservice.NewHandler(r)
-	NanjingNengRui.NewHandler(r)
-	debugHandler.NewHandler(r)
-	proxyserver.NewHandler(r)
-	shaaXiETC.NewHandler(r)
-	// 注册API处理器
 	api.NewConfigHandler(r)
-
-	api.NewQQLoginHandler(r)
 
 	// 启动服务器
 	port := config.Global.ServerConfig.Port
